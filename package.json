@@ -1,0 +1,18 @@
+{
+  "name": "libra-figma",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Figma plugin that generates the Libra brand guideline, design system and mobile app screens.",
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --target=es2017 --format=iife --outfile=code.js",
+    "watch": "npm run build -- --watch",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run build && npm run smoke",
+    "smoke": "node test/run.js && MAX_MODES=1 node test/run.js && NO_JAKARTA=1 RERUN=1 node test/run.js"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "*",
+    "esbuild": "*",
+    "typescript": "*"
+  }
+}
