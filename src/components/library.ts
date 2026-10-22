@@ -17,7 +17,9 @@ import {
   platformBadge,
   recolor,
   rect,
+  relinkStyles,
   row,
+  STYLE_KEYS,
   setText,
   shadow,
   text,
@@ -533,7 +535,9 @@ function buildSetFor(def: Def, theme: Theme, holder: FrameNode) {
   const comps: ComponentNode[] = [];
   for (const v of def.variants) {
     const node = def.build(v);
+    const rootEffect = node.getPluginData(STYLE_KEYS.effect);
     const comp = node.type === 'COMPONENT' ? node : figma.createComponentFromNode(node);
+    relinkStyles(comp, rootEffect);
     comp.name = def.variants.length > 1 ? propsName(v) : NAME_PREFIX + '/' + def.set;
     comp.description = def.description;
     registry.set(vkey(def.set, v, theme), comp);

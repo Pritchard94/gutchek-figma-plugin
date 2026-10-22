@@ -24,6 +24,18 @@ const wait = setInterval(() => {
   }
   clearInterval(wait);
   console.log('closePlugin:', mock.closed);
+  const log = mock.root.children.find((p) => p.name === 'Libra · Generator log');
+  if (log) console.log('  log:', log.children.map((t) => t.characters).join('\n').split('\n').slice(0, 8).join(' | '));
+  const inInstance = (n) => {
+    for (let p = n.parent; p; p = p.parent) if (p.type === 'INSTANCE') return true;
+    return n.type === 'INSTANCE';
+  };
+  const all = mock.root.children.reduce((a, p) => a.concat(p.findAll()), []).filter((n) => !inInstance(n));
+  const texts = all.filter((n) => n.type === 'TEXT');
+  const unlinked = texts.filter((n) => n.getPluginData('textStyle') && !n._textStyleId).length;
+  const fx = all.filter((n) => n.getPluginData && n.getPluginData('effectStyle'));
+  const fxUnlinked = fx.filter((n) => !n.effectStyleId).length;
+  console.log(`  text styles unlinked: ${unlinked}/${texts.length}, effect styles unlinked: ${fxUnlinked}/${fx.length}`);
   for (const p of mock.root.children) {
     const all = p.findAll();
     const count = (t) => all.filter((n) => n.type === t).length;

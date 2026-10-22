@@ -108,7 +108,14 @@ class BaseNode {
     if (typeof c === 'string') throw new Error('dynamic-page requires collection object');
     if (!c.modes.find((m) => m.modeId === modeId)) throw new Error('Unknown mode ' + modeId);
   }
-  async setReactionsAsync(r) {
+  _alive(method) {
+    if (this.removed) throw new Error(`in ${method}: The node with id "${this.id}" does not exist`);
+  }
+  setReactionsAsync(r) {
+    this._alive('setReactionsAsync');
+    return this._setReactions(r);
+  }
+  async _setReactions(r) {
     if (!Array.isArray(r)) throw new Error('reactions must be array');
     for (const x of r) {
       for (const a of x.actions || []) {
@@ -117,9 +124,11 @@ class BaseNode {
     }
     this.reactions = r;
   }
-  async setEffectStyleIdAsync(id) {
+  setEffectStyleIdAsync(id) {
+    this._alive('setEffectStyleIdAsync');
     if (!styles.has(id)) throw new Error('Unknown effect style ' + id);
     this.effectStyleId = id;
+    return Promise.resolve();
   }
   set textStyleId(_) {
     throw new Error('textStyleId is read-only with dynamic-page');
@@ -301,7 +310,11 @@ class TextNode extends BaseNode {
     this.width = Math.max(1, s.length * 7);
     this.height = 20;
   }
-  async setTextStyleIdAsync(id) {
+  setTextStyleIdAsync(id) {
+    this._alive('setTextStyleIdAsync');
+    return this._setTextStyle(id);
+  }
+  async _setTextStyle(id) {
     if (!styles.has(id)) throw new Error('Unknown text style ' + id);
     const s = styles.get(id);
     if (!loadedFonts.has(fontKey(s.fontName))) throw new Error('Style font not loaded');
@@ -390,10 +403,23 @@ const mock = {
     }
     return f;
   },
+  // Like Figma: the converted node is replaced by a new component node; children move over.
   createComponentFromNode(n) {
     if (n.type !== 'FRAME') throw new Error('createComponentFromNode expects frame, got ' + n.type);
-    n.type = 'COMPONENT';
-    return n;
+    const c = new FrameNode('COMPONENT');
+    for (const k of Object.keys(n)) {
+      if (k === 'id' || k === 'children' || k === 'parent' || k === 'removed' || k === '_pluginData') continue;
+      c[k] = n[k];
+    }
+    c.type = 'COMPONENT';
+    nodesById.set(c.id, c);
+    const parent = n.parent;
+    const index = parent ? parent.children.indexOf(n) : -1;
+    for (const ch of n.children.slice()) c.appendChild(ch);
+    n.remove();
+    nodesById.delete(n.id);
+    if (parent) parent.insertChild(index, c);
+    return c;
   },
   combineAsVariants(nodes, parent) {
     if (!nodes.length) throw new Error('no nodes');

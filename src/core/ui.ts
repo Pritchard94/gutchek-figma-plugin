@@ -250,7 +250,8 @@ export function shadow(node: FrameNode | ComponentNode | RectangleNode | Ellipse
   const s = ctx.effectStyles.get(key);
   if (s) {
     node.effects = s.effects;
-    later(() => node.setEffectStyleIdAsync(s.id));
+    node.setPluginData(STYLE_KEYS.effect, s.id);
+    later(() => node.setEffectStyleIdAsync(s.id), node);
   }
 }
 
@@ -290,7 +291,10 @@ export function text(str: string, style: TypeKey | CustomType, color: Token = 't
   if (o.align) t.textAlignHorizontal = o.align === 'left' ? 'LEFT' : o.align === 'center' ? 'CENTER' : 'RIGHT';
   if (typeof style === 'string') {
     const s = ctx.textStyles.get(style);
-    if (s) later(() => t.setTextStyleIdAsync(s.id));
+    if (s) {
+      t.setPluginData(STYLE_KEYS.text, s.id);
+      later(() => t.setTextStyleIdAsync(s.id), t);
+    }
   }
   if (o.w === 'fill') setPending(t, { w: 'fill' });
   else if (typeof o.w === 'number') {
@@ -364,6 +368,22 @@ export function placeRotated(node: SceneNode & LayoutMixin, cx: number, cy: numb
     [cos, -sin, x],
     [sin, cos, y],
   ];
+}
+
+export const STYLE_KEYS = { text: 'textStyle', effect: 'effectStyle' };
+
+/**
+ * createComponentFromNode replaces the converted node, so style links queued
+ * against it are lost. Re-queue them on the new component and its descendants.
+ */
+export function relinkStyles(root: ComponentNode, rootEffect: string) {
+  if (rootEffect) later(() => root.setEffectStyleIdAsync(rootEffect), root);
+  for (const n of root.findAll((c) => !!c.getPluginData(STYLE_KEYS.text) || !!c.getPluginData(STYLE_KEYS.effect))) {
+    const ts = n.getPluginData(STYLE_KEYS.text);
+    const fx = n.getPluginData(STYLE_KEYS.effect);
+    if (ts && n.type === 'TEXT') later(() => n.setTextStyleIdAsync(ts), n);
+    if (fx && 'setEffectStyleIdAsync' in n) later(() => (n as FrameNode).setEffectStyleIdAsync(fx), n);
+  }
 }
 
 // ---------------------------------------------------------------- icons

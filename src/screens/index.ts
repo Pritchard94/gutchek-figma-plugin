@@ -150,7 +150,7 @@ export function buildScreens(theme: Theme, page: PageNode): { page: PageNode; fr
   for (const [node, target] of links) {
     const dest = frames[target];
     if (!dest || node.removed) continue;
-    later(() => (node as FrameNode).setReactionsAsync([makeReaction(dest.id)]));
+    later(() => (node as FrameNode).setReactionsAsync([makeReaction(dest.id)]), node);
   }
   if (frames.welcome) {
     try {

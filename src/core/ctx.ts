@@ -45,8 +45,8 @@ export function warn(msg: string) {
 }
 
 /** Queue an async API call (style links, reactions) so builders can stay synchronous. */
-export function later(fn: () => Promise<unknown>) {
-  ctx.pending.push(fn);
+export function later(fn: () => Promise<unknown>, node?: BaseNode) {
+  ctx.pending.push(node ? () => (node.removed ? Promise.resolve() : fn()) : fn);
 }
 
 export async function flush() {
@@ -56,9 +56,11 @@ export async function flush() {
   for (let i = 0; i < jobs.length; i += size) {
     await Promise.all(
       jobs.slice(i, i + size).map((j) =>
-        j().catch((e) => {
-          warn('Deferred call failed: ' + String(e && e.message ? e.message : e));
-        }),
+        Promise.resolve()
+          .then(j)
+          .catch((e) => {
+            warn('Deferred call failed: ' + String(e && e.message ? e.message : e));
+          }),
       ),
     );
   }
