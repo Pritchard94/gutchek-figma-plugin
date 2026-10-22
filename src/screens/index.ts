@@ -1,7 +1,6 @@
 import { Theme } from '../tokens';
 import { ctx, applyThemeMode, later, warn } from '../core/ctx';
 import { hexPaint, text } from '../core/ui';
-import { newPage } from '../pages/common';
 import { links } from './kit';
 import { purpose, signIn, verify, welcome } from './auth';
 import { home, homeEmpty, saved } from './home';
@@ -91,10 +90,9 @@ function makeReaction(destinationId: string): Reaction {
   };
 }
 
-export function buildScreens(theme: Theme): { page: PageNode; frames: Record<string, FrameNode> } {
+export function buildScreens(theme: Theme, page: PageNode): { page: PageNode; frames: Record<string, FrameNode> } {
   ctx.theme = theme;
   links.length = 0;
-  const page = newPage(theme === 'dark' ? 'Screens · Dark' : 'Screens · Light');
   page.backgrounds = [hexPaint(theme === 'dark' ? '#05050A' : '#E9EBF0')];
   const frames: Record<string, FrameNode> = {};
   let y = 0;

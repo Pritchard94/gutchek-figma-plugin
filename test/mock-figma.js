@@ -185,6 +185,12 @@ class ParentNode extends BaseNode {
   }
 }
 
+function pageOf(n) {
+  let p = n;
+  while (p && p.type !== 'PAGE') p = p.parent;
+  return p || null;
+}
+
 function insideInstance(n) {
   let p = n.parent;
   while (p) {
@@ -229,6 +235,7 @@ class FrameNode extends ParentNode {
     const inst = deepClone(this, true);
     inst.type = 'INSTANCE';
     inst.mainComponent = this;
+    mock.currentPage.appendChild(inst);
     return inst;
   }
   swapComponent(c) {
@@ -391,6 +398,10 @@ const mock = {
   combineAsVariants(nodes, parent) {
     if (!nodes.length) throw new Error('no nodes');
     for (const n of nodes) if (n.type !== 'COMPONENT') throw new Error('combineAsVariants needs components');
+    const target = pageOf(parent);
+    for (const n of nodes) {
+      if (pageOf(n) !== target) throw new Error(`Variant "${n.name}" is on a different page from the set parent "${parent.name}"`);
+    }
     const names = new Set();
     for (const n of nodes) {
       if (names.has(n.name)) throw new Error('Duplicate variant name ' + n.name);

@@ -1,7 +1,7 @@
 import { Theme, Token, contrast, elevation, primitives, radius, resolveRef, semantic, spacing, typeScale, TypeKey, luminance } from '../tokens';
 import { ctx, applyThemeMode, flush } from '../core/ctx';
 import { box, col, hexPaint, row, text, rect } from '../core/ui';
-import { board, layoutHorizontally, newPage, section } from './common';
+import { board, layoutHorizontally, section } from './common';
 
 export function withTheme<T>(theme: Theme, fn: () => T): T {
   const prev = ctx.theme;
@@ -83,8 +83,7 @@ function typeRow(key: TypeKey): FrameNode {
   ]);
 }
 
-export function buildFoundations(): PageNode {
-  const page = newPage('Foundations');
+export function buildFoundations(page: PageNode): PageNode {
   ctx.theme = 'light';
 
   const tokens = board(

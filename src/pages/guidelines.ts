@@ -3,7 +3,7 @@ import { ctx } from '../core/ctx';
 import { FillSpec, Kid, abs, add, box, col, gradient, hexPaint, icon, paint, rect, row, text, pill, avatar } from '../core/ui';
 import { appIcon, glyph, lockup } from '../brand';
 import { use } from '../components/library';
-import { board, bullet, layoutHorizontally, newPage, section } from './common';
+import { board, bullet, layoutHorizontally, section } from './common';
 import { swatchChip, themedPanel } from './foundations';
 
 const EYEBROW = 'Libra · Brand guideline';
@@ -438,8 +438,7 @@ function accessibility(): FrameNode {
   );
 }
 
-export function buildGuidelines(): PageNode {
-  const page = newPage('Brand Guidelines');
+export function buildGuidelines(page: PageNode): PageNode {
   ctx.theme = 'light';
   const boards = [essence(), logo(), colour(), typography(), layout(), iconography(), signature(), voice(), accessibility()];
   for (const b of boards) page.appendChild(b);
@@ -449,8 +448,7 @@ export function buildGuidelines(): PageNode {
 
 // ---------------------------------------------------------------- cover
 
-export function buildCover(previews: FrameNode[]): PageNode {
-  const page = newPage('Cover');
+export function buildCover(previews: FrameNode[], page: PageNode): PageNode {
   ctx.theme = 'light';
   const cover = box({ name: 'Cover', dir: 'none', w: 1920, h: 1080, fill: [gradient([['#2C1E66', 0], ['#5B3FD1', 0.65], ['#7556E3', 1]], 120)], clip: true });
   const left = col({ name: 'Copy', gap: 28, w: 820 }, [

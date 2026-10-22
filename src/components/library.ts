@@ -540,6 +540,7 @@ function buildSetFor(def: Def, theme: Theme, holder: FrameNode) {
     comps.push(comp);
   }
   if (comps.length > 1) {
+    for (const c of comps) holder.appendChild(c);
     const cs = figma.combineAsVariants(comps, holder);
     cs.name = NAME_PREFIX + '/' + def.set;
     cs.description = def.description;

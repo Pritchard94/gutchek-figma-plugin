@@ -6,23 +6,24 @@ import { buildFlow } from './pages/flow';
 import { layoutHorizontally, newPage } from './pages/common';
 import { buildScreens } from './screens';
 
-async function step<T>(label: string, fn: () => T | Promise<T>): Promise<T> {
+const WORK_PAGE = 'Libra · generating';
+const LOG_PAGE = 'Libra · Generator log';
+let stage = 'Starting';
+
+async function onPage<T>(name: string, label: string, fn: (page: PageNode) => T): Promise<T> {
+  stage = label;
   figma.notify('Libra · ' + label, { timeout: 1500 });
-  const out = await fn();
+  const page = newPage(name);
+  await figma.setCurrentPageAsync(page);
+  const out = fn(page);
   await flush();
   return out;
 }
 
-async function run() {
-  await loadFonts();
-
-  const work = figma.createPage();
-  work.name = 'Libra · generating';
-  await figma.setCurrentPageAsync(work);
-
+async function cleanUp(work: PageNode) {
   for (const p of figma.root.children.slice()) {
     if (p === work) continue;
-    if (p.getPluginData(PLUGIN_KEY) === '1') {
+    if (p.getPluginData(PLUGIN_KEY) === '1' || p.name === WORK_PAGE || p.name === LOG_PAGE) {
       p.remove();
       continue;
     }
@@ -30,25 +31,39 @@ async function run() {
     if (p.children.length === 0) p.remove();
   }
   await removePrevious();
+}
 
-  await step('Creating variables and styles', async () => {
-    await createVariables();
-    createStyles();
-  });
+async function run() {
+  stage = 'Loading fonts';
+  await loadFonts();
 
-  const components = await step('Building components', () => {
-    const page = newPage('Components');
+  const work = figma.createPage();
+  work.name = WORK_PAGE;
+  work.setPluginData(PLUGIN_KEY, '1');
+  await figma.setCurrentPageAsync(work);
+
+  stage = 'Removing the previous run';
+  await cleanUp(work);
+
+  stage = 'Creating variables and styles';
+  await createVariables();
+  createStyles();
+
+  const components = await onPage('Components', 'Building components', (page) => {
     const roots = buildLibrary(page, ctx.modes);
     layoutHorizontally(roots, 200);
     return page;
   });
-  const foundations = await step('Building foundations', buildFoundations);
-  const guidelines = await step('Writing brand guidelines', buildGuidelines);
-  const light = await step('Designing light screens', () => buildScreens('light'));
-  const dark = await step('Designing dark screens', () => buildScreens('dark'));
-  const flow = await step('Mapping the user flow', () => buildFlow(light.frames));
-  const cover = await step('Making the cover', () => buildCover([light.frames.home, light.frames.report, light.frames.match].filter(Boolean)));
+  const foundations = await onPage('Foundations', 'Building foundations', buildFoundations);
+  const guidelines = await onPage('Brand Guidelines', 'Writing brand guidelines', buildGuidelines);
+  const light = await onPage('Screens · Light', 'Designing light screens', (page) => buildScreens('light', page));
+  const dark = await onPage('Screens · Dark', 'Designing dark screens', (page) => buildScreens('dark', page));
+  const flow = await onPage('User Flow', 'Mapping the user flow', (page) => buildFlow(light.frames, page));
+  const cover = await onPage('Cover', 'Making the cover', (page) =>
+    buildCover([light.frames.home, light.frames.report, light.frames.match].filter(Boolean), page),
+  );
 
+  stage = 'Arranging pages';
   const order = [cover, guidelines, foundations, components, light.page, dark.page, flow];
   order.forEach((p, i) => figma.root.insertChild(i, p));
 
@@ -64,13 +79,39 @@ async function run() {
     }
   }
 
+  if (ctx.warnings.length) {
+    await writeLog('Generated with notes', ctx.warnings);
+    await figma.setCurrentPageAsync(cover);
+  }
   const modeNote = ctx.modes ? 'Light and Dark modes in one variable collection.' : 'Dark tokens in a separate collection (plan limit).';
-  const warnings = ctx.warnings.length ? ' Notes: ' + ctx.warnings.join(' ') : '';
-  console.log('[Libra] warnings', ctx.warnings);
-  figma.closePlugin('Libra design file ready. ' + modeNote + warnings);
+  const notes = ctx.warnings.length ? ' ' + ctx.warnings.length + ' note(s) on the "' + LOG_PAGE + '" page.' : '';
+  figma.closePlugin('Libra design file ready. ' + modeNote + notes);
 }
 
-run().catch((e) => {
-  console.error('[Libra] generation failed', e);
-  figma.closePlugin('Libra generator failed: ' + (e && e.message ? e.message : String(e)));
+/** Writes a plain text log into the file so problems can be diagnosed from a share link. */
+async function writeLog(title: string, lines: string[]) {
+  try {
+    const page = figma.createPage();
+    page.name = LOG_PAGE;
+    page.setPluginData(PLUGIN_KEY, '1');
+    await figma.setCurrentPageAsync(page);
+    const inter = { family: 'Inter', style: 'Regular' };
+    await figma.loadFontAsync(inter);
+    const t = figma.createText();
+    t.fontName = inter;
+    t.fontSize = 16;
+    t.characters = [title, 'Stage: ' + stage, ''].concat(lines).join('\n');
+    t.resize(1200, t.height);
+    t.textAutoResize = 'HEIGHT';
+    page.appendChild(t);
+  } catch (_) {
+    /* logging must never mask the original problem */
+  }
+}
+
+run().catch(async (e) => {
+  const message = e && e.message ? e.message : String(e);
+  console.error('[Libra] generation failed at "' + stage + '"', e);
+  await writeLog('Libra generator failed', ['Error: ' + message, '', String((e && e.stack) || '')].concat(ctx.warnings));
+  figma.closePlugin('Libra generator failed at "' + stage + '": ' + message);
 });

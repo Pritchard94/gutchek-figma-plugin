@@ -1,7 +1,5 @@
 import { ctx } from '../core/ctx';
 import { box, col, icon, row, text } from '../core/ui';
-import { newPage } from './common';
-
 const SCALE = 0.5;
 
 function thumb(frame: FrameNode | undefined, caption: string): FrameNode | null {
@@ -33,8 +31,7 @@ function lane(title: string, note: string, steps: Array<[FrameNode | undefined, 
   ]);
 }
 
-export function buildFlow(frames: Record<string, FrameNode>): PageNode {
-  const page = newPage('User Flow');
+export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): PageNode {
   ctx.theme = 'light';
   const root = col({ name: 'User flow', gap: 64, pad: 96, fill: 'bg/canvas', radius: 48 }, [
     col({ name: 'Header', gap: 12 }, [
