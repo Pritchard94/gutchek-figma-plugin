@@ -45,7 +45,7 @@ export function report(): FrameNode {
       nav: { title: 'Report', action: 'share', backTo: 'home' },
       tall: true,
       gap: 20,
-      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Save', 'Secondary', 'Large', 'bookmark'), btn('Share', 'Primary', 'Large', 'share')])],
+      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Save', 'Secondary', 'Large', 'bookmark'), link(btn('Share', 'Primary', 'Large', 'share'), 'shareReport')])],
       footerDivider: true,
     },
     [
@@ -81,7 +81,7 @@ export function report(): FrameNode {
       ]),
       col({ name: 'Footnote', gap: 6, w: 'fill', pad: [4, 0, 8, 0] }, [
         center('Based on public content only. People are more than their posts.', 'caption', 'text/tertiary'),
-        center('Something wrong? Report an issue', 'caption', 'brand/fg'),
+        link(center('Something wrong? Report an issue', 'caption', 'brand/fg'), 'reportIssue'),
       ]),
     ],
   );

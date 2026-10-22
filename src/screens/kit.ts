@@ -22,6 +22,7 @@ export interface NavSpec {
   action?: string | null;
   back?: boolean;
   backTo?: string;
+  actionTo?: string;
 }
 
 export interface ScreenSpec {
@@ -48,6 +49,10 @@ export function navBar(n: NavSpec): SceneNode {
   if (n.backTo) {
     const back = (bar as FrameNode).findOne((c) => c.name === 'back');
     if (back) link(back, n.backTo);
+  }
+  if (n.actionTo) {
+    const action = (bar as FrameNode).findOne((c) => c.name === 'action');
+    if (action) link(action, n.actionTo);
   }
   return fill(bar);
 }
@@ -107,6 +112,49 @@ export function withSheet(base: FrameNode, title: string, content: Kid[], name?:
   ]);
   add(base, abs(sheet, 0, base.height - sheet.height));
   return base;
+}
+
+/** Crop a tall scrolling screen to one viewport so a sheet can sit over it. */
+export function viewport(frame: FrameNode): FrameNode {
+  frame.layoutSizingVertical = 'FIXED';
+  frame.resize(device.width, device.height);
+  return frame;
+}
+
+export interface Choice {
+  label: string;
+  detail?: string;
+  on?: boolean;
+}
+
+/** Radio list inside a grouped card. */
+export function radioGroup(choices: Choice[], name = 'Choices'): FrameNode {
+  return group(
+    choices.map((c) =>
+      row({ name: c.label, w: 'fill', gap: 14, pad: [14, 16], cross: c.detail ? 'start' : 'center' }, [
+        box({ name: 'Radio', dir: 'h', w: 22, h: 22, radius: 11, stroke: c.on ? 'brand/fg' : 'border/strong', strokeW: c.on ? 6 : 1.5, fill: 'bg/surface' }, []),
+        col({ name: 'Text', gap: 2, w: 'fill' }, [text(c.label, 'body', 'text/primary', { w: 'fill' }), c.detail ? text(c.detail, 'small', 'text/secondary', { w: 'fill' }) : null]),
+      ]),
+    ),
+    name,
+    52,
+  );
+}
+
+/** Multi-line text area styled like TextField. */
+export function textArea(label: string, value: string, placeholder = false, h = 120): FrameNode {
+  return col({ name: label, gap: 6, w: 'fill' }, [
+    text(label, 'label', 'text/secondary'),
+    box({ name: 'Area', dir: 'v', w: 'fill', h, pad: 16, radius: 12, fill: 'bg/surface', stroke: 'border/strong' }, [
+      text(value, 'body', placeholder ? 'text/tertiary' : 'text/primary', { w: 'fill' }),
+    ]),
+  ]);
+}
+
+/** Large illustrative icon in a soft circle, used for empty, success and permission states. */
+export function heroIcon(iconName: string, tone: Tone = 'brand', size = 96): FrameNode {
+  const t = toneTokens[tone];
+  return box({ name: 'Hero icon', dir: 'h', w: size, h: size, radius: size / 2, fill: t.bg, main: 'center', cross: 'center' }, [icon(iconName, Math.round(size * 0.44), t.fg)]);
 }
 
 export function withDialog(base: FrameNode, dialog: FrameNode, name?: string): FrameNode {

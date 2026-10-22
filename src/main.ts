@@ -5,6 +5,7 @@ import { buildCover, buildGuidelines } from './pages/guidelines';
 import { buildFlow } from './pages/flow';
 import { layoutHorizontally, newPage } from './pages/common';
 import { buildScreens } from './screens';
+import { buildWebsite } from './web';
 
 const WORK_PAGE = 'Libra · generating';
 const LOG_PAGE = 'Libra · Generator log';
@@ -59,12 +60,16 @@ async function run() {
   const light = await onPage('Screens · Light', 'Designing light screens', (page) => buildScreens('light', page));
   const dark = await onPage('Screens · Dark', 'Designing dark screens', (page) => buildScreens('dark', page));
   const flow = await onPage('User Flow', 'Mapping the user flow', (page) => buildFlow(light.frames, page));
+  const website = await onPage('Website', 'Designing the website', (page) => {
+    buildWebsite(page, light.frames);
+    return page;
+  });
   const cover = await onPage('Cover', 'Making the cover', (page) =>
     buildCover([light.frames.home, light.frames.report, light.frames.match].filter(Boolean), page),
   );
 
   stage = 'Arranging pages';
-  const order = [cover, guidelines, foundations, components, light.page, dark.page, flow];
+  const order = [cover, guidelines, foundations, components, light.page, dark.page, flow, website];
   order.forEach((p, i) => figma.root.insertChild(i, p));
 
   await figma.setCurrentPageAsync(cover);

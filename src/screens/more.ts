@@ -126,12 +126,12 @@ export function safety(): FrameNode {
     ]),
     row({ name: 'Bottom', gap: 12, w: 'fill' }, [
       row({ name: 'Contacts', gap: -8 }, [ringed(avatar('NK', 32, 'positive')), ringed(avatar('IB', 32, 'warning'))]),
-      text('2 trusted contacts', 'small', 'text/secondary', { w: 'fill' }),
-      btn('Start sharing', 'Primary', 'Small', undefined, false),
+      link(text('2 trusted contacts', 'small', 'text/secondary', { w: 'fill' }), 'trustedContacts'),
+      link(btn('Start sharing', 'Primary', 'Small', undefined, false), 'shareSetup'),
     ]),
   ]);
   return screen(
-    { name: 'Safety Hub', tab: 'Safety', nav: { type: 'Large', title: 'Safety', action: 'life-buoy' }, gap: 20 },
+    { name: 'Safety Hub', tab: 'Safety', nav: { type: 'Large', title: 'Safety', action: 'life-buoy', actionTo: 'resources' }, gap: 20 },
     [
       share,
       col({ name: 'Checklist', gap: 10, w: 'fill' }, [
@@ -148,11 +148,14 @@ export function safety(): FrameNode {
       ]),
       col({ name: 'Support', gap: 10, w: 'fill' }, [
         groupTitle('Support'),
-        group([
-          listRow('Emergency services', 'Nigeria', 'phone', 'Value', '112'),
-          listRow('Sexual assault referral centre', 'Free and confidential', 'life-buoy'),
-          listRow('Talk to someone now', 'Chat with a trained listener', 'message'),
-        ]),
+        link(
+          group([
+            listRow('Emergency services', 'Nigeria', 'phone', 'Value', '112'),
+            listRow('Sexual assault referral centre', 'Free and confidential', 'life-buoy'),
+            listRow('Talk to someone now', 'Chat with a trained listener', 'message'),
+          ]),
+          'resources',
+        ),
       ]),
     ],
   );
@@ -172,18 +175,25 @@ export function settings(): FrameNode {
   return screen(
     { name: 'Settings', tab: 'Settings', nav: { type: 'Large', title: 'Settings', action: null }, gap: 16 },
     [
-      row({ name: 'Profile', w: 'fill', gap: 14 }, [
-        avatar(user.initials, 56, 'brand'),
-        col({ name: 'Text', gap: 2, w: 'fill' }, [text(user.name, 'h3', 'text/primary'), text(user.email, 'small', 'text/secondary')]),
-        pill('Verified', 'positive', 'shield-check'),
-      ]),
+      link(
+        row({ name: 'Profile', w: 'fill', gap: 14 }, [
+          avatar(user.initials, 56, 'brand'),
+          col({ name: 'Text', gap: 2, w: 'fill' }, [text(user.name, 'h3', 'text/primary'), text(user.email, 'small', 'text/secondary')]),
+          pill('Verified', 'positive', 'shield-check'),
+        ]),
+        'account',
+      ),
       plan,
       groupTitle('Privacy'),
-      group([listRow('App lock', 'Face ID to open Libra', 'face-id', 'SwitchOn'), listRow('Search history', null, 'clock', 'Value', '12'), del]),
+      group([
+        link(listRow('App lock', 'Face ID to open Libra', 'face-id', 'SwitchOn'), 'appLocked'),
+        link(listRow('Search history', null, 'clock', 'Value', '12'), 'history'),
+        del,
+      ]),
       groupTitle('Notifications'),
-      group([listRow('Report ready', null, 'bell', 'SwitchOn'), listRow('Report changes', 'Monitoring alerts · Pro', 'trending-up', 'SwitchOff')]),
+      link(group([listRow('Report ready', null, 'bell', 'SwitchOn'), listRow('Report changes', 'Monitoring alerts · Pro', 'trending-up', 'SwitchOff')]), 'notifSettings'),
       groupTitle('Support and legal'),
-      group([listRow('Report an issue', null, 'flag'), listRow('Terms and privacy', null, 'file'), listRow('Public opt-out page', null, 'globe')]),
+      group([link(listRow('Help and support', null, 'help'), 'help'), listRow('Terms and privacy', null, 'file'), listRow('Public opt-out page', null, 'globe')]),
     ],
   );
 }
@@ -203,7 +213,7 @@ export function plans(): FrameNode {
       name: 'Plans',
       nav: { title: 'Plans', action: 'x', back: false },
       gap: 12,
-      footer: [btn('Continue with Plus'), center('Billed monthly through the App Store. Cancel anytime.', 'caption', 'text/tertiary')],
+      footer: [link(btn('Continue with Plus'), 'paymentSuccess'), center('Billed monthly through the App Store. Cancel anytime.', 'caption', 'text/tertiary')],
     },
     [
       text('Choose your plan', 'h2', 'text/primary', { w: 'fill' }),

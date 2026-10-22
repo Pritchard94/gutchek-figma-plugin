@@ -7,6 +7,27 @@ import { home, homeEmpty, saved } from './home';
 import { matchCompared, matchConfirm, newSearch, newSearchPlatform, processing } from './search';
 import { evidence, report, reportLow, reportSevere, signalsCaution, signalsPositive } from './report';
 import { compare, deleteData, personality, plans, safety, settings } from './more';
+import { appLocked, idIntro, intro, notifPrompt, selfie } from './onboarding';
+import {
+  account,
+  addNote,
+  blocked,
+  comparePicker,
+  help,
+  history,
+  linkedAccounts,
+  noMatch,
+  notifSettings,
+  notificationsList,
+  paymentSuccess,
+  paywall,
+  reportIssue,
+  resources,
+  shareLive,
+  shareReport,
+  shareSetup,
+  trustedContacts,
+} from './flows';
 
 export interface ScreenDef {
   id: string;
@@ -14,62 +35,99 @@ export interface ScreenDef {
   build: () => FrameNode;
 }
 
-export const GROUPS: Array<{ title: string; note: string; screens: ScreenDef[] }> = [
+type Group = { title: string; note: string; screens: Array<[string, string, () => FrameNode]> };
+
+const DEFS: Group[] = [
   {
     title: '1 · Onboarding',
-    note: 'Sign up, verify, and agree to the purpose and age rules before the first search.',
+    note: 'Sign up, verify, agree to the purpose and age rules, and optionally verify identity before the first search.',
     screens: [
-      { id: 'welcome', label: '1.1 Welcome', build: welcome },
-      { id: 'signin', label: '1.2 Sign in', build: signIn },
-      { id: 'verify', label: '1.3 Verify code', build: verify },
-      { id: 'purpose', label: '1.4 Age and purpose', build: purpose },
+      ['welcome', 'Welcome', welcome],
+      ['intro', 'How Libra works', intro],
+      ['signin', 'Sign in', signIn],
+      ['verify', 'Verify code', verify],
+      ['purpose', 'Age and purpose', purpose],
+      ['idIntro', 'Verify identity', idIntro],
+      ['selfie', 'Selfie check', selfie],
+      ['notifPrompt', 'Notifications permission', notifPrompt],
     ],
   },
   {
     title: '2 · Home and saved',
-    note: 'The hub: start a Libra, revisit reports and saved people.',
+    note: 'The hub: start a Libra, revisit reports, notifications and saved people.',
     screens: [
-      { id: 'home', label: '2.1 Home', build: home },
-      { id: 'homeEmpty', label: '2.2 Home · first time', build: homeEmpty },
-      { id: 'saved', label: '2.3 Saved', build: saved },
+      ['home', 'Home', home],
+      ['homeEmpty', 'Home · first time', homeEmpty],
+      ['notificationsList', 'Notifications', notificationsList],
+      ['saved', 'Saved', saved],
+      ['addNote', 'Private note', addNote],
     ],
   },
   {
     title: '3 · New Libra',
-    note: 'Name and one handle in, confirmed accounts out. Friction here is deliberate.',
+    note: 'Name and one handle in, confirmed accounts out. Friction here is deliberate, and every dead end explains itself.',
     screens: [
-      { id: 'search', label: '3.1 New search', build: newSearch },
-      { id: 'searchPlatform', label: '3.2 Platform picker', build: newSearchPlatform },
-      { id: 'match', label: '3.3 Match confirmation', build: matchConfirm },
-      { id: 'matchCompared', label: '3.4 What we compared', build: matchCompared },
-      { id: 'processing', label: '3.5 Processing', build: processing },
+      ['search', 'New search', newSearch],
+      ['searchPlatform', 'Platform picker', newSearchPlatform],
+      ['match', 'Match confirmation', matchConfirm],
+      ['matchCompared', 'What we compared', matchCompared],
+      ['linkedAccounts', 'Linked accounts', linkedAccounts],
+      ['processing', 'Processing', processing],
+      ['noMatch', 'No match found', noMatch],
+      ['blocked', 'Search not available', blocked],
+      ['paywall', 'Out of reports', paywall],
     ],
   },
   {
     title: '4 · Report',
     note: 'Explain, do not just score. Every number expands into evidence.',
     screens: [
-      { id: 'report', label: '4.1 Report overview', build: report },
-      { id: 'reportSevere', label: '4.2 Serious concerns', build: reportSevere },
-      { id: 'reportLow', label: '4.3 Low confidence', build: reportLow },
-      { id: 'signalsCaution', label: '4.4 Signals · Caution', build: signalsCaution },
-      { id: 'signalsPositive', label: '4.5 Signals · Positive', build: signalsPositive },
-      { id: 'evidence', label: '4.6 Evidence detail', build: evidence },
-      { id: 'personality', label: '4.7 Personality', build: personality },
-      { id: 'compare', label: '4.8 Compare', build: compare },
+      ['report', 'Report overview', report],
+      ['reportSevere', 'Serious concerns', reportSevere],
+      ['reportLow', 'Low confidence', reportLow],
+      ['signalsCaution', 'Signals · Caution', signalsCaution],
+      ['signalsPositive', 'Signals · Positive', signalsPositive],
+      ['evidence', 'Evidence detail', evidence],
+      ['personality', 'Personality', personality],
+      ['comparePicker', 'Compare · choose people', comparePicker],
+      ['compare', 'Compare', compare],
+      ['shareReport', 'Share report', shareReport],
+      ['reportIssue', 'Report an issue', reportIssue],
     ],
   },
   {
-    title: '5 · Safety and settings',
-    note: 'Safety tools, privacy controls, plans and data deletion.',
+    title: '5 · Safety',
+    note: 'Share my date, trusted contacts and local support, one tap from anywhere.',
     screens: [
-      { id: 'safety', label: '5.1 Safety Hub', build: safety },
-      { id: 'settings', label: '5.2 Settings', build: settings },
-      { id: 'plans', label: '5.3 Plans', build: plans },
-      { id: 'deleteData', label: '5.4 Delete data', build: deleteData },
+      ['safety', 'Safety Hub', safety],
+      ['shareSetup', 'Share my date · set up', shareSetup],
+      ['shareLive', 'Share my date · live', shareLive],
+      ['trustedContacts', 'Trusted contacts', trustedContacts],
+      ['resources', 'Support resources', resources],
+    ],
+  },
+  {
+    title: '6 · Settings and account',
+    note: 'Privacy controls, plans, payments and data deletion.',
+    screens: [
+      ['settings', 'Settings', settings],
+      ['account', 'Account', account],
+      ['history', 'Search history', history],
+      ['notifSettings', 'Notification settings', notifSettings],
+      ['help', 'Help', help],
+      ['appLocked', 'App locked', appLocked],
+      ['plans', 'Plans', plans],
+      ['paymentSuccess', 'Payment success', paymentSuccess],
+      ['deleteData', 'Delete data', deleteData],
     ],
   },
 ];
+
+export const GROUPS: Array<{ title: string; note: string; screens: ScreenDef[] }> = DEFS.map((g, gi) => ({
+  title: g.title,
+  note: g.note,
+  screens: g.screens.map(([id, label, build], i) => ({ id, label: gi + 1 + '.' + (i + 1) + ' ' + label, build })),
+}));
 
 const GAP = 80;
 const SECTION_PAD = 80;

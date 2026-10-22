@@ -12,7 +12,7 @@ export function welcome(): FrameNode {
       gap: 24,
       cross: 'center',
       footer: [
-        link(btn('Create account'), 'signin'),
+        link(btn('Create account'), 'intro'),
         link(btn('I already have an account', 'Secondary'), 'signin'),
         center('By continuing you agree to the Terms and Privacy Policy. Libra is for adults 18 and over.', 'caption', 'text/tertiary'),
       ],
@@ -90,7 +90,7 @@ export function purpose(): FrameNode {
       nav: { title: '', action: null, backTo: 'verify' },
       gap: 12,
       footer: [
-        link(btn('Agree and continue'), 'home'),
+        link(btn('Agree and continue'), 'notifPrompt'),
         center('Searches are private. The person is never notified.', 'caption', 'text/tertiary'),
       ],
     },
@@ -100,7 +100,7 @@ export function purpose(): FrameNode {
       check("I'm 18 or older", 'Libra is for adults and never profiles anyone under 18.'),
       check("I'm using Libra for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
       check("I won't use Libra to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
-      listRow('Verify your identity', 'Optional. Adds a trusted badge to your account.', 'id-card'),
+      link(listRow('Verify your identity', 'Optional. Adds a trusted badge to your account.', 'id-card'), 'idIntro'),
     ],
   );
 }

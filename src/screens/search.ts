@@ -70,7 +70,7 @@ export function matchConfirm(): FrameNode {
       cross: 'center',
       gap: 14,
       footer: [
-        row({ name: 'Decision', gap: 12, w: 'fill' }, [btn('Not them', 'Secondary', 'Large', 'x'), link(btn("Yes, that's them", 'Primary', 'Large', 'check'), 'processing')]),
+        row({ name: 'Decision', gap: 12, w: 'fill' }, [btn('Not them', 'Secondary', 'Large', 'x'), link(btn("Yes, that's them", 'Primary', 'Large', 'check'), 'linkedAccounts')]),
         what,
       ],
     },

@@ -43,9 +43,9 @@ const wait = setInterval(() => {
   }
   console.log('  collections:', collections.map((c) => c.name + ' [' + c.modes.map((m) => m.name).join('/') + ']').join(', '));
   console.log('  variables:', variables.length, 'styles:', styles.size);
-  const screens = mock.root.children.filter((p) => p.name.startsWith('Screens'));
+  const screens = mock.root.children.filter((p) => p.name.startsWith('Screens') || p.name === 'Website');
   for (const p of screens) {
-    const frames = p.findAll((n) => n.getPluginData && n.getPluginData('screen') === '1');
+    const frames = p.findAll((n) => n.getPluginData && (n.getPluginData('screen') === '1' || n.getPluginData('webpage') === '1'));
     const withLinks = p.findAll((n) => n.reactions && n.reactions.length).length;
     console.log(`  ${p.name}: ${frames.length} screens, ${withLinks} prototype links`);
   }

@@ -42,7 +42,7 @@ export function home(): FrameNode {
     people.map((p) => col({ name: p.first, gap: 6, cross: 'center', w: 'fill' }, [avatar(p.initials, 56, p.tone), text(p.first, 'label', 'text/secondary')])),
   );
   return screen(
-    { name: 'Home', tab: 'Home', nav: { type: 'Large', title: 'Good evening, ' + user.first, action: 'bell' }, gap: 24 },
+    { name: 'Home', tab: 'Home', nav: { type: 'Large', title: 'Good evening, ' + user.first, action: 'bell', actionTo: 'notificationsList' }, gap: 24 },
     [
       newLibraCard(),
       col({ name: 'Recent', gap: 12, w: 'fill' }, [sectionHead('Recent reports', 'See all', 'saved'), reportRow(tobi, 'report'), reportRow(daniel, 'reportSevere')]),
@@ -94,7 +94,7 @@ export function saved(): FrameNode {
         p.confidence === 'Low' ? use('ConfidenceBadge', { Level: 'Low' }, { label: 'Low data' }) : scorePair(String(p.caution), String(p.positive)),
       ]),
       p.note
-        ? row({ name: 'Note', w: 'fill', pad: [10, 12], gap: 8, radius: 10, fill: 'bg/subtle', cross: 'start' }, [icon('pencil', 16, 'text/tertiary'), text(p.note, 'small', 'text/secondary', { w: 'fill' })])
+        ? link(row({ name: 'Note', w: 'fill', pad: [10, 12], gap: 8, radius: 10, fill: 'bg/subtle', cross: 'start' }, [icon('pencil', 16, 'text/tertiary'), text(p.note, 'small', 'text/secondary', { w: 'fill' })]), 'addNote')
         : null,
     ]);
     if (target) link(c, target);
@@ -106,7 +106,7 @@ export function saved(): FrameNode {
       tab: 'Saved',
       nav: { type: 'Large', title: 'Saved', action: 'columns' },
       gap: 16,
-      footer: [link(btn('Compare two people', 'Secondary', 'Large', 'columns'), 'compare')],
+      footer: [link(btn('Compare two people', 'Secondary', 'Large', 'columns'), 'comparePicker')],
     },
     [
       field('Search', 'Search saved people', { state: 'Default', leading: 'search', hideLabel: true }),
