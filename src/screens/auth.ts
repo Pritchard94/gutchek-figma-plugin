@@ -90,7 +90,10 @@ export function purpose(): FrameNode {
       name: 'Age and purpose',
       nav: { title: '', action: null, backTo: 'verify' },
       gap: 12,
-      footer: [link(btn('Agree and continue'), 'home')],
+      footer: [
+        link(btn('Agree and continue'), 'home'),
+        center('Searches are private. The person is never notified.', 'caption', 'text/tertiary'),
+      ],
     },
     [
       text('Before your first Libra', 'h1', 'text/primary', { w: 'fill' }),
@@ -98,7 +101,6 @@ export function purpose(): FrameNode {
       check("I'm 18 or older", 'Libra is for adults and never profiles anyone under 18.'),
       check("I'm using Libra for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
       check("I won't use Libra to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
-      note('eye-off', 'Searches are private. The person is never notified, and we never reveal who searched whom.', 'brand'),
       listRow('Verify your identity', 'Optional. Adds a trusted badge to your account.', 'id-card'),
     ],
   );

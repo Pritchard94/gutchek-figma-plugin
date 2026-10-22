@@ -147,9 +147,14 @@ export function buildScreens(theme: Theme, page: PageNode): { page: PageNode; fr
     y += height + SECTION_GAP;
   }
 
+  const screenOf = (n: BaseNode): BaseNode | null => {
+    let p: BaseNode | null = n;
+    while (p && !(p.type === 'FRAME' && (p as FrameNode).getPluginData('screen') === '1')) p = p.parent;
+    return p;
+  };
   for (const [node, target] of links) {
     const dest = frames[target];
-    if (!dest || node.removed) continue;
+    if (!dest || node.removed || screenOf(node) === dest) continue;
     later(() => (node as FrameNode).setReactionsAsync([makeReaction(dest.id)]), node);
   }
   if (frames.welcome) {

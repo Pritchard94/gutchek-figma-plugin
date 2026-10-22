@@ -149,10 +149,11 @@ export function listRow(title: string, subtitle: string | null, iconName: string
   return fill(use('ListRow', { Trailing: trailing }, texts, { hide: subtitle ? [] : ['subtitle'], icons: { icon: iconName } }));
 }
 
-export function group(rows: SceneNode[], name = 'Group'): FrameNode {
+/** inset aligns dividers with row text: 64 for rows with a 36pt icon tile, 16 for plain rows. */
+export function group(rows: SceneNode[], name = 'Group', inset = 64): FrameNode {
   const kids: Kid[] = [];
   rows.forEach((r, i) => {
-    if (i > 0) kids.push(box({ name: 'Inset divider', dir: 'h', w: 'fill', pad: [0, 0, 0, 64] }, [divider()]));
+    if (i > 0) kids.push(box({ name: 'Inset divider', dir: 'h', w: 'fill', pad: [0, 0, 0, inset] }, [divider()]));
     kids.push(fill(r));
   });
   return col({ name, w: 'fill', radius: 16, fill: 'bg/surface', stroke: 'border/default', clip: true }, kids);

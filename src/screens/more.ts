@@ -1,5 +1,5 @@
 import { Token } from '../tokens';
-import { avatar, box, col, fill, icon, pill, rect, row, text } from '../core/ui';
+import { avatar, box, col, fill, icon, paint, pill, rect, row, text } from '../core/ui';
 import { btn, center, chip, group, groupTitle, iconTile, link, listRow, note, screen, surface, use, withDialog } from './kit';
 import { seun, tobi, user } from './data';
 
@@ -95,6 +95,7 @@ export function compare(): FrameNode {
           cat('Deception signals', 'caution', 1, 3),
         ],
         'Categories',
+        16,
       ),
       note('info', 'Both reports use scoring version 1.3. Seun has less public data, so differences are less certain.', 'neutral'),
     ],
@@ -102,6 +103,13 @@ export function compare(): FrameNode {
 }
 
 // ---------------------------------------------------------------- safety
+
+function ringed(a: FrameNode): FrameNode {
+  a.strokes = [paint('brand/subtle')];
+  a.strokeWeight = 2;
+  a.strokeAlign = 'OUTSIDE';
+  return a;
+}
 
 export function safety(): FrameNode {
   const item = (done: boolean, label: string) =>
@@ -117,7 +125,7 @@ export function safety(): FrameNode {
       col({ name: 'Text', gap: 2, w: 'fill' }, [text('Share my date', 'title', 'text/primary'), text('Send plans and live location to a trusted contact.', 'small', 'text/secondary', { w: 'fill' })]),
     ]),
     row({ name: 'Bottom', gap: 12, w: 'fill' }, [
-      row({ name: 'Contacts', gap: -8 }, [avatar('NK', 32, 'positive'), avatar('IB', 32, 'warning')]),
+      row({ name: 'Contacts', gap: -8 }, [ringed(avatar('NK', 32, 'positive')), ringed(avatar('IB', 32, 'warning'))]),
       text('2 trusted contacts', 'small', 'text/secondary', { w: 'fill' }),
       btn('Start sharing', 'Primary', 'Small', undefined, false),
     ]),
@@ -136,7 +144,7 @@ export function safety(): FrameNode {
           item(false, 'Keep your drink with you'),
           item(false, 'Agree a check-in time'),
           item(false, 'Trust your gut. You can leave anytime.'),
-        ]),
+        ], 'Checklist items', 50),
       ]),
       col({ name: 'Support', gap: 10, w: 'fill' }, [
         groupTitle('Support'),

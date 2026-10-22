@@ -123,7 +123,7 @@ function logo(): FrameNode {
         labelled('Mono for single-colour print and partner use', stage([lockup(72, 'text/primary', 'text/primary')], 'bg/muted', 'Mono stage')),
       ]),
       row({ name: 'Marks', gap: 24, w: 'fill', cross: 'start' }, [
-        labelled('App icon. Gradient Indigo 500 to 700 at 135 degrees, glyph at 58% of the tile.', stage([row({ name: 'Icons', gap: 32, cross: 'end' }, [appIcon(180), appIcon(120), appIcon(76), appIcon(48)])], 'bg/canvas', 'Icon stage', 300)),
+        labelled('App icon. Gradient Indigo 500 to 700 at 135 degrees, glyph at 58% of the tile.', stage([row({ name: 'Icons', gap: 24, cross: 'end' }, [appIcon(112), appIcon(80), appIcon(56), appIcon(40)])], 'bg/canvas', 'Icon stage', 300)),
         labelled('Clear space equals x, the height of one pan plus its strings, on every side.', stage([clear], 'bg/canvas', 'Clear space stage', 300)),
         labelled('Minimum sizes: glyph 20pt, lockup 88pt wide. Below that, use the glyph alone.', stage([row({ name: 'Minimums', gap: 32, cross: 'center' }, [glyph(20, 'brand/fg'), lockup(24)])], 'bg/canvas', 'Minimum stage', 300)),
       ]),

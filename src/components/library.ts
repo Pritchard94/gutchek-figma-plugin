@@ -270,7 +270,7 @@ define('TextField', 'Actions and inputs', 'Label above, helper below. Error stat
       box({ name: 'spacer', w: 'fill', h: 1 }),
       hidden(named(icon('chevron-down', 20, 'text/tertiary'), 'trailing')),
     ]),
-    hidden(text(p.State === 'Error' ? 'Enter a valid handle' : 'Helper text', 'caption', p.State === 'Error' ? 'caution/fg' : 'text/tertiary', { name: 'helper' }), p.State !== 'Error'),
+    hidden(text(p.State === 'Error' ? 'Enter a valid handle' : 'Helper text', 'caption', p.State === 'Error' ? 'caution/fg' : 'text/tertiary', { name: 'helper', w: 'fill' }), p.State !== 'Error'),
   ]);
 });
 
@@ -371,11 +371,11 @@ define('MatchCard', 'Libra report', 'Candidate account in the confirmation stack
   return col({ name: 'MatchCard', w: 321, pad: 20, gap: 16, radius: 24, fill: 'bg/raised', stroke: 'border/default', shadow: 'e2' }, [
     row({ name: 'Top', gap: 12, w: 'fill', cross: 'start' }, [
       avatar('TA', 56, 'brand'),
-      col({ name: 'Identity', gap: 4, w: 'fill' }, [
+      col({ name: 'Identity', gap: 6, w: 'fill' }, [
         text('Tobi Adeyemi', 'h3', 'text/primary', { name: 'name', w: 'fill' }),
         row({ name: 'Handle row', gap: 6 }, [platformBadge('IG', 18), text('@tobi.adeyemi', 'small', 'text/secondary', { name: 'handle' })]),
+        tier,
       ]),
-      tier,
     ]),
     text('Product designer. Lagos. Football on Sundays, jollof debates all week.', 'small', 'text/secondary', { name: 'bio', w: 'fill' }),
     col({ name: 'Facts', gap: 8, w: 'fill' }, [fact('map-pin', 'Lagos, Nigeria', 'location'), fact('users', '1k to 5k followers', 'followers'), fact('link', 'Links to TikTok and X in bio', 'links')]),

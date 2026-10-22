@@ -7,8 +7,8 @@ const W = 353;
 const H = 212;
 const CX = W / 2;
 const PIVOT_Y = 36;
-const BEAM = 246;
-const CARD_W = 108;
+const BEAM = 220;
+const CARD_W = 100;
 
 function pan(side: 'caution' | 'positive', score: string, tilt: Tilt): FrameNode {
   const neutral = tilt === 'Pending' || tilt === 'Low';

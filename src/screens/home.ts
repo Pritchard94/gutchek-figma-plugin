@@ -28,7 +28,7 @@ function reportRow(p: Person, target?: string): FrameNode {
     col({ name: 'Text', gap: 2, w: 'fill' }, [
       text(p.name, 'bodyStrong', 'text/primary', { w: 'fill' }),
       text(p.verdict, 'small', 'text/secondary', { w: 'fill' }),
-      text(p.updated + ' · ' + p.confidence + ' confidence', 'caption', 'text/tertiary', { w: 'fill' }),
+      text(p.updated, 'caption', 'text/tertiary', { w: 'fill' }),
     ]),
     p.confidence === 'Low' ? use('ConfidenceBadge', { Level: 'Low' }, { label: 'Low data' }) : col({ name: 'Mini', gap: 4, cross: 'end' }, [scorePair(String(p.caution), String(p.positive))]),
   ]);

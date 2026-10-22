@@ -49,7 +49,7 @@ export function report(): FrameNode {
       footerDivider: true,
     },
     [
-      personHeader(tobi, tobi.handle + ' · 3 platforms · updated just now'),
+      personHeader(tobi, tobi.handle + ' · 3 platforms'),
       dialCard('Positive', '2', '8', 'High', tobi.verdict, '214 public items · Instagram, X and TikTok · 2019 to 2026'),
       surface([
         text('Summary', 'h3', 'text/primary'),
@@ -97,7 +97,7 @@ export function reportSevere(): FrameNode {
       footer: [link(btn('Show findings'), 'signalsCaution'), link(btn('Talk to someone first', 'Secondary', 'Large', 'life-buoy'), 'safety')],
     },
     [
-      personHeader(daniel, daniel.handle + ' · 2 platforms · updated 1 week ago'),
+      personHeader(daniel, daniel.handle + ' · 2 platforms'),
       col({ name: 'Take a breath', w: 'fill', pad: 20, gap: 12, radius: 24, fill: 'bg/surface', stroke: 'border/default' }, [
         row({ name: 'Head', gap: 12, w: 'fill' }, [iconTile('wind', 'brand', 44), text('Take a breath', 'h2', 'text/primary', { w: 'fill' })]),
         text(
@@ -122,7 +122,7 @@ export function reportLow(): FrameNode {
       footer: [btn('Add another account', 'Primary', 'Large', 'plus')],
     },
     [
-      personHeader(kemi, kemi.handle + ' · 1 platform · updated 2 weeks ago'),
+      personHeader(kemi, kemi.handle + ' · 1 platform'),
       dialCard('Low', '1', '2', 'Low', 'Not enough public information', 'Scores are capped until there is more to go on'),
       note('info', "We found only 6 public posts on 1 platform. That's not a clean or a bad result, just too little to weigh fairly.", 'neutral'),
       surface([text('What we checked', 'h3', 'text/primary'), platformLine('IG', 'Instagram · 6 posts'), platformLine('X', 'X · no matching account found', false), platformLine('TT', 'TikTok · no matching account found', false)]),
@@ -217,7 +217,7 @@ function signals(active: 'First' | 'Second'): FrameNode {
     { name: active === 'First' ? 'Signals · Caution' : 'Signals · Positive', nav: { title: 'Signals', action: 'sliders', backTo: 'report' }, gap: 14 },
     [
       link(fill(use('Segmented', { Active: active }, { first: 'Caution · 3', second: 'Positive · 6' })), active === 'First' ? 'signalsPositive' : 'signalsCaution'),
-      row({ name: 'Filters', gap: 8 }, [chip('All', true), chip('Recent'), chip('Strongest'), chip('Hidden · 0')]),
+      row({ name: 'Filters', gap: 8 }, [chip('All', true), chip('Recent'), chip('Strongest')]),
       ...list.map((s, i) => signalCard(s, i === 0 && active === 'First' ? 'evidence' : undefined)),
     ],
   );
