@@ -4,7 +4,7 @@ import { btn, center, field, link, listRow, note, screen, use } from './kit';
 import { user } from './data';
 
 export function welcome(): FrameNode {
-  const hero = box({ name: 'Hero', dir: 'v', w: 'fill', h: 300, radius: 32, fill: 'brand/subtle', main: 'center', cross: 'center', gap: 0 }, [use('ScaleDial', { Tilt: 'Positive' })]);
+  const hero = box({ name: 'Hero', dir: 'v', w: 'fill', h: 260, radius: 32, fill: 'brand/subtle', main: 'center', cross: 'center', gap: 0 }, [use('ScaleDial', { Tilt: 'Positive' })]);
   return screen(
     {
       name: 'Welcome',
@@ -36,8 +36,7 @@ export function signIn(): FrameNode {
       footer: [
         link(btn('Send code'), 'verify'),
         row({ name: 'Or', gap: 12, w: 'fill' }, [fill(divider()), text('or', 'small', 'text/tertiary'), fill(divider())]),
-        btn('Continue with Apple', 'Secondary'),
-        btn('Continue with Google', 'Secondary'),
+        row({ name: 'Social sign in', gap: 12, w: 'fill' }, [fill(use('SocialButton', { Provider: 'Apple' })), fill(use('SocialButton', { Provider: 'Google' }))]),
       ],
     },
     [

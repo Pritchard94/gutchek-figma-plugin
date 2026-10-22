@@ -276,6 +276,11 @@ export function createStyles() {
     s.effects = shadowEffects(key);
     ctx.effectStyles.set(key, s);
   }
+  const glass = figma.createEffectStyle();
+  glass.name = NAME_PREFIX + '/Elevation/Glass';
+  glass.description = 'Floating translucent chrome: tab bar and floating actions. Pair with a 72 to 80% surface fill.';
+  glass.effects = (shadowEffects('e2') as Effect[]).concat([{ type: 'BACKGROUND_BLUR', blurType: 'NORMAL', radius: 24, visible: true }]);
+  ctx.effectStyles.set('glass', glass);
 }
 
 export function shadowEffects(key: keyof typeof elevation): Effect[] {

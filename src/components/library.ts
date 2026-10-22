@@ -171,22 +171,26 @@ const TABS = [
   { key: 'Settings', icon: 'settings' },
 ];
 
-define('TabBar', 'Navigation', 'Primary navigation. Four destinations from the spec: Home, Saved, Safety, Settings.', cross({ Active: TABS.map((t) => t.key) }), (p) =>
-  col({ name: 'TabBar', w: 393, fill: 'bg/surface' }, [
-    divider(),
-    row(
-      { name: 'Tabs', w: 'fill', pad: [8, 8, 0, 8] },
-      TABS.map((t) => {
-        const on = p.Active === t.key;
-        const c: Token = on ? 'brand/fg' : 'text/tertiary';
-        return col({ name: 'tab-' + t.key.toLowerCase(), w: 'fill', gap: 4, cross: 'center', pad: [4, 0] }, [
-          icon(t.icon, 24, c),
-          text(t.key, { family: 'ui', weight: on ? 600 : 500, size: 11, line: 14 }, c, { name: 'label-' + t.key.toLowerCase() }),
-        ]);
-      }),
-    ),
-    use('HomeIndicator'),
-  ]),
+define(
+  'TabBar',
+  'Navigation',
+  'Floating glass tab bar in the iOS 26 style: a translucent capsule for the four destinations, with the selected tab in an indigo pill, and a separate New Libra action. Content scrolls underneath.',
+  cross({ Active: TABS.map((t) => t.key) }),
+  (p) => {
+    const tabs = TABS.map((t) => {
+      const on = p.Active === t.key;
+      const c: Token = on ? 'brand/fg' : 'text/secondary';
+      return col({ name: 'tab-' + t.key.toLowerCase(), w: 'fill', h: 'fill', gap: 2, main: 'center', cross: 'center', radius: 26, fill: on ? 'brand/subtle' : null }, [
+        icon(t.icon, 22, c),
+        text(t.key, { family: 'ui', weight: on ? 600 : 500, size: 11, line: 13 }, c, { name: 'label-' + t.key.toLowerCase() }),
+      ]);
+    });
+    const capsule = row({ name: 'Capsule', w: 'fill', h: 62, pad: 5, gap: 2, radius: 31, fill: 'bg/raised', fillOpacity: 0.84, stroke: 'border/default', shadow: 'glass' }, tabs);
+    const action = box({ name: 'new-libra', dir: 'h', w: 62, h: 62, radius: 31, fill: 'brand/solid', main: 'center', cross: 'center', shadow: 'glass' }, [
+      named(icon('plus', 26, 'text/on-solid'), 'new-libra-icon'),
+    ]);
+    return col({ name: 'TabBar', w: 393 }, [row({ name: 'Bar', w: 'fill', pad: [0, 16, 0, 16], gap: 10, cross: 'center' }, [capsule, action]), use('HomeIndicator')]);
+  },
 );
 
 define('NavBar', 'Navigation', 'Inline bar for pushed screens, Large for tab roots. Swap action-icon per screen.', cross({ Type: ['Inline', 'Large'] }), (p) => {
@@ -241,6 +245,33 @@ define(
     );
   },
 );
+
+const APPLE_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#000000" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>';
+const GOOGLE_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">' +
+  '<path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/>' +
+  '<path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/>' +
+  '<path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/>' +
+  '<path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>' +
+  '</svg>';
+
+define('SocialButton', 'Actions and inputs', "Sign in with Apple or Google, shown side by side at equal width. Logos follow each provider's brand guidelines.", cross({ Provider: ['Apple', 'Google'] }), (p) => {
+  let logo: SceneNode;
+  try {
+    const svg = figma.createNodeFromSvg(p.Provider === 'Apple' ? APPLE_SVG : GOOGLE_SVG);
+    svg.name = p.Provider + ' logo';
+    svg.fills = [];
+    if (p.Provider === 'Apple') recolor(svg, 'text/primary');
+    logo = svg;
+  } catch (_) {
+    logo = text(p.Provider === 'Apple' ? 'A' : 'G', 'bodyStrong', 'text/primary');
+  }
+  return row({ name: 'SocialButton', h: 52, pad: [0, 16], gap: 10, main: 'center', cross: 'center', radius: 12, fill: 'bg/surface', stroke: 'border/strong' }, [
+    logo,
+    text(p.Provider, 'bodyStrong', 'text/primary', { name: 'label' }),
+  ]);
+});
 
 define('IconButton', 'Actions and inputs', '44pt touch target. Always give it an accessibility label in code.', cross({ Style: ['Ghost', 'Tonal', 'Solid'] }), (p) =>
   box(

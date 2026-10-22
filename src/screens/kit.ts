@@ -1,6 +1,6 @@
 import { Token, TypeKey, device } from '../tokens';
 import { ctx } from '../core/ctx';
-import { Kid, Tone, abs, add, box, col, divider, fill, icon, rect, row, text, toneTokens, platformBadge } from '../core/ui';
+import { Kid, Tone, abs, add, box, col, divider, fill, findByName, icon, rect, row, text, toneTokens, platformBadge } from '../core/ui';
 import { use, named } from '../components/library';
 
 // ---------------------------------------------------------------- prototype links
@@ -60,17 +60,33 @@ export function screen(spec: ScreenSpec, body: Kid[]): FrameNode {
   const footer = spec.footer
     ? col({ name: 'Footer', w: 'fill', pad: [12, device.margin, spec.tab ? 12 : 4, device.margin], gap: 12, fill: spec.bg || 'bg/canvas', cross: 'center' }, spec.footer)
     : null;
+  const tabBar = spec.tab ? use('TabBar', { Active: spec.tab }) : null;
   const kids: Kid[] = [fill(use('StatusBar')), spec.nav ? navBar(spec.nav) : null, bodyFrame];
   if (footer) {
     if (spec.footerDivider) kids.push(divider());
     kids.push(footer);
   }
-  kids.push(fill(spec.tab ? use('TabBar', { Active: spec.tab }) : use('HomeIndicator')));
+  if (!tabBar) kids.push(fill(use('HomeIndicator')));
+  else if (footer) kids.push(box({ name: 'Tab bar clearance', w: device.width, h: Math.round(tabBar.height) }));
   const root = col({ name: spec.name, w: device.width, fill: spec.bg || 'bg/canvas', clip: true }, kids);
   if (!spec.tall || root.height < device.height) {
     root.layoutSizingVertical = 'FIXED';
     root.resize(device.width, device.height);
     bodyFrame.layoutGrow = 1;
+  }
+  if (tabBar) {
+    add(root, abs(tabBar, 0, Math.round(root.height - tabBar.height)));
+    const targets: Array<[string, string]> = [
+      ['tab-home', 'home'],
+      ['tab-saved', 'saved'],
+      ['tab-safety', 'safety'],
+      ['tab-settings', 'settings'],
+      ['new-libra', 'search'],
+    ];
+    for (const [layer, target] of targets) {
+      const n = findByName(tabBar, layer);
+      if (n) link(n, target);
+    }
   }
   root.setPluginData('screen', '1');
   return root;

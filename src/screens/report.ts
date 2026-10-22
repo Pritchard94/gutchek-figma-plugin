@@ -11,7 +11,7 @@ function personHeader(p: Person, meta: string): FrameNode {
 }
 
 function dialCard(tilt: string, caution: string, positive: string, level: string, verdict: string, basis: string): FrameNode {
-  return col({ name: 'Libra Scale', w: 'fill', pad: [20, 0, 20, 0], gap: 12, radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
+  return col({ name: 'Libra Scale', w: 'fill', pad: [20, 0, 18, 0], gap: 14, radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
     col({ name: 'Verdict', gap: 4, w: 'fill', pad: [0, 20], cross: 'center' }, [text('Verdict', 'overline', 'brand/fg'), center(verdict, 'h2')]),
     use('ScaleDial', { Tilt: tilt }, { 'caution-score': caution, 'positive-score': positive }),
     use('ConfidenceBadge', { Level: level }),

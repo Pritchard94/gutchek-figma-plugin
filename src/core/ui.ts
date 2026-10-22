@@ -149,7 +149,7 @@ export interface BoxProps {
   h?: Size;
   main?: 'start' | 'center' | 'end' | 'between';
   cross?: 'start' | 'center' | 'end' | 'baseline';
-  shadow?: 'e1' | 'e2' | 'e3';
+  shadow?: 'e1' | 'e2' | 'e3' | 'glass';
   clip?: boolean;
   wrap?: boolean;
   wrapGap?: number;
@@ -246,7 +246,7 @@ export function styleFrame<T extends FrameNode | ComponentNode>(f: T, p: BoxProp
   return f;
 }
 
-export function shadow(node: FrameNode | ComponentNode | RectangleNode | EllipseNode, key: 'e1' | 'e2' | 'e3') {
+export function shadow(node: FrameNode | ComponentNode | RectangleNode | EllipseNode, key: 'e1' | 'e2' | 'e3' | 'glass') {
   const s = ctx.effectStyles.get(key);
   if (s) {
     node.effects = s.effects;

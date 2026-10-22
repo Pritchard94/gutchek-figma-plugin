@@ -260,7 +260,7 @@ function typography(): FrameNode {
       section('Rules', null, [
         col({ name: 'Rules', gap: 12, w: 'fill' }, [
           bullet('Sentence case everywhere, including buttons and titles.'),
-          bullet('Never set body text below 14pt or captions below 12pt. Support Dynamic Type up to XXL without truncating scores.'),
+          bullet('Never set body text below 14pt or captions below 12pt; the only exception is tab bar labels at the iOS standard 11pt. Support Dynamic Type up to XXL without truncating scores.'),
           bullet('Score numerals always appear with their side label and an icon, so meaning never depends on colour.'),
           bullet('Evidence excerpts are quoted in Inter Regular and keep the original spelling, slang and punctuation.'),
         ]),
@@ -281,11 +281,11 @@ function layout(): FrameNode {
   };
   overlay(0, 0, 393, 54, 'warning/fg', 'Status bar 54');
   overlay(0, 54, 393, 44, 'brand/solid', 'Nav bar 44', 0.12);
-  overlay(0, 852 - 83, 393, 83, 'brand/solid', 'Tab bar 49 + home indicator 34', 0.12);
-  overlay(0, 98, 20, 852 - 98 - 83, 'caution/fg', '', 0.18);
-  overlay(373, 98, 20, 852 - 98 - 83, 'caution/fg', '', 0.18);
+  overlay(0, 852 - 96, 393, 96, 'brand/solid', 'Floating tab bar 62 + home indicator 34', 0.12);
+  overlay(0, 98, 20, 852 - 98 - 96, 'caution/fg', '', 0.18);
+  overlay(373, 98, 20, 852 - 98 - 96, 'caution/fg', '', 0.18);
   const colW = (353 - 3 * 16) / 4;
-  for (let i = 0; i < 4; i++) overlay(20 + i * (colW + 16), 98, colW, 852 - 98 - 83, 'positive/fg', i === 0 ? 'Col' : '', 0.1);
+  for (let i = 0; i < 4; i++) overlay(20 + i * (colW + 16), 98, colW, 852 - 98 - 96, 'positive/fg', i === 0 ? 'Col' : '', 0.1);
   return board(
     EYEBROW + ' · 05',
     'Layout',
@@ -298,7 +298,7 @@ function layout(): FrameNode {
           bullet('Margins 20pt. Cards pad 16 to 20pt. Sections are separated by 32pt, items inside a section by 12 to 16pt.'),
           bullet('Touch targets are at least 44 by 44pt, including icon buttons and list rows.'),
           bullet('Primary actions sit in the bottom third of the screen, within thumb reach, above the home indicator.'),
-          bullet('Long reports scroll inside a fixed frame; the nav bar stays pinned and the tab bar hides on pushed screens.'),
+          bullet('The tab bar floats: a translucent glass capsule inset 16pt from the edges, with New Libra as a separate round action. Content scrolls underneath it, and it hides on pushed screens.'),
           bullet('Android: same layout at 360 to 412dp, Material system bars replace iOS chrome.'),
           text('Corners and depth', 'h2', 'text/primary'),
           bullet('Corners grow with surface size: 8 for chips, 12 for buttons and fields, 16 for cards, 24 for sheets and swipe cards.'),
