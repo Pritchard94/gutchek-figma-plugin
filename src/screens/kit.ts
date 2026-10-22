@@ -1,6 +1,6 @@
-import { Token, TypeKey, device } from '../tokens';
+import { Token, TypeKey, device, tokenHex } from '../tokens';
 import { ctx } from '../core/ctx';
-import { Kid, Tone, abs, add, box, col, divider, fill, findByName, icon, rect, row, text, toneTokens, platformBadge } from '../core/ui';
+import { Kid, Tone, abs, add, box, col, divider, fill, findByName, gradient, icon, rect, row, text, toneTokens, platformBadge } from '../core/ui';
 import { use, named } from '../components/library';
 
 // ---------------------------------------------------------------- prototype links
@@ -75,6 +75,9 @@ export function screen(spec: ScreenSpec, body: Kid[]): FrameNode {
     bodyFrame.layoutGrow = 1;
   }
   if (tabBar) {
+    const bg = tokenHex(spec.bg || 'bg/canvas', ctx.theme);
+    const edge = rect(device.width, 150, [gradient([[bg, 0, 0], [bg, 0.55, 0.92], [bg, 1, 1]], 90)], 0, 'Scroll edge fade');
+    add(root, abs(edge, 0, Math.round(root.height - 150)));
     add(root, abs(tabBar, 0, Math.round(root.height - tabBar.height)));
     const targets: Array<[string, string]> = [
       ['tab-home', 'home'],

@@ -45,7 +45,7 @@ export function report(): FrameNode {
       nav: { title: 'Report', action: 'share', backTo: 'home' },
       tall: true,
       gap: 20,
-      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Save', 'Secondary', 'Large', 'bookmark'), btn('Share with a friend', 'Primary', 'Large', 'share')])],
+      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Save', 'Secondary', 'Large', 'bookmark'), btn('Share', 'Primary', 'Large', 'share')])],
       footerDivider: true,
     },
     [
