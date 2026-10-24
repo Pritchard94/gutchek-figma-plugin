@@ -45,6 +45,14 @@ export function home(): FrameNode {
     { name: 'Home', tab: 'Home', nav: { type: 'Large', title: 'Good evening, ' + user.first, action: 'bell', actionTo: 'notificationsList' }, gap: 24 },
     [
       newLibraCard(),
+      link(
+        row({ name: 'Analyse a chat', w: 'fill', gap: 14, pad: 16, radius: 20, fill: 'bg/surface', stroke: 'border/default' }, [
+          iconTile('message', 'brand', 44),
+          col({ name: 'Text', gap: 2, w: 'fill' }, [text('Analyse a chat', 'bodyStrong', 'text/primary'), text('Upload screenshots to see how they communicate', 'small', 'text/secondary', { w: 'fill' })]),
+          icon('chevron-right', 20, 'text/tertiary'),
+        ]),
+        'analyse',
+      ),
       col({ name: 'Recent', gap: 12, w: 'fill' }, [sectionHead('Recent reports', 'See all', 'saved'), reportRow(tobi, 'report'), reportRow(daniel, 'reportSevere')]),
       row({ name: 'Safety tip', w: 'fill', pad: 16, gap: 14, radius: 16, fill: 'positive/subtle', cross: 'start' }, [
         iconTile('life-buoy', 'positive', 40),

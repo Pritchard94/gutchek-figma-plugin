@@ -14,7 +14,7 @@ export function link<T extends SceneNode>(node: T, target: string): T {
 
 // ---------------------------------------------------------------- shell
 
-export type Tab = 'Home' | 'Saved' | 'Safety' | 'Settings';
+export type Tab = 'Home' | 'Saved' | 'Rooms' | 'Safety' | 'Settings';
 
 export interface NavSpec {
   type?: 'Inline' | 'Large';
@@ -87,9 +87,10 @@ export function screen(spec: ScreenSpec, body: Kid[]): FrameNode {
     const targets: Array<[string, string]> = [
       ['tab-home', 'home'],
       ['tab-saved', 'saved'],
+      ['tab-rooms', 'roomsList'],
       ['tab-safety', 'safety'],
       ['tab-settings', 'settings'],
-      ['new-libra', 'search'],
+      ['new-libra', 'create'],
     ];
     for (const [layer, target] of targets) {
       const n = findByName(tabBar, layer);

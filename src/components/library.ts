@@ -28,6 +28,7 @@ import {
 import { ICONS, iconSvg } from '../icons';
 import { glyph } from '../brand';
 import { Tilt, scaleDial } from './scale';
+import { bubble, nickAvatar, reactionBar } from './chat';
 
 type Props = Record<string, string>;
 
@@ -167,6 +168,7 @@ define('HomeIndicator', 'System', 'iOS home indicator area, 34pt.', [{}], () =>
 const TABS = [
   { key: 'Home', icon: 'home' },
   { key: 'Saved', icon: 'bookmark' },
+  { key: 'Rooms', icon: 'message' },
   { key: 'Safety', icon: 'shield' },
   { key: 'Settings', icon: 'settings' },
 ];
@@ -182,10 +184,10 @@ define(
       const c: Token = on ? 'brand/fg' : 'text/secondary';
       return col({ name: 'tab-' + t.key.toLowerCase(), w: 'fill', h: 'fill', gap: 2, main: 'center', cross: 'center', radius: 26, fill: on ? 'brand/subtle' : null }, [
         icon(t.icon, 22, c),
-        text(t.key, { family: 'ui', weight: on ? 600 : 500, size: 11, line: 13 }, c, { name: 'label-' + t.key.toLowerCase() }),
+        text(t.key, { family: 'ui', weight: on ? 600 : 500, size: 10, line: 12 }, c, { name: 'label-' + t.key.toLowerCase() }),
       ]);
     });
-    const capsule = row({ name: 'Capsule', w: 'fill', h: 62, pad: 5, gap: 2, radius: 31, fill: 'bg/raised', fillOpacity: 0.84, stroke: 'border/default', shadow: 'glass' }, tabs);
+    const capsule = row({ name: 'Capsule', w: 'fill', h: 62, pad: 4, gap: 0, radius: 31, fill: 'bg/raised', fillOpacity: 0.84, stroke: 'border/default', shadow: 'glass' }, tabs);
     const action = box({ name: 'new-libra', dir: 'h', w: 62, h: 62, radius: 31, fill: 'brand/solid', main: 'center', cross: 'center', shadow: 'glass' }, [
       named(icon('plus', 26, 'text/on-solid'), 'new-libra-icon'),
     ]);
@@ -427,6 +429,58 @@ define('TraitBar', 'Libra report', 'Communication-style trait on a five-step sca
   ]);
 });
 
+define(
+  'ChatBubble',
+  'Conversations',
+  'Messages from an uploaded chat. Them on the left, You on the right. Flagged messages get a tinted ring and the pattern name, so evidence never relies on colour alone.',
+  cross({ Side: ['Them', 'You'], Flag: ['None', 'Caution', 'Positive'] }),
+  (p) => {
+    const them = p.Side === 'Them';
+    const flag = p.Flag === 'Caution' ? 'caution' : p.Flag === 'Positive' ? 'positive' : null;
+    const sample = them ? (flag === 'positive' ? 'No pressure at all, take your time' : 'Send me your WhatsApp now, this app is slow') : 'Maybe later this week?';
+    return col({ name: 'ChatBubble', w: 353 }, [bubble(sample, them ? 'them' : 'you', { flag, tag: flag === 'caution' ? 'Pressure' : flag === 'positive' ? 'Respects boundaries' : undefined, time: 'Tue 21:14' })]);
+  },
+);
+
+define('PatternCard', 'Conversations', 'One behaviour pattern from a conversation: how often, when, and the exact messages. Patterns need 3 or more instances; single high-severity items are labelled as such.', cross({ Side: ['Caution', 'Positive'] }), (p) => {
+  const caution = p.Side === 'Caution';
+  const t = toneTokens[caution ? 'caution' : 'positive'];
+  const sev = pill(caution ? 'High' : 'Clear', 'neutral', undefined, 'severity-pill');
+  const sevText = sev.findOne((n) => n.type === 'TEXT');
+  if (sevText) sevText.name = 'severity';
+  const quote = (q: string, time: string, n: number) =>
+    col({ name: 'Excerpt ' + n, gap: 2, w: 'fill' }, [text(q, 'small', 'text/primary', { name: 'quote' + n, w: 'fill' }), text(time, 'caption', 'text/tertiary', { name: 'time' + n })]);
+  return col({ name: 'PatternCard', w: 353, pad: 16, gap: 12, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
+    row({ name: 'Header', gap: 12, w: 'fill', cross: 'start' }, [
+      box({ name: 'Icon tile', dir: 'h', w: 36, h: 36, radius: 10, fill: t.bg, main: 'center', cross: 'center' }, [icon(caution ? 'alert-triangle' : 'check-circle', 20, t.fg)]),
+      col({ name: 'Titles', gap: 2, w: 'fill' }, [
+        text(caution ? 'Pressure and rushing' : 'Respects boundaries', 'bodyStrong', 'text/primary', { name: 'title', w: 'fill' }),
+        text(caution ? '5 times · 2 Oct to 19 Oct' : '2 times · 8 Oct to 12 Oct', 'small', 'text/secondary', { name: 'meta', w: 'fill' }),
+      ]),
+      sev,
+    ]),
+    col({ name: 'Excerpts', gap: 10, w: 'fill', pad: 12, radius: 12, fill: 'bg/subtle' }, [
+      quote(caution ? '"Send me your WhatsApp now, this app is slow"' : '"No pressure at all, take your time"', caution ? 'Them · Thu 2 Oct, 21:14' : 'Them · Wed 8 Oct, 19:02', 1),
+      quote(caution ? '"Why are you acting shy? Just come to mine tonight"' : '"Totally fine, whenever works for you"', caution ? 'Them · Sun 19 Oct, 23:40' : 'Them · Sun 12 Oct, 10:31', 2),
+    ]),
+    row({ name: 'Footer', gap: 6 }, [text('See in context', 'smallStrong', 'brand/fg', { name: 'context' }), icon('chevron-right', 16, 'brand/fg')]),
+  ]);
+});
+
+const POST_TONE: Record<string, Tone> = { Story: 'brand', Question: 'warning', Advice: 'neutral', Win: 'positive' };
+
+define('PostCard', 'Rooms', 'A member post in a Gossip Room. Nicknames only, never real names. Supportive reactions only; there are no downvotes.', cross({ Type: ['Story', 'Question', 'Advice', 'Win'] }), (p) =>
+  col({ name: 'PostCard', w: 353, pad: 16, gap: 12, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
+    row({ name: 'Author', gap: 10, w: 'fill' }, [
+      nickAvatar('SoftLife', 'brand', 36),
+      col({ name: 'Who', gap: 0, w: 'fill' }, [text('SoftLife_Ada', 'smallStrong', 'text/primary', { name: 'nickname' }), text('2h ago', 'caption', 'text/tertiary', { name: 'meta' })]),
+      pill(p.Type, POST_TONE[p.Type], undefined, 'type-pill'),
+    ]),
+    text('He said "no pressure" and actually meant it. Waited two weeks for me to feel ready to meet, then picked somewhere public without me asking.', 'body', 'text/primary', { name: 'body', w: 'fill' }),
+    row({ name: 'Footer', w: 'fill', gap: 8 }, [reactionBar([24, 9, 3, 11]), box({ name: 'Spacer', w: 'fill', h: 1 }), row({ name: 'Replies', gap: 4 }, [icon('message', 16, 'text/secondary'), text('14', 'label', 'text/secondary', { name: 'replies' })])]),
+  ]),
+);
+
 define('ProgressStep', 'Libra report', 'Staged progress on the processing screen.', cross({ State: ['Done', 'Active', 'Pending'] }), (p) => {
   let indicator: FrameNode;
   if (p.State === 'Done') {
@@ -546,6 +600,8 @@ const GROUP_NOTES: Record<string, string> = {
   'Actions and inputs': 'Controls with 44pt minimum touch targets and visible focus.',
   'Libra report': 'The building blocks of a Libra report. Every number expands into evidence.',
   'Content and feedback': 'Lists, people and system messages.',
+  Conversations: 'Chat analysis: uploaded messages as evidence, and the behaviour patterns found in them.',
+  Rooms: 'Gossip Rooms: member posts under nicknames, with supportive reactions only.',
 };
 
 function sectionFor(groups: Map<string, FrameNode>, root: FrameNode, group: string): FrameNode {

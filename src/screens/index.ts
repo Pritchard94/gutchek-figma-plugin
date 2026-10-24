@@ -8,6 +8,8 @@ import { matchCompared, matchConfirm, newSearch, newSearchPlatform, processing }
 import { evidence, report, reportLow, reportSevere, signalsCaution, signalsPositive } from './report';
 import { compare, deleteData, personality, plans, safety, settings } from './more';
 import { appLocked, idIntro, intro, notifPrompt, selfie } from './onboarding';
+import { analyse, chatBlocked, chatConsent, chatLimited, chatProcessing, chatReport, chatUpload, combinedView, createSheet, exportGuide, pasteText, patternDetail, safetyCard, sampleReport, speakers } from './chat';
+import { appeal, banNotice, composer, composerBlocked, joinPending, myStanding, postHeld, reportPost, roomAbout, roomFeed, roomWelcome, roomsList, thread } from './rooms';
 import {
   account,
   addNote,
@@ -107,6 +109,46 @@ const DEFS: Group[] = [
     ],
   },
   {
+    title: '7 · Chat analysis',
+    note: 'Upload a conversation, confirm who said what, and get a behaviour report with the exact messages as evidence. Safety comes before scores.',
+    screens: [
+      ['create', 'Start something', createSheet],
+      ['analyse', 'Analyse a chat', analyse],
+      ['sampleReport', 'Sample report', sampleReport],
+      ['exportGuide', 'Export guide', exportGuide],
+      ['chatConsent', 'Before you upload', chatConsent],
+      ['chatUpload', 'Upload and arrange', chatUpload],
+      ['pasteText', 'Paste text', pasteText],
+      ['speakers', 'Confirm speakers', speakers],
+      ['chatProcessing', 'Chat processing', chatProcessing],
+      ['safetyCard', 'Safety card', safetyCard],
+      ['chatReport', 'Conversation report', chatReport],
+      ['patternDetail', 'Pattern in context', patternDetail],
+      ['combinedView', 'Combined view', combinedView],
+      ['chatLimited', 'Limited data', chatLimited],
+      ['chatBlocked', 'Chat not analysed', chatBlocked],
+    ],
+  },
+  {
+    title: '8 · Gossip Rooms',
+    note: 'Moderated rooms for sharing your own experience under a nickname. Libra Bot screens every post; bans always come with a reason and an appeal.',
+    screens: [
+      ['roomsList', 'Rooms', roomsList],
+      ['roomAbout', 'Room details', roomAbout],
+      ['joinPending', 'Join request pending', joinPending],
+      ['roomWelcome', 'Rules and nickname', roomWelcome],
+      ['roomFeed', 'Room feed', roomFeed],
+      ['thread', 'Thread', thread],
+      ['composer', 'New post', () => composer()],
+      ['composerBlocked', 'Blocked by Libra Bot', composerBlocked],
+      ['postHeld', 'Post held for review', postHeld],
+      ['reportPost', 'Report a post', reportPost],
+      ['banNotice', 'Ban notice', banNotice],
+      ['appeal', 'Appeal', appeal],
+      ['myStanding', 'Your standing', myStanding],
+    ],
+  },
+  {
     title: '6 · Settings and account',
     note: 'Privacy controls, plans, payments and data deletion.',
     screens: [
@@ -123,8 +165,11 @@ const DEFS: Group[] = [
   },
 ];
 
+const ORDER = ['Onboarding', 'Home and saved', 'New Libra', 'Report', 'Chat analysis', 'Gossip Rooms', 'Safety', 'Settings and account'];
+DEFS.sort((a, b) => ORDER.indexOf(a.title) - ORDER.indexOf(b.title));
+
 export const GROUPS: Array<{ title: string; note: string; screens: ScreenDef[] }> = DEFS.map((g, gi) => ({
-  title: g.title,
+  title: gi + 1 + ' · ' + g.title,
   note: g.note,
   screens: g.screens.map(([id, label, build], i) => ({ id, label: gi + 1 + '.' + (i + 1) + ' ' + label, build })),
 }));
