@@ -182,6 +182,8 @@ export function pricing(): FrameNode {
     ['Scores, confidence and summary', ['yes', 'yes', 'yes', 'yes']],
     ['Evidence viewer', ['-', 'yes', 'yes', 'yes']],
     ['Personality snapshot', ['-', 'yes', 'yes', 'yes']],
+    ['Chat analyses', ['2 a month', '2 + credits', '2 + credits', '1 credit']],
+    ['Gossip Rooms', ['yes', 'yes', 'yes', 'yes']],
     ['Private notes', ['-', 'yes', 'yes', '-']],
     ['Compare two people', ['-', '-', 'yes', '-']],
     ['Monitoring alerts', ['-', '-', 'yes', '-']],
@@ -266,6 +268,7 @@ export function optout(): FrameNode {
     section('Options', [row({ name: 'Options', w: 'fill', gap: 24, cross: 'start' }, [
       option('ban', 'Remove me from Libra', 'We stop analysing your public accounts and remove you from existing reports. Future searches for you will be blocked.', 'Request removal', 'optout', true),
       option('flag', 'Dispute a finding', 'Something wrong, out of context or about someone else? Tell us, and a person will review it.', 'Dispute a finding', 'dispute', false),
+      option('message', 'Remove a room post about me', 'If a Gossip Rooms post describes you, we can remove it, even if you are not a Libra member.', 'Request post removal', 'status', false),
     ]), timeline], { gap: 32 }),
     section('Form', [row({ name: 'Form row', w: 'fill', gap: 40, cross: 'start' }, [
       optoutForm(),

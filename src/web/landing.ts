@@ -26,10 +26,10 @@ const STEPS: Array<[string, string, string, string]> = [
 
 const FEATURES: Array<[string, string, string]> = [
   ['file', 'Evidence viewer', 'Every flag and every positive opens the original post, with date, platform and context checks.'],
-  ['message', 'Personality snapshot', 'How someone communicates online: tone, humour, conflict style. Observations, never diagnoses.'],
-  ['columns', 'Compare', 'Weigh two people side by side on the same scoring version, category by category.'],
+  ['message', 'Chat analysis', 'Upload a conversation and see patterns like pressure, love-bombing or money requests, with the exact messages.'],
+  ['sparkle', 'Personality snapshot', 'How someone communicates online: tone, humour, conflict style. Observations, never diagnoses.'],
+  ['users', 'Gossip Rooms', 'Moderated rooms to share your own experience under a nickname. Never a place to expose anyone.'],
   ['navigation', 'Share my date', 'Send plans and live location to a trusted friend, with check-ins that escalate if you miss one.'],
-  ['life-buoy', 'Safety Hub', 'A first-date checklist and local support lines, one tap away from anywhere in the app.'],
   ['lock', 'Private by design', 'Searches stay private, reports are encrypted, and you can delete everything in a tap.'],
 ];
 

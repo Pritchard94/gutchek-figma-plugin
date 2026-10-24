@@ -64,6 +64,23 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
       [frames.personality, 'Personality'],
       [frames.compare, 'Compare'],
     ]),
+    lane('Analyse a chat', 'User-provided evidence: consent, upload, confirm speakers, then safety before scores.', [
+      [frames.analyse, 'Analyse a chat'],
+      [frames.chatConsent, 'Consent'],
+      [frames.chatUpload, 'Upload'],
+      [frames.speakers, 'Confirm speakers'],
+      [frames.chatProcessing, 'Processing'],
+      [frames.chatReport, 'Conversation report'],
+    ]),
+    lane('Gossip Rooms', 'Join, accept the rules, post through Libra Bot, and appeal any ban.', [
+      [frames.roomsList, 'Rooms'],
+      [frames.roomAbout, 'Room details'],
+      [frames.roomWelcome, 'Rules and nickname'],
+      [frames.roomFeed, 'Feed'],
+      [frames.composer, 'New post'],
+      [frames.banNotice, 'Ban notice'],
+      [frames.appeal, 'Appeal'],
+    ]),
     lane('Alternate outcomes', 'The same flow ends differently when the evidence is serious or thin.', [
       [frames.reportSevere, 'Serious concerns'],
       [frames.safety, 'Safety Hub'],

@@ -3,6 +3,8 @@ import { hexPaint, text } from '../core/ui';
 import { webLinks } from './kit';
 import { Screens, landing, mobileLanding } from './landing';
 import { dispute, helpCentre, howItWorks, mobileOptout, notFound, optout, pricing, privacy, requestStatus, terms, trust } from './pages';
+import { chatAnalysisPage, communityGuidelines } from './addendum';
+import { ADMIN_PAGES } from './admin';
 
 interface WebDef {
   id: string;
@@ -13,7 +15,9 @@ interface WebDef {
 const DESKTOP_PAGES: WebDef[] = [
   { id: 'landing', label: 'Home', build: landing },
   { id: 'how', label: 'How it works', build: howItWorks },
+  { id: 'chat', label: 'Chat analysis', build: chatAnalysisPage },
   { id: 'trust', label: 'Trust and safety', build: trust },
+  { id: 'guidelines', label: 'Community guidelines', build: () => communityGuidelines() },
   { id: 'pricing', label: 'Pricing', build: pricing },
   { id: 'optout', label: 'Opt out', build: optout },
   { id: 'dispute', label: 'Dispute a finding', build: dispute },
@@ -87,8 +91,10 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
 
   const desktop = build(DESKTOP_PAGES);
   const mobile = build(MOBILE_PAGES);
+  const admin = build(ADMIN_PAGES.map(([id, label, fn]) => ({ id, label, build: () => fn() })));
   let y = sectionFor(page, 'Website · Desktop 1440', 'Marketing site, public opt-out and dispute flow, help centre and legal pages. Click through with Play.', desktop, 0);
-  sectionFor(page, 'Website · Mobile 390', 'Responsive versions of the most-visited pages: the homepage and the opt-out form.', mobile, y, 80);
+  y = sectionFor(page, 'Website · Mobile 390', 'Responsive versions of the most-visited pages: the homepage and the opt-out form.', mobile, y, 80);
+  sectionFor(page, 'Admin and moderation dashboard · Web app', 'Staff-only dashboard for Gossip Rooms: queues, appeals, members, room settings and an immutable audit log. Role-based access with MFA.', admin, y, 80);
 
   const mobileTargets: Record<string, string> = { landing: 'mLanding', optout: 'mOptout' };
   const topOf = (n: BaseNode): BaseNode | null => {
@@ -110,8 +116,9 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
   }
   try {
     page.flowStartingPoints = [
-      { nodeId: frames.landing.id, name: 'Website · Desktop' },
-      { nodeId: frames.mLanding.id, name: 'Website · Mobile' },
+      { nodeId: frames.landing && frames.landing.id, name: 'Website · Desktop' },
+      { nodeId: frames.mLanding && frames.mLanding.id, name: 'Website · Mobile' },
+      { nodeId: frames.adminOverview && frames.adminOverview.id, name: 'Admin dashboard' },
     ].filter((p) => !!p.nodeId);
   } catch (_) {
     warn('Could not set website prototype starting points.');

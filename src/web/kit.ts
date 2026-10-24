@@ -46,6 +46,7 @@ export function section(name: string, kids: Kid[], o: { fill?: Token; pad?: [num
 
 const NAV: Array<[string, string]> = [
   ['How it works', 'how'],
+  ['Chat analysis', 'chat'],
   ['Trust and safety', 'trust'],
   ['Pricing', 'pricing'],
   ['Help', 'helpcenter'],
@@ -86,11 +87,13 @@ export function webFooter(mobile = false): FrameNode {
   const columns = [
     colFor('Product', [
       ['How it works', 'how'],
+      ['Chat analysis', 'chat'],
       ['Pricing', 'pricing'],
       ['Download the app', 'landing'],
     ]),
     colFor('Safety', [
       ['Trust and safety', 'trust'],
+      ['Community guidelines', 'guidelines'],
       ['Opt out of Libra', 'optout'],
       ['Dispute a finding', 'dispute'],
       ['Check a request', 'status'],
