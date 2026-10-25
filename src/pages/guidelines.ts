@@ -467,13 +467,13 @@ export function buildCover(previews: FrameNode[], page: PageNode): PageNode {
   const left = col({ name: 'Copy', gap: 28, w: 820 }, [
     lockup(72, 'text/on-solid', 'text/on-solid'),
     text('Know the person behind the DMs', { family: 'display', weight: 800, size: 80, line: 88, tracking: -3 }, 'text/on-solid', { w: 'fill' }),
-    text('Brand guideline, design system, mobile app, website and moderation dashboard · v1.2', { family: 'ui', weight: 500, size: 24, line: 34 }, 'text/on-solid', { w: 'fill', opacity: 0.85 }),
+    text('Brand guideline, design system, mobile app, web app, website and moderation dashboard · v1.3', { family: 'ui', weight: 500, size: 24, line: 34 }, 'text/on-solid', { w: 'fill', opacity: 0.85 }),
     row({ name: 'Meta', gap: 12, wrap: true, w: 'fill' }, [
       metaPill('October 2026'),
       metaPill('iOS 393 × 852'),
       metaPill('Light and dark'),
       metaPill('React Native + NativeWind'),
-      metaPill('Website, desktop and mobile'),
+      metaPill('Web app and website'),
     ]),
     text('Prepared for Pritchard Feyisanumi Francis', 'body', 'text/on-solid', { opacity: 0.7 }),
   ]);
