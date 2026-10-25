@@ -67,6 +67,14 @@ export const primitives: Record<string, Record<string, string>> = {
     '800': '#1D2939',
     '900': '#101828',
   },
+  'name-blue': { fg: '#2563EB', 'fg-dark': '#7DB4FF', tint: '#DBEAFE', 'tint-dark': '#172554' },
+  'name-sky': { fg: '#0369A1', 'fg-dark': '#5CC8FF', tint: '#E0F2FE', 'tint-dark': '#0C2A40' },
+  'name-teal': { fg: '#0F766E', 'fg-dark': '#3DD6C3', tint: '#CCFBF1', 'tint-dark': '#0B2E2B' },
+  'name-purple': { fg: '#9333EA', 'fg-dark': '#C9A2FF', tint: '#F3E8FF', 'tint-dark': '#2E1450' },
+  'name-magenta': { fg: '#C026D3', 'fg-dark': '#F28CF5', tint: '#FAE8FF', 'tint-dark': '#3A0F3F' },
+  'name-orange': { fg: '#C2410C', 'fg-dark': '#FF9E6B', tint: '#FFEDD5', 'tint-dark': '#3A1A0B' },
+  'name-brown': { fg: '#92400E', 'fg-dark': '#E0B07A', tint: '#FEF3C7', 'tint-dark': '#33210C' },
+  'name-slate': { fg: '#475569', 'fg-dark': '#B8C2D3', tint: '#E2E8F0', 'tint-dark': '#1E2533' },
   night: {
     '50': '#F5F5FA',
     '300': '#CFCFDC',
@@ -124,6 +132,13 @@ export const semantic: Record<string, { light: Ref; dark: Ref; group: 'bg' | 'te
   'warning/subtle': { light: 'amber/50', dark: 'amber/950', group: 'bg' },
   'warning/border': { light: 'amber/200', dark: 'amber/800', group: 'border' },
 };
+
+/** Member identity colours for Rooms: stable per nickname, never red or green (reserved for signals). */
+export const NAME_HUES = ['blue', 'sky', 'teal', 'purple', 'magenta', 'orange', 'brown', 'slate'];
+for (const hue of NAME_HUES) {
+  semantic['name/' + hue] = { light: 'name-' + hue + '/fg', dark: 'name-' + hue + '/fg-dark', group: 'text' };
+  semantic['name/' + hue + '-tint'] = { light: 'name-' + hue + '/tint', dark: 'name-' + hue + '/tint-dark', group: 'bg' };
+}
 
 export type Token = keyof typeof semantic & string;
 

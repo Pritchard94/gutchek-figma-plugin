@@ -1,4 +1,4 @@
-import { Token, contrast, primitives, tokenHex } from '../tokens';
+import { NAME_HUES, Token, contrast, primitives, tokenHex } from '../tokens';
 import { ctx } from '../core/ctx';
 import { FillSpec, Kid, abs, add, box, col, gradient, hexPaint, icon, paint, rect, row, text, pill, avatar } from '../core/ui';
 import { appIcon, glyph, lockup } from '../brand';
@@ -330,6 +330,11 @@ function iconography(): FrameNode {
           text('Chat wallpaper', 'h3', 'text/primary'),
           text('Rooms use a tiled doodle wallpaper, inspired by WhatsApp: line icons from the Lucide set for dating, care and the scale, in Indigo at 9% opacity, rotated up to 25 degrees on a 54pt grid.', 'body', 'text/secondary', { w: 'fill' }),
           text('Never include eyes, cameras, locks or anything that suggests surveillance. The pattern sits behind messages only, never behind headers or the composer.', 'body', 'text/secondary', { w: 'fill' }),
+          text('Member colours', 'h3', 'text/primary'),
+          text('Each nickname gets a stable colour from eight hues, matched on its avatar. Red and green are never used, because they belong to Caution and Positive. Moderators and Libra Bot are always Indigo. Your own messages get an Indigo tint and accent bar; mentions of you get Amber.', 'body', 'text/secondary', { w: 'fill' }),
+          row({ name: 'Member colours', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, NAME_HUES.map((h) =>
+            box({ name: h, dir: 'h', pad: [4, 10], radius: 999, fill: 'name/' + h + '-tint' }, [text(h.charAt(0).toUpperCase() + h.slice(1), 'smallStrong', 'name/' + h)]),
+          )),
         ]),
       ]),
       row({ name: 'Rules', gap: 24, w: 'fill', cross: 'start' }, [

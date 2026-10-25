@@ -1,6 +1,6 @@
 import { box, col, divider, fill, gradient, hexPaint, icon, row, text } from '../core/ui';
 import { glyph } from '../brand';
-import { REACTIONS, RoomMsg, composerBar, filledIcon, nickAvatar, quoteEmbed, roomMessage, streamDivider, systemLine } from '../components/chat';
+import { REACTIONS, RoomMsg, composerBar, filledIcon, nameToken, nickAvatar, quoteEmbed, roomMessage, streamDivider, systemLine } from '../components/chat';
 import { addWallpaper } from '../components/doodles';
 import { btn, center, group, iconTile, link, radioGroup, screen, use, withSheet } from './kit';
 
@@ -17,6 +17,8 @@ interface HeaderOpts {
   /** Show a save (bookmark) action instead of the mute bell. */
   save?: { saved: boolean; to?: string };
   plain?: boolean;
+  /** Tapping the title opens room info. */
+  infoTo?: string;
 }
 
 function roomHeader(o: HeaderOpts): FrameNode {
@@ -27,10 +29,13 @@ function roomHeader(o: HeaderOpts): FrameNode {
   return row({ name: 'Room header', w: 'fill', pad: [4, 8, 8, 4], gap: 8, fill: 'bg/surface' }, [
     btnBox('chevron-left', 'Back', o.backTo),
     o.tile === false ? null : iconTile('message', 'brand', 36),
-    col({ name: 'Title', gap: 0, w: 'fill' }, [
-      row({ name: 'Name', gap: 6, w: 'fill' }, [text(o.title, 'title', 'text/primary', { maxLines: 1 }), o.muted ? icon('bell-off', 14, 'text/tertiary') : null]),
-      text(o.sub, 'caption', 'text/tertiary', { w: 'fill', maxLines: 1 }),
-    ]),
+    (() => {
+      const t = col({ name: 'Title', gap: 0, w: 'fill' }, [
+        row({ name: 'Name', gap: 4, w: 'fill' }, [text(o.title, 'title', 'text/primary', { maxLines: 1 }), o.muted ? icon('bell-off', 14, 'text/tertiary') : null, o.infoTo ? icon('chevron-right', 14, 'text/tertiary') : null]),
+        text(o.sub, 'caption', 'text/tertiary', { w: 'fill', maxLines: 1 }),
+      ]);
+      return o.infoTo ? link(t, o.infoTo) : t;
+    })(),
     o.plain
       ? null
       : o.save
@@ -67,13 +72,13 @@ const FEED: RoomMsg[] = [
 ];
 
 const FEED_NEW: RoomMsg[] = [
-  { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', time: 'Today 19:58', body: WIN_TEXT, reactions: [[0, 24], [3, 11]], mine: 0, thread: { count: '14 replies', last: 'NaijaBelle · 2m', people: [['NaijaBelle', 'warning'], ['Tayo', 'neutral'], ['Mod', 'brand']] }, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved: true } },
-  { nick: 'Ronke.writes', tone: 'positive', type: 'Story', time: 'Today 20:21', body: 'Needed this today. The ones who respect your pace are the keepers.', quote: { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', text: WIN_TEXT }, actions: { likes: 19, replies: 2, quotes: 0 } },
+  { nick: 'QuietStorm_24', tone: 'brand', me: true, type: 'Win', time: 'Today 19:58', body: WIN_TEXT, reactions: [[0, 24], [3, 11]], mine: 0, thread: { count: '14 replies', last: 'NaijaBelle · 2m', people: [['NaijaBelle', 'warning'], ['Tayo', 'neutral'], ['Mod', 'brand']] }, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved: true } },
+  { nick: 'Ronke.writes', tone: 'positive', isNew: true, mention: true, type: 'Story', time: 'Today 20:21', body: '@QuietStorm_24 needed this today. The ones who respect your pace are the keepers.', quote: { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', text: WIN_TEXT }, actions: { likes: 19, replies: 2, quotes: 0 } },
 ];
 
 function feed(o: { blocked?: boolean; name?: string } = {}): FrameNode {
   const header = chrome(
-    roomHeader({ title: ROOM, sub: '1.2k members · 48 online', backTo: 'roomsList', bellTo: 'muteSheet', moreTo: 'roomAbout' }),
+    roomHeader({ title: ROOM, sub: '1.2k members · 48 online · tap for info', backTo: 'roomsList', bellTo: 'muteSheet', moreTo: 'roomInfo', infoTo: 'roomInfo' }),
     pinnedBar('Pinned · Share your own experience. Never name or identify anyone.'),
   );
   const kids: SceneNode[] = [
@@ -144,9 +149,10 @@ function threadView(saved: boolean, toast: boolean): FrameNode {
     { nick: 'NaijaBelle', tone: 'warning', time: '19:59', body: 'This is the energy we deserve. Happy for you!', reactions: [[0, 9]] },
     { nick: 'Tayo_Writes', tone: 'neutral', time: '20:03', body: 'Picking a public place without being asked is such a green flag.', reactions: [[0, 6], [1, 2]] },
     { nick: 'SoftLife_Ada', tone: 'positive', time: '20:15', body: 'Saving this for the days I need hope.', replyTo: { nick: 'QuietStorm_24', tone: 'brand', text: 'He said "no pressure" and actually meant it.' }, reactions: [[3, 4]] },
+    { nick: 'QuietStorm_24', tone: 'brand', op: true, me: true, time: '20:31', body: 'Thank you all. Taking it slow and loving it.', reactions: [[0, 18]] },
     { nick: 'Mod_Kemi', tone: 'brand', role: 'mod', time: '20:40', body: 'Lovely to see this. Keep details about him out of replies so it stays a story, not a profile.', reactions: [[0, 12]] },
   ];
-  const original = roomMessage({ nick: 'QuietStorm_24', tone: 'brand', type: 'Win', time: 'Today 19:58', body: WIN_TEXT, reactions: [[0, 24], [3, 11], [2, 3]], mine: 0, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved } });
+  const original = roomMessage({ nick: 'QuietStorm_24', tone: 'brand', me: true, type: 'Win', time: 'Today 19:58', body: WIN_TEXT, reactions: [[0, 24], [3, 11], [2, 3]], mine: 0, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved } });
   for (const [layer, target] of [
     ['quote', 'quoteComposer'],
     ['share', 'shareSheet'],
@@ -326,6 +332,51 @@ export function messageActions(): FrameNode {
       ),
     ],
     'Room feed · Message actions',
+  );
+}
+
+/** Room details: reached only by tapping the room header. */
+export function roomInfo(): FrameNode {
+  const action = (iconName: string, label: string, to?: string) => {
+    const c = col({ name: label, w: 'fill', gap: 6, cross: 'center', pad: [12, 0], radius: 14, fill: 'bg/surface', stroke: 'border/default' }, [icon(iconName, 22, 'brand/fg'), text(label, 'label', 'text/secondary')]);
+    return to ? link(c, to) : c;
+  };
+  const member = (nick: string, role?: string, sub?: string) =>
+    row({ name: nick, w: 'fill', gap: 12, pad: [10, 16] }, [
+      nickAvatar(nick, undefined, 36),
+      col({ name: 'Text', gap: 0, w: 'fill' }, [text(nick, 'bodyStrong', nameToken(nick)), sub ? text(sub, 'caption', 'text/tertiary') : null]),
+      role ? box({ name: 'Role', dir: 'h', pad: [1, 5], radius: 4, fill: 'brand/solid' }, [text(role, { family: 'ui', weight: 700, size: 10, line: 14, tracking: 4 }, 'text/on-solid')]) : null,
+    ]);
+  const rules = ['Share your own experience only', 'Never identify anyone', 'No threats, hate or selling', 'Nothing involving anyone under 18', 'Share posts only with the Share button'];
+  return screen(
+    { name: 'Room info', nav: { title: '', action: 'share', backTo: 'roomFeed' }, tall: true, gap: 16 },
+    [
+      col({ name: 'Head', w: 'fill', gap: 8, cross: 'center' }, [
+        iconTile('message', 'brand', 72),
+        center(ROOM, 'h2'),
+        center('1.2k members · 48 online · Approval required', 'small', 'text/secondary'),
+      ]),
+      row({ name: 'Actions', w: 'fill', gap: 10 }, [action('bell-off', 'Mute', 'muteSheet'), action('search', 'Search'), action('pin', 'Pinned'), action('bookmark', 'Saved', 'savedThreads')]),
+      col({ name: 'About', w: 'fill', gap: 8, pad: 16, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
+        text('About', 'title', 'text/primary'),
+        text('Stories and advice from the early days of getting to know someone. Posts leave the feed after 30 days and are never searchable.', 'small', 'text/secondary', { w: 'fill' }),
+      ]),
+      col({ name: 'Rules', w: 'fill', gap: 10, pad: 16, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
+        text('Rules', 'title', 'text/primary'),
+        ...rules.map((r, i) =>
+          row({ name: r, w: 'fill', gap: 10 }, [box({ name: 'N', dir: 'h', w: 22, h: 22, radius: 11, fill: 'brand/subtle', main: 'center', cross: 'center' }, [text(String(i + 1), 'label', 'brand/on-subtle')]), text(r, 'small', 'text/primary', { w: 'fill' })]),
+        ),
+      ]),
+      text('Moderators', 'overline', 'text/tertiary'),
+      group([member('Mod_Kemi', 'MOD', 'Online'), member('Mod_Tunde', 'MOD', 'Away')], 'Moderators', 64),
+      text('Online now · 48', 'overline', 'text/tertiary'),
+      group([member('NaijaBelle'), member('Tayo_Writes'), member('Ronke.writes', undefined, 'New this week'), member('SoftLife_Ada')], 'Online', 64),
+      group([
+        fill(use('ListRow', { Trailing: 'Value' }, { title: 'Your nickname', value: 'QuietStorm_24' }, { hide: ['subtitle'], icons: { icon: 'user' } })),
+        link(fill(use('ListRow', { Trailing: 'Value' }, { title: 'Your standing', value: 'Good' }, { hide: ['subtitle'], icons: { icon: 'shield-check' } })), 'myStanding'),
+      ]),
+      link(btn('Leave room', 'Tertiary', 'Large', 'log-out'), 'roomsList'),
+    ],
   );
 }
 

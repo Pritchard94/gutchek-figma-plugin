@@ -1,6 +1,6 @@
 import { Token } from '../tokens';
 import { Kid, Tone, abs, add, avatar, box, col, divider, fill, icon, pill, rect, row, text, toneTokens } from '../core/ui';
-import { lockup } from '../brand';
+import { glyph, lockup } from '../brand';
 import { use } from '../components/library';
 import { user } from '../screens/data';
 import { modeSwitch } from '../components/appearance';
@@ -66,6 +66,28 @@ export function sidebar(active: string): FrameNode {
   ]);
 }
 
+export const RAIL_W = 72;
+
+/** Collapsed icon rail, used when a room is open so the conversation gets the width. */
+export function railSidebar(active: string): FrameNode {
+  const item = ([iconName, label, id, badge]: (typeof NAV)[number]) => {
+    const on = id === active;
+    const f = box({ name: label, dir: 'none', w: 48, h: 48 });
+    add(f, abs(box({ name: 'Button', dir: 'h', w: 48, h: 48, radius: 14, fill: on ? 'brand/subtle' : null, main: 'center', cross: 'center' }, [icon(iconName, 22, on ? 'brand/fg' : 'text/secondary')]), 0, 0));
+    if (badge) add(f, abs(box({ name: 'Dot', dir: 'h', w: 10, h: 10, radius: 5, fill: 'caution/solid', stroke: 'bg/surface', strokeW: 2, strokeAlign: 'OUTSIDE' }), 34, 6));
+    return alink(f, id);
+  };
+  return col({ name: 'Sidebar · collapsed', w: RAIL_W, h: APP_H, pad: [20, 12], gap: 14, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
+    alink(box({ name: 'Logo', dir: 'h', w: 44, h: 44, radius: 12, fill: 'brand/solid', main: 'center', cross: 'center' }, [glyph(28, 'text/on-solid')]), 'wHome'),
+    alink(box({ name: 'New Libra', dir: 'h', w: 44, h: 44, radius: 22, fill: 'brand/subtle', main: 'center', cross: 'center' }, [icon('plus', 22, 'brand/fg')]), 'wSearch'),
+    divider(),
+    ...NAV.map(item),
+    box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
+    alink(box({ name: 'Expand', dir: 'h', w: 40, h: 40, radius: 20, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('chevron-right', 18, 'text/secondary')]), 'wHome'),
+    alink(avatar(user.initials, 36, 'brand'), 'wSettings'),
+  ]);
+}
+
 export function topbar(title: string, crumb?: string, actions: Kid[] = []): FrameNode {
   const bell = box({ name: 'Notifications', dir: 'none', w: 40, h: 40 });
   add(bell, abs(box({ name: 'Button', dir: 'h', w: 40, h: 40, radius: 20, fill: 'bg/surface', stroke: 'border/default', main: 'center', cross: 'center' }, [icon('bell', 18, 'text/primary')]), 0, 0));
@@ -93,6 +115,8 @@ export interface AppSpec {
   tall?: boolean;
   bleed?: boolean;
   gap?: number;
+  /** Collapse the app sidebar to the icon rail. */
+  collapsed?: boolean;
 }
 
 /** Web app frame: sidebar, top bar, content and an optional right rail. */
@@ -106,7 +130,7 @@ export function appFrame(spec: AppSpec, content: Kid[]): FrameNode {
           spec.rail ? col({ name: 'Rail', w: spec.railW || 360, gap: 20 }, spec.rail) : null,
         ]),
       ]);
-  const side = sidebar(spec.active);
+  const side = spec.collapsed ? railSidebar(spec.active) : sidebar(spec.active);
   const f = row({ name: spec.name, w: APP_W, fill: 'bg/canvas', clip: true, cross: 'start' }, [side, main]);
   const tallH = Math.max(APP_H, Math.round(main.height));
   if (spec.bleed || !spec.tall || main.height <= APP_H) {
@@ -114,7 +138,7 @@ export function appFrame(spec: AppSpec, content: Kid[]): FrameNode {
     f.resize(APP_W, APP_H);
     if (!spec.bleed) (main as FrameNode).layoutSizingVertical = 'FILL';
   } else {
-    side.resize(SIDEBAR_W, tallH);
+    side.resize(side.width, tallH);
   }
   f.setPluginData('webapp', '1');
   return f;

@@ -10,7 +10,7 @@ import { appearance, compare, deleteData, personality, plans, safety, settings }
 import { appLocked, idIntro, intro, notifPrompt, selfie } from './onboarding';
 import { analyse, chatBlocked, chatConsent, chatLimited, chatProcessing, chatReport, chatUpload, combinedView, createSheet, exportGuide, pasteText, patternDetail, safetyCard, sampleReport, speakers } from './chat';
 import { appeal, banNotice, composer, joinPending, myStanding, postHeld, reportPost, roomAbout, roomWelcome, roomsList } from './rooms';
-import { messageActions, muteSheet, quoteComposer, roomFeed, roomFeedBlocked, savedThreads, shareSheet, thread, threadSaved } from './roomchat';
+import { messageActions, muteSheet, roomInfo, quoteComposer, roomFeed, roomFeedBlocked, savedThreads, shareSheet, thread, threadSaved } from './roomchat';
 import {
   account,
   addNote,
@@ -146,6 +146,7 @@ const DEFS: Group[] = [
       ['shareSheet', 'Share post', shareSheet],
       ['messageActions', 'Message actions', messageActions],
       ['muteSheet', 'Mute room', muteSheet],
+      ['roomInfo', 'Room info', roomInfo],
       ['composer', 'New post', () => composer()],
       ['roomFeedBlocked', 'Blocked by Libra Bot', roomFeedBlocked],
       ['postHeld', 'Post held for review', postHeld],

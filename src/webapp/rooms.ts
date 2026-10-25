@@ -3,7 +3,7 @@ import { glyph } from '../brand';
 import { use } from '../components/library';
 import { RoomMsg, composerBar, filledIcon, nickAvatar, roomMessage, streamDivider, systemLine } from '../components/chat';
 import { addWallpaper } from '../components/doodles';
-import { APP_H, APP_W, SIDEBAR_W, alink, appFrame, btn, iconTileW, modal } from './shell';
+import { APP_H, APP_W, RAIL_W, alink, appFrame, btn, iconTileW, modal } from './shell';
 
 const LIST_W = 300;
 const PANEL_W = 360;
@@ -45,8 +45,8 @@ const STREAM: RoomMsg[] = [
 ];
 
 const STREAM_NEW: RoomMsg[] = [
-  { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', time: 'Today 19:58', body: WIN, reactions: [[0, 24], [3, 11]], mine: 0, thread: { count: '14 replies', last: 'NaijaBelle · 2m', people: [['NaijaBelle', 'warning'], ['Tayo', 'neutral'], ['Mod', 'brand']] }, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved: true } },
-  { nick: 'Ronke.writes', tone: 'positive', type: 'Story', time: 'Today 20:21', body: 'Needed this today. The ones who respect your pace are the keepers.', quote: { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', text: WIN }, actions: { likes: 19, replies: 2, quotes: 0 } },
+  { nick: 'QuietStorm_24', tone: 'brand', me: true, type: 'Win', time: 'Today 19:58', body: WIN, reactions: [[0, 24], [3, 11]], mine: 0, thread: { count: '14 replies', last: 'NaijaBelle · 2m', people: [['NaijaBelle', 'warning'], ['Tayo', 'neutral'], ['Mod', 'brand']] }, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved: true } },
+  { nick: 'Ronke.writes', tone: 'positive', isNew: true, mention: true, type: 'Story', time: 'Today 20:21', body: '@QuietStorm_24 needed this today. The ones who respect your pace are the keepers.', quote: { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', text: WIN }, actions: { likes: 19, replies: 2, quotes: 0 } },
 ];
 
 function streamColumn(width: number): FrameNode {
@@ -56,11 +56,16 @@ function streamColumn(width: number): FrameNode {
   };
   const header = col({ name: 'Header', w: 'fill', fill: 'bg/surface' }, [
     row({ name: 'Bar', w: 'fill', h: 64, pad: [0, 20], gap: 10, cross: 'center' }, [
-      iconTileW('message', 'brand', 36),
-      col({ name: 'Title', gap: 0, w: 'fill' }, [text(ROOM, 'title', 'text/primary'), text('1.2k members · 48 online · slow mode 5m', 'caption', 'text/tertiary')]),
+      alink(
+        row({ name: 'Room title', gap: 10, w: 'fill' }, [
+          iconTileW('message', 'brand', 36),
+          col({ name: 'Title', gap: 0, w: 'fill' }, [row({ name: 'Name', gap: 4 }, [text(ROOM, 'title', 'text/primary'), icon('chevron-down', 16, 'text/tertiary')]), text('1.2k members · 48 online · slow mode 5m · click for room info', 'caption', 'text/tertiary')]),
+        ]),
+        'wRoomsAbout',
+      ),
       headBtn('bell', 'Mute', 'wRoomsMute'),
       headBtn('pin', 'Pinned'),
-      headBtn('users', 'Members', 'wRooms'),
+      headBtn('users', 'Members', 'wRoomsAbout'),
       headBtn('more', 'More'),
     ]),
     divider(),
@@ -108,7 +113,7 @@ function infoPanel(): FrameNode {
     row({ name: nick, w: 'fill', gap: 10 }, [nickAvatar(nick, tone, 28), text(nick, 'small', 'text/primary', { w: 'fill' }), role ? pill(role, 'brand') : null]);
   const rules = ['Share your own experience only', 'Never identify anyone', 'No threats, hate or selling', 'Nothing involving minors', 'Share only with the Share button'];
   return col({ name: 'Room info', w: PANEL_W, h: APP_H, pad: [20, 20], gap: 20, fill: 'bg/surface', stroke: 'border/default' }, [
-    text('About this room', 'title', 'text/primary'),
+    row({ name: 'Head', w: 'fill', gap: 8 }, [text('About this room', 'title', 'text/primary', { w: 'fill' }), alink(box({ name: 'Close', dir: 'h', w: 32, h: 32, radius: 16, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('x', 16, 'text/secondary')]), 'wRooms')]),
     text('Stories and advice from the early days of getting to know someone. Approval required to join. Posts leave the feed after 30 days.', 'small', 'text/secondary', { w: 'fill' }),
     col({ name: 'Rules', w: 'fill', gap: 10 }, [text('Rules', 'overline', 'text/tertiary'), ...rules.map((r, i) => row({ name: r, gap: 10, w: 'fill' }, [box({ name: 'N', dir: 'h', w: 22, h: 22, radius: 11, fill: 'brand/subtle', main: 'center', cross: 'center' }, [text(String(i + 1), 'label', 'brand/on-subtle')]), text(r, 'small', 'text/primary', { w: 'fill' })]))]),
     divider(),
@@ -123,6 +128,7 @@ function threadPanel(): FrameNode {
     { nick: 'NaijaBelle', tone: 'warning', time: '19:59', body: 'This is the energy we deserve. Happy for you!', reactions: [[0, 9]] },
     { nick: 'Tayo_Writes', tone: 'neutral', time: '20:03', body: 'Picking a public place without being asked is such a green flag.', reactions: [[0, 6]] },
     { nick: 'SoftLife_Ada', tone: 'positive', time: '20:15', body: 'Saving this for the days I need hope.', replyTo: { nick: 'QuietStorm_24', tone: 'brand', text: 'He said "no pressure" and actually meant it.' } },
+    { nick: 'QuietStorm_24', tone: 'brand', op: true, me: true, time: '20:31', body: 'Thank you all. Taking it slow and loving it.', reactions: [[0, 18]] },
     { nick: 'Mod_Kemi', tone: 'brand', role: 'mod', time: '20:40', body: 'Lovely to see this. Keep details about him out of replies so it stays a story, not a profile.' },
   ];
   return col({ name: 'Thread panel', w: PANEL_W + 40, h: APP_H, fill: 'bg/surface', stroke: 'border/default' }, [
@@ -134,7 +140,7 @@ function threadPanel(): FrameNode {
     ]),
     divider(),
     col({ name: 'Thread body', w: 'fill', h: 'fill', pad: [16, 20], gap: 14, clip: true }, [
-      roomMessage({ nick: 'QuietStorm_24', tone: 'brand', type: 'Win', time: 'Today 19:58', body: WIN, reactions: [[0, 24], [3, 11]], mine: 0, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved: true } }),
+      roomMessage({ nick: 'QuietStorm_24', tone: 'brand', me: true, type: 'Win', time: 'Today 19:58', body: WIN, reactions: [[0, 24], [3, 11]], mine: 0, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved: true } }),
       streamDivider('14 replies'),
       ...replies.map((m) => roomMessage(m)),
     ]),
@@ -143,22 +149,26 @@ function threadPanel(): FrameNode {
   ]);
 }
 
-function workspace(panel: 'info' | 'thread'): SceneNode[] {
-  const right = panel === 'thread' ? threadPanel() : infoPanel();
-  const streamW = APP_W - SIDEBAR_W - LIST_W - right.width;
-  return [roomsColumn(), streamColumn(streamW), right];
+function workspace(panel: 'none' | 'info' | 'thread'): SceneNode[] {
+  const right = panel === 'thread' ? threadPanel() : panel === 'info' ? infoPanel() : null;
+  const streamW = APP_W - RAIL_W - LIST_W - (right ? right.width : 0);
+  return right ? [roomsColumn(), streamColumn(streamW), right] : [roomsColumn(), streamColumn(streamW)];
 }
 
 export function wRooms(): FrameNode {
-  return appFrame({ name: 'Rooms', active: 'wRooms', bleed: true }, workspace('info'));
+  return appFrame({ name: 'Rooms', active: 'wRooms', bleed: true, collapsed: true }, workspace('none'));
+}
+
+export function wRoomsAbout(): FrameNode {
+  return appFrame({ name: 'Rooms · room info', active: 'wRooms', bleed: true, collapsed: true }, workspace('info'));
 }
 
 export function wRoomsThread(): FrameNode {
-  return appFrame({ name: 'Rooms · Thread', active: 'wRooms', bleed: true }, workspace('thread'));
+  return appFrame({ name: 'Rooms · Thread', active: 'wRooms', bleed: true, collapsed: true }, workspace('thread'));
 }
 
 export function wRoomsMute(): FrameNode {
-  const base = appFrame({ name: 'Rooms · Mute', active: 'wRooms', bleed: true }, workspace('info'));
+  const base = appFrame({ name: 'Rooms · Mute', active: 'wRooms', bleed: true, collapsed: true }, workspace('none'));
   const opt = (label: string, on = false) =>
     row({ name: label, w: 'fill', gap: 10, pad: [10, 12], radius: 10, fill: on ? 'brand/subtle' : null }, [text(label, 'small', on ? 'brand/on-subtle' : 'text/primary', { w: 'fill' }), on ? icon('check', 16, 'brand/fg') : null]);
   const menu = col({ name: 'Mute menu', w: 280, gap: 2, pad: 8, radius: 16, fill: 'bg/raised', stroke: 'border/default', shadow: 'e3' }, [
@@ -171,14 +181,14 @@ export function wRoomsMute(): FrameNode {
     divider(),
     row({ name: 'Mentions', w: 'fill', gap: 10, pad: [10, 12] }, [text('Still notify me about replies', 'small', 'text/primary', { w: 'fill' }), use('Switch', { State: 'On' })]),
   ]);
-  const streamX = SIDEBAR_W + LIST_W;
-  const streamW = APP_W - SIDEBAR_W - LIST_W - PANEL_W;
+  const streamX = RAIL_W + LIST_W;
+  const streamW = APP_W - RAIL_W - LIST_W;
   add(base, abs(menu, streamX + streamW - 280 - 120, 60));
   return base;
 }
 
 export function wRoomsShare(): FrameNode {
-  const base = appFrame({ name: 'Rooms · Share', active: 'wRooms', bleed: true }, workspace('info'));
+  const base = appFrame({ name: 'Rooms · Share', active: 'wRooms', bleed: true, collapsed: true }, workspace('none'));
   const target = (iconName: string, label: string, primary = false) =>
     col({ name: label, w: 'fill', gap: 6, cross: 'center' }, [
       box({ name: 'Circle', dir: 'h', w: 52, h: 52, radius: 26, fill: primary ? 'brand/solid' : 'bg/subtle', main: 'center', cross: 'center' }, [icon(iconName, 22, primary ? 'text/on-solid' : 'text/primary')]),
@@ -207,7 +217,7 @@ export function wDiscover(): FrameNode {
       text(desc, 'small', 'text/secondary', { w: 'fill' }),
       state === 'join' ? btn('Request to join', 'Secondary', 'Medium') : state === 'pending' ? pill('Request pending', 'warning', 'clock') : pill('Invite only', 'neutral', 'lock'),
     ]);
-  return appFrame({ name: 'Discover rooms', active: 'wRooms', title: 'Discover rooms', crumb: 'Rooms / Discover' }, [
+  return appFrame({ name: 'Discover rooms', active: 'wRooms', title: 'Discover rooms', crumb: 'Rooms / Discover', collapsed: true }, [
     row({ name: 'Filters', gap: 8 }, [use('Chip', { Selected: 'On' }, { label: 'All' }), use('Chip', { Selected: 'Off' }, { label: 'Open with bot' }), use('Chip', { Selected: 'Off' }, { label: 'Approval required' }), use('Chip', { Selected: 'Off' }, { label: 'Lagos' }), use('Chip', { Selected: 'Off' }, { label: 'Abuja' })]),
     row({ name: 'Row 1', w: 'fill', gap: 20, cross: 'start' }, [
       roomCard('map-pin', 'warning', 'Lagos Dating Life', 'Dating in the city: places, culture and safety tips.', '2.4k members', 'Open with bot', 'join'),

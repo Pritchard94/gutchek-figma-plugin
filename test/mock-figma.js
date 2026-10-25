@@ -310,6 +310,14 @@ class TextNode extends BaseNode {
     this.width = Math.max(1, s.length * 7);
     this.height = 20;
   }
+  setRangeFills(start, end, fills) {
+    if (!(start >= 0 && end <= this._characters.length && start < end)) throw new Error('Bad range ' + start + '-' + end);
+    if (!Array.isArray(fills)) throw new Error('fills must be array');
+  }
+  setRangeFontName(start, end, f) {
+    if (!(start >= 0 && end <= this._characters.length && start < end)) throw new Error('Bad range');
+    if (!loadedFonts.has(fontKey(f))) throw new Error('Range font not loaded ' + fontKey(f));
+  }
   setTextStyleIdAsync(id) {
     this._alive('setTextStyleIdAsync');
     return this._setTextStyle(id);

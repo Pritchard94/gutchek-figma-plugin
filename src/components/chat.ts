@@ -1,5 +1,6 @@
-import { Token } from '../tokens';
+import { NAME_HUES, Token } from '../tokens';
 import { Tone, abs, add, avatar, box, col, icon, paint, rect, row, text, toneTokens } from '../core/ui';
+import { font } from '../core/ctx';
 
 export type Speaker = 'them' | 'you';
 export type Flag = 'caution' | 'positive' | null;
@@ -122,8 +123,44 @@ export function reactionBar(counts: number[], mine = -1): FrameNode {
   );
 }
 
-export function nickAvatar(nick: string, tone: Tone, size = 36): FrameNode {
-  return avatar(nick.slice(0, 2).toUpperCase(), size, tone);
+const FIXED_HUES: Record<string, string> = {
+  NaijaBelle: 'magenta',
+  Tayo_Writes: 'teal',
+  Tayo: 'teal',
+  QuietStorm_24: 'blue',
+  QuietStorm: 'blue',
+  'Ronke.writes': 'orange',
+  Ronke: 'orange',
+  SoftLife_Ada: 'purple',
+  SoftLife: 'purple',
+  Ade_new: 'sky',
+  BigBoyz_: 'brown',
+};
+
+/** Stable identity colour for a nickname. Moderators and the bot always use Libra Indigo. */
+export function nameHue(nick: string): string | null {
+  if (/^mod/i.test(nick) || nick === 'Libra Bot' || /^admin/i.test(nick)) return null;
+  if (FIXED_HUES[nick]) return FIXED_HUES[nick];
+  let h = 0;
+  for (let i = 0; i < nick.length; i++) h = (h * 31 + nick.charCodeAt(i)) >>> 0;
+  return NAME_HUES[h % NAME_HUES.length];
+}
+
+export function nameToken(nick: string): Token {
+  const hue = nameHue(nick);
+  return hue ? 'name/' + hue : 'brand/fg';
+}
+
+export function nameTint(nick: string): Token {
+  const hue = nameHue(nick);
+  return hue ? 'name/' + hue + '-tint' : 'brand/subtle';
+}
+
+/** Initials avatar in the member's identity colour. The tone argument is kept for call sites that predate identity colours. */
+export function nickAvatar(nick: string, _tone?: Tone, size = 36): FrameNode {
+  return box({ name: 'Avatar', dir: 'h', w: size, h: size, radius: size / 2, fill: nameTint(nick), main: 'center', cross: 'center' }, [
+    text(nick.replace(/[^A-Za-z]/g, '').slice(0, 2).toUpperCase() || 'L', { family: 'display', weight: 700, size: Math.max(8, Math.round(size * 0.36)), tracking: -1 }, nameToken(nick), { name: 'initials' }),
+  ]);
 }
 
 // ---------------------------------------------------------------- room messages (Discord-style stream)
@@ -149,6 +186,37 @@ export interface RoomMsg {
   actions?: { likes: number; liked?: boolean; replies?: number; quotes?: number; saved?: boolean };
   /** Quoted post embedded below the body. */
   quote?: { nick: string; tone: Tone; type?: PostType; text: string; room?: string };
+  /** Original poster of the thread this message is in. */
+  op?: boolean;
+  /** The signed-in member's own message: faint indigo tint and accent bar. */
+  me?: boolean;
+  /** Member in their first week. */
+  isNew?: boolean;
+  /** Mentions the signed-in member: amber highlight. */
+  mention?: boolean;
+}
+
+function tag(label: string, kind: 'op' | 'new' | 'you'): FrameNode {
+  const fillTok: Token = kind === 'new' ? 'name/teal-tint' : kind === 'you' ? 'brand/subtle' : 'bg/subtle';
+  const fg: Token = kind === 'new' ? 'name/teal' : kind === 'you' ? 'brand/fg' : 'text/secondary';
+  return box({ name: 'Tag ' + label, dir: 'h', pad: [1, 5], radius: 4, fill: fillTok, stroke: kind === 'new' ? undefined : kind === 'you' ? 'brand/border' : 'border/default', cross: 'center' }, [
+    text(label, { family: 'ui', weight: 700, size: 10, line: 14, tracking: 4 }, fg),
+  ]);
+}
+
+/** Colour @handles inside a message body. */
+function highlightMentions(t: TextNode) {
+  const s = t.characters;
+  const re = /@[A-Za-z0-9_.]+/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s))) {
+    try {
+      t.setRangeFills(m.index, m.index + m[0].length, [paint('warning/fg')]);
+      t.setRangeFontName(m.index, m.index + m[0].length, font('ui', 600));
+    } catch (_) {
+      /* range styling is cosmetic */
+    }
+  }
 }
 
 /** Outline icon with its shapes filled, for active states like a liked heart or a saved bookmark. */
@@ -183,7 +251,7 @@ export function quoteEmbed(q: NonNullable<RoomMsg['quote']>): FrameNode {
   return col({ name: 'Quoted post', w: 'fill', gap: 6, pad: 12, radius: 12, fill: 'bg/surface', stroke: 'border/strong' }, [
     row({ name: 'Head', gap: 6, w: 'fill' }, [
       nickAvatar(q.nick, q.tone, 18),
-      text(q.nick, 'smallStrong', 'text/primary'),
+      text(q.nick, 'smallStrong', nameToken(q.nick)),
       q.type ? typeTag(q.type) : null,
       q.room ? text('in ' + q.room, 'caption', 'text/tertiary', { w: 'fill', maxLines: 1 }) : null,
     ]),
@@ -239,19 +307,22 @@ function replyRef(r: NonNullable<RoomMsg['replyTo']>): FrameNode {
   return row({ name: 'Replying to', gap: 6, w: 'fill', pad: [0, 0, 0, 18], cross: 'end' }, [
     elbow,
     nickAvatar(r.nick, r.tone, 16),
-    text(r.nick, 'label', 'text/secondary'),
+    text(r.nick, 'label', nameToken(r.nick)),
     text(r.text, 'caption', 'text/tertiary', { w: 'fill', maxLines: 1 }),
   ]);
 }
 
 /** One message in a room stream. Continuations drop the avatar and header, like Discord. */
 export function roomMessage(m: RoomMsg): FrameNode {
-  const nameToken: Token = m.role ? 'brand/fg' : 'text/primary';
+  const nameTok: Token = m.role ? 'brand/fg' : nameToken(m.nick);
   const header = m.cont
     ? null
-    : row({ name: 'Header', gap: 6, w: 'fill' }, [
-        text(m.nick, 'bodyStrong', nameToken, { name: 'nickname' }),
+    : row({ name: 'Header', gap: 6, w: 'fill', wrap: true, wrapGap: 4 }, [
+        text(m.nick, 'bodyStrong', nameTok, { name: 'nickname' }),
         m.role ? roleBadge(m.role === 'mod' ? 'MOD' : 'BOT') : null,
+        m.op ? tag('OP', 'op') : null,
+        m.isNew ? tag('NEW', 'new') : null,
+        m.me ? tag('YOU', 'you') : null,
         m.type ? typeTag(m.type) : null,
         m.time ? text(m.time, 'caption', 'text/tertiary', { name: 'time' }) : null,
       ]);
@@ -260,11 +331,11 @@ export function roomMessage(m: RoomMsg): FrameNode {
     : m.role === 'bot'
       ? box({ name: 'Bot avatar', dir: 'h', w: 40, h: 40, radius: 20, fill: 'brand/solid', main: 'center', cross: 'center' }, [icon('shield-check', 20, 'text/on-solid')])
       : nickAvatar(m.nick, m.tone, 40);
+  const bodyText = text(m.body, 'body', 'text/primary', { name: 'body', w: 'fill' });
+  if (m.body.indexOf('@') !== -1) highlightMentions(bodyText);
   const content = col({ name: 'Content', gap: 4, w: 'fill' }, [
     header,
-    row({ name: 'Body row', gap: 6, w: 'fill', cross: 'end' }, [
-      text(m.body, 'body', 'text/primary', { name: 'body', w: 'fill' }),
-    ]),
+    row({ name: 'Body row', gap: 6, w: 'fill', cross: 'end' }, [bodyText]),
     m.edited ? text('(edited)', 'caption', 'text/tertiary') : null,
     m.quote ? quoteEmbed(m.quote) : null,
     m.reactions && m.reactions.length ? reactionChips(m.reactions, m.mine) : null,
@@ -274,10 +345,29 @@ export function roomMessage(m: RoomMsg): FrameNode {
       ? row({ name: 'Ephemeral', gap: 6 }, [icon('eye-off', 13, 'text/tertiary'), text('Only you can see this ·', 'caption', 'text/tertiary'), text('Dismiss', 'caption', 'brand/fg')])
       : null,
   ]);
-  return col(
-    { name: 'Message · ' + m.nick, w: 'fill', gap: 4, pad: m.ephemeral ? [10, 10] : [m.cont ? 0 : 6, 0, 0, 0], radius: m.ephemeral ? 12 : 0, fill: m.ephemeral ? 'brand/subtle' : null, stroke: m.ephemeral ? 'brand/border' : undefined },
+  const highlight: 'me' | 'mention' | null = m.ephemeral ? null : m.mention ? 'mention' : m.me ? 'me' : null;
+  const msg = col(
+    {
+      name: 'Message · ' + m.nick,
+      w: 'fill',
+      gap: 4,
+      pad: m.ephemeral ? [10, 10] : highlight ? [8, 8, 8, 8] : [m.cont ? 0 : 6, 0, 0, 0],
+      radius: m.ephemeral || highlight ? 12 : 0,
+      fill: m.ephemeral ? 'brand/subtle' : highlight === 'mention' ? 'warning/subtle' : highlight === 'me' ? 'brand/subtle' : null,
+      fillOpacity: highlight === 'me' ? 0.8 : undefined,
+      stroke: m.ephemeral ? 'brand/border' : undefined,
+    },
     [m.replyTo ? replyRef(m.replyTo) : null, row({ name: 'Row', gap: 12, w: 'fill', cross: 'start' }, [left, content])],
   );
+  if (highlight) {
+    msg.strokes = [paint(highlight === 'mention' ? 'warning/fg' : 'brand/solid')];
+    msg.strokeAlign = 'INSIDE';
+    msg.strokeTopWeight = 0;
+    msg.strokeRightWeight = 0;
+    msg.strokeBottomWeight = 0;
+    msg.strokeLeftWeight = 3;
+  }
+  return msg;
 }
 
 export function streamDivider(label: string, tone: 'neutral' | 'new' = 'neutral'): FrameNode {

@@ -5,7 +5,8 @@ import { appLinks } from './shell';
 import { wHome, wHomeEmpty, wLinked, wMatch, wNotifications, wPaywall, wProcessing, wPurpose, wSearch, wSignIn, wVerify } from './core';
 import { wCompare, wPersonality, wReport, wSaved, wSavedThreads, wSevere, wSignals } from './report';
 import { wAnalyse, wChatReport, wSpeakers } from './chat';
-import { wDiscover, wRooms, wRoomsMute, wRoomsShare, wRoomsThread } from './rooms';
+import { wDiscover, wRooms, wRoomsAbout, wRoomsMute, wRoomsShare, wRoomsThread } from './rooms';
+import { MOBILE_WEB } from './mobileweb';
 import { wBilling, wDelete, wSafety, wSettings } from './account';
 
 type Def = [string, string, () => FrameNode];
@@ -61,6 +62,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     note: 'Discord-style three columns: rooms, the stream over the doodle wallpaper, and room info or an open thread.',
     pages: [
       ['wRooms', 'Rooms', wRooms],
+      ['wRoomsAbout', 'Rooms · room info', wRoomsAbout],
       ['wRoomsThread', 'Rooms · thread', wRoomsThread],
       ['wRoomsMute', 'Rooms · mute', wRoomsMute],
       ['wRoomsShare', 'Rooms · share', wRoomsShare],
@@ -76,6 +78,11 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
       ['wDelete', 'Settings · delete account', wDelete],
       ['wBilling', 'Plan and billing', wBilling],
     ],
+  },
+  {
+    title: 'Web app · 7 · Mobile web',
+    note: 'The same web app on a phone browser: a top bar with a menu drawer, a bottom bar for the main sections, and stacked layouts. Rooms open full screen; room info opens from the header.',
+    pages: MOBILE_WEB,
   },
 ];
 
