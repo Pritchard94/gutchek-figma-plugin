@@ -3,6 +3,7 @@ import { ctx } from '../core/ctx';
 import { FillSpec, Kid, abs, add, box, col, gradient, hexPaint, icon, paint, rect, row, text, pill, avatar } from '../core/ui';
 import { appIcon, glyph, lockup } from '../brand';
 import { use } from '../components/library';
+import { doodleLayer } from '../components/doodles';
 import { board, bullet, layoutHorizontally, section } from './common';
 import { swatchChip, themedPanel } from './foundations';
 
@@ -319,6 +320,18 @@ function iconography(): FrameNode {
     'Icons come from Lucide: open, rounded and quiet. Imagery stays abstract. Libra never shows stock photos of phones, keyholes or silhouettes, and never displays a searched person\'s photo outside the match confirmation step.',
     [
       row({ name: 'Icon grid', gap: 16, w: 'fill', wrap: true, wrapGap: 16 }, names.map((n) => col({ name: n, w: 140, pad: 20, gap: 12, cross: 'center', radius: 16, fill: 'bg/canvas' }, [icon(n, 32, 'text/primary'), text(n, 'caption', 'text/secondary')]))),
+      row({ name: 'Wallpaper', gap: 32, w: 'fill', cross: 'center' }, [
+        (() => {
+          const tile = box({ name: 'Wallpaper sample', dir: 'none', w: 640, h: 280, radius: 24, fill: 'bg/canvas', clip: true, stroke: 'border/default' });
+          tile.appendChild(doodleLayer(640, 280, 'brand/fg', 0.12));
+          return tile;
+        })(),
+        col({ name: 'Wallpaper notes', gap: 12, w: 'fill' }, [
+          text('Chat wallpaper', 'h3', 'text/primary'),
+          text('Rooms use a tiled doodle wallpaper, inspired by WhatsApp: line icons from the Lucide set for dating, care and the scale, in Indigo at 9% opacity, rotated up to 25 degrees on a 54pt grid.', 'body', 'text/secondary', { w: 'fill' }),
+          text('Never include eyes, cameras, locks or anything that suggests surveillance. The pattern sits behind messages only, never behind headers or the composer.', 'body', 'text/secondary', { w: 'fill' }),
+        ]),
+      ]),
       row({ name: 'Rules', gap: 24, w: 'fill', cross: 'start' }, [
         doDont(true, 'Pair every signal colour with an icon and a word: a triangle for Caution, a check for Positive.', row({ name: 'Example', gap: 8 }, [use('ScoreBadge', { Side: 'Caution' }), use('ScoreBadge', { Side: 'Positive' })])),
         doDont(true, 'Use initials avatars on soft tints. They keep people identifiable without amplifying their photos.', row({ name: 'Avatars', gap: 8 }, [avatar('TA', 48, 'brand'), avatar('SB', 48, 'positive'), avatar('KO', 48, 'warning'), avatar('DO', 48, 'neutral')])),

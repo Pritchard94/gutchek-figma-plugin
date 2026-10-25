@@ -125,3 +125,138 @@ export function reactionBar(counts: number[], mine = -1): FrameNode {
 export function nickAvatar(nick: string, tone: Tone, size = 36): FrameNode {
   return avatar(nick.slice(0, 2).toUpperCase(), size, tone);
 }
+
+// ---------------------------------------------------------------- room messages (Discord-style stream)
+
+export type PostType = 'Story' | 'Question' | 'Advice' | 'Win';
+const TYPE_TONE: Record<PostType, Tone> = { Story: 'brand', Question: 'warning', Advice: 'neutral', Win: 'positive' };
+
+export interface RoomMsg {
+  nick: string;
+  tone: Tone;
+  time?: string;
+  body: string;
+  role?: 'mod' | 'bot';
+  type?: PostType;
+  replyTo?: { nick: string; tone: Tone; text: string };
+  reactions?: Array<[number, number]>;
+  mine?: number;
+  thread?: { count: string; last: string; people: Array<[string, Tone]> };
+  cont?: boolean;
+  ephemeral?: boolean;
+  edited?: boolean;
+}
+
+function roleBadge(label: string): FrameNode {
+  return box({ name: 'Role', dir: 'h', pad: [1, 5], radius: 4, fill: 'brand/solid', cross: 'center' }, [text(label, { family: 'ui', weight: 700, size: 10, line: 14, tracking: 4 }, 'text/on-solid')]);
+}
+
+function typeTag(t: PostType): FrameNode {
+  const tt = toneTokens[TYPE_TONE[t]];
+  return box({ name: 'Type', dir: 'h', pad: [1, 6], radius: 4, fill: tt.bg, cross: 'center' }, [text(t, { family: 'ui', weight: 600, size: 11, line: 14 }, tt.fg)]);
+}
+
+function reactionChips(list: Array<[number, number]>, mine?: number): FrameNode {
+  const chips = list.map(([idx, count]) => {
+    const on = idx === mine;
+    const [iconName, label] = REACTIONS[idx];
+    return row({ name: label, gap: 4, pad: [3, 8], radius: 8, fill: on ? 'brand/subtle' : 'bg/subtle', stroke: on ? 'brand/border' : undefined }, [
+      icon(iconName, 14, on ? 'brand/fg' : 'text/secondary'),
+      text(String(count), 'label', on ? 'brand/on-subtle' : 'text/secondary'),
+    ]);
+  });
+  chips.push(row({ name: 'Add reaction', pad: [3, 8], radius: 8, fill: 'bg/subtle' }, [icon('smile', 14, 'text/tertiary')]));
+  return row({ name: 'Reactions', gap: 6, wrap: true, wrapGap: 6, w: 'fill' }, chips);
+}
+
+function threadChip(t: NonNullable<RoomMsg['thread']>): FrameNode {
+  const faces = row({ name: 'Faces', gap: -6 }, t.people.map(([n, tone]) => {
+    const a = nickAvatar(n, tone, 18);
+    a.strokes = [paint('bg/surface')];
+    a.strokeWeight = 1.5;
+    a.strokeAlign = 'OUTSIDE';
+    return a;
+  }));
+  return row({ name: 'Thread', gap: 8, pad: [7, 10], radius: 10, fill: 'bg/surface', stroke: 'border/default' }, [
+    icon('messages', 16, 'brand/fg'),
+    text(t.count, 'smallStrong', 'brand/fg'),
+    faces,
+    text(t.last, 'caption', 'text/tertiary'),
+    icon('chevron-right', 14, 'text/tertiary'),
+  ]);
+}
+
+function replyRef(r: NonNullable<RoomMsg['replyTo']>): FrameNode {
+  const elbow = box({ name: 'Elbow', dir: 'h', w: 24, h: 10, stroke: 'border/strong', strokeW: 2, radius: [6, 0, 0, 0] });
+  elbow.strokeRightWeight = 0;
+  elbow.strokeBottomWeight = 0;
+  elbow.strokeTopWeight = 2;
+  elbow.strokeLeftWeight = 2;
+  return row({ name: 'Replying to', gap: 6, w: 'fill', pad: [0, 0, 0, 18], cross: 'end' }, [
+    elbow,
+    nickAvatar(r.nick, r.tone, 16),
+    text(r.nick, 'label', 'text/secondary'),
+    text(r.text, 'caption', 'text/tertiary', { w: 'fill', maxLines: 1 }),
+  ]);
+}
+
+/** One message in a room stream. Continuations drop the avatar and header, like Discord. */
+export function roomMessage(m: RoomMsg): FrameNode {
+  const nameToken: Token = m.role ? 'brand/fg' : 'text/primary';
+  const header = m.cont
+    ? null
+    : row({ name: 'Header', gap: 6, w: 'fill' }, [
+        text(m.nick, 'bodyStrong', nameToken, { name: 'nickname' }),
+        m.role ? roleBadge(m.role === 'mod' ? 'MOD' : 'BOT') : null,
+        m.type ? typeTag(m.type) : null,
+        m.time ? text(m.time, 'caption', 'text/tertiary', { name: 'time' }) : null,
+      ]);
+  const left = m.cont
+    ? box({ name: 'Gutter', dir: 'h', w: 40, h: 1 })
+    : m.role === 'bot'
+      ? box({ name: 'Bot avatar', dir: 'h', w: 40, h: 40, radius: 20, fill: 'brand/solid', main: 'center', cross: 'center' }, [icon('shield-check', 20, 'text/on-solid')])
+      : nickAvatar(m.nick, m.tone, 40);
+  const content = col({ name: 'Content', gap: 4, w: 'fill' }, [
+    header,
+    row({ name: 'Body row', gap: 6, w: 'fill', cross: 'end' }, [
+      text(m.body, 'body', 'text/primary', { name: 'body', w: 'fill' }),
+    ]),
+    m.edited ? text('(edited)', 'caption', 'text/tertiary') : null,
+    m.reactions && m.reactions.length ? reactionChips(m.reactions, m.mine) : null,
+    m.thread ? threadChip(m.thread) : null,
+    m.ephemeral
+      ? row({ name: 'Ephemeral', gap: 6 }, [icon('eye-off', 13, 'text/tertiary'), text('Only you can see this ·', 'caption', 'text/tertiary'), text('Dismiss', 'caption', 'brand/fg')])
+      : null,
+  ]);
+  return col(
+    { name: 'Message · ' + m.nick, w: 'fill', gap: 4, pad: m.ephemeral ? [10, 10] : [m.cont ? 0 : 6, 0, 0, 0], radius: m.ephemeral ? 12 : 0, fill: m.ephemeral ? 'brand/subtle' : null, stroke: m.ephemeral ? 'brand/border' : undefined },
+    [m.replyTo ? replyRef(m.replyTo) : null, row({ name: 'Row', gap: 12, w: 'fill', cross: 'start' }, [left, content])],
+  );
+}
+
+export function streamDivider(label: string, tone: 'neutral' | 'new' = 'neutral'): FrameNode {
+  const lineTok: Token = tone === 'new' ? 'caution/fg' : 'border/default';
+  return row({ name: 'Divider · ' + label, w: 'fill', gap: 10, pad: [4, 0] }, [
+    box({ name: 'Line', dir: 'h', w: 'fill', h: 1, fill: lineTok }),
+    tone === 'new'
+      ? box({ name: 'New', dir: 'h', pad: [1, 6], radius: 4, fill: 'caution/solid' }, [text(label, { family: 'ui', weight: 700, size: 10, line: 14, tracking: 4 }, 'text/on-solid')])
+      : text(label, 'label', 'text/tertiary'),
+    tone === 'new' ? null : box({ name: 'Line', dir: 'h', w: 'fill', h: 1, fill: lineTok }),
+  ]);
+}
+
+export function systemLine(iconName: string, str: string): FrameNode {
+  return row({ name: 'System', w: 'fill', gap: 10, pad: [2, 0, 2, 12] }, [icon(iconName, 16, 'text/tertiary'), text(str, 'small', 'text/secondary', { w: 'fill' })]);
+}
+
+/** Bottom composer, like Discord: attach, message field, emoji, send. */
+export function composerBar(placeholder: string, value?: string, blocked = false): FrameNode {
+  return row({ name: 'Composer', w: 'fill', gap: 10, cross: 'center' }, [
+    box({ name: 'Attach', dir: 'h', w: 40, h: 40, radius: 20, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('plus', 20, 'text/secondary')]),
+    row({ name: 'Field', w: 'fill', h: value ? undefined : 44, pad: [10, 14], gap: 8, radius: 22, fill: 'bg/subtle', stroke: blocked ? 'caution/fg' : undefined, strokeW: 1.5, cross: value ? 'end' : 'center' }, [
+      text(value || placeholder, 'body', value ? 'text/primary' : 'text/tertiary', { w: 'fill', name: 'value' }),
+      icon('smile', 22, 'text/tertiary'),
+    ]),
+    box({ name: 'Send', dir: 'h', w: 40, h: 40, radius: 20, fill: value ? (blocked ? 'bg/muted' : 'brand/solid') : 'bg/subtle', main: 'center', cross: 'center' }, [icon('arrow-right', 20, value && !blocked ? 'text/on-solid' : 'text/tertiary')]),
+  ]);
+}

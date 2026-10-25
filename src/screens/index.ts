@@ -9,7 +9,8 @@ import { evidence, report, reportLow, reportSevere, signalsCaution, signalsPosit
 import { compare, deleteData, personality, plans, safety, settings } from './more';
 import { appLocked, idIntro, intro, notifPrompt, selfie } from './onboarding';
 import { analyse, chatBlocked, chatConsent, chatLimited, chatProcessing, chatReport, chatUpload, combinedView, createSheet, exportGuide, pasteText, patternDetail, safetyCard, sampleReport, speakers } from './chat';
-import { appeal, banNotice, composer, composerBlocked, joinPending, myStanding, postHeld, reportPost, roomAbout, roomFeed, roomWelcome, roomsList, thread } from './rooms';
+import { appeal, banNotice, composer, joinPending, myStanding, postHeld, reportPost, roomAbout, roomWelcome, roomsList } from './rooms';
+import { messageActions, muteSheet, roomFeed, roomFeedBlocked, thread } from './roomchat';
 import {
   account,
   addNote,
@@ -139,8 +140,10 @@ const DEFS: Group[] = [
       ['roomWelcome', 'Rules and nickname', roomWelcome],
       ['roomFeed', 'Room feed', roomFeed],
       ['thread', 'Thread', thread],
+      ['messageActions', 'Message actions', messageActions],
+      ['muteSheet', 'Mute room', muteSheet],
       ['composer', 'New post', () => composer()],
-      ['composerBlocked', 'Blocked by Libra Bot', composerBlocked],
+      ['roomFeedBlocked', 'Blocked by Libra Bot', roomFeedBlocked],
       ['postHeld', 'Post held for review', postHeld],
       ['reportPost', 'Report a post', reportPost],
       ['banNotice', 'Ban notice', banNotice],

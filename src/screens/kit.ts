@@ -36,6 +36,10 @@ export interface ScreenSpec {
   footer?: Kid[];
   footerDivider?: boolean;
   tall?: boolean;
+  /** Fixed header placed between the status bar and the scrolling content. */
+  top?: SceneNode;
+  /** 'end' anchors content to the bottom, like a chat: overflow is clipped at the top. */
+  main?: 'start' | 'end';
 }
 
 export function navBar(n: NavSpec): SceneNode {
@@ -59,14 +63,14 @@ export function navBar(n: NavSpec): SceneNode {
 
 export function screen(spec: ScreenSpec, body: Kid[]): FrameNode {
   const bodyFrame = col(
-    { name: 'Content', w: 'fill', pad: spec.pad || [8, device.margin, 24, device.margin], gap: spec.gap === undefined ? 20 : spec.gap, cross: spec.cross || 'start', clip: true },
+    { name: 'Content', w: 'fill', pad: spec.pad || [8, device.margin, 24, device.margin], gap: spec.gap === undefined ? 20 : spec.gap, cross: spec.cross || 'start', main: spec.main, clip: true },
     body,
   );
   const footer = spec.footer
     ? col({ name: 'Footer', w: 'fill', pad: [12, device.margin, spec.tab ? 12 : 4, device.margin], gap: 12, fill: spec.bg || 'bg/canvas', cross: 'center' }, spec.footer)
     : null;
   const tabBar = spec.tab ? use('TabBar', { Active: spec.tab }) : null;
-  const kids: Kid[] = [fill(use('StatusBar')), spec.nav ? navBar(spec.nav) : null, bodyFrame];
+  const kids: Kid[] = [fill(use('StatusBar')), spec.nav ? navBar(spec.nav) : null, spec.top ? fill(spec.top) : null, bodyFrame];
   if (footer) {
     if (spec.footerDivider) kids.push(divider());
     kids.push(footer);

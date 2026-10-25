@@ -1,5 +1,6 @@
 import { Tone, box, col, fill, icon, pill, row, text, divider } from '../core/ui';
 import { nickAvatar, reactionBar } from '../components/chat';
+import { roomFeed } from './roomchat';
 import { btn, center, chip, group, groupTitle, heroIcon, iconTile, link, note, radioGroup, screen, surface, textArea, use, withSheet } from './kit';
 
 interface Room {
@@ -24,41 +25,68 @@ function modeTone(m: Room['mode']): Tone {
   return m === 'Approval required' ? 'brand' : m === 'Open with bot' ? 'positive' : 'neutral';
 }
 
-function roomCard(r: Room, target?: string): SceneNode {
+// ---------------------------------------------------------------- browse and join
+
+function unreadBadge(n: string): FrameNode {
+  return box({ name: 'Unread', dir: 'h', h: 20, pad: [0, 7], radius: 10, fill: 'brand/solid', main: 'center', cross: 'center' }, [text(n, { family: 'ui', weight: 700, size: 11, line: 14 }, 'text/on-solid')]);
+}
+
+function joinedRow(r: Room, preview: string, time: string, o: { unread?: string; muted?: boolean } = {}, target?: string): SceneNode {
+  const tile = iconTile(r.iconName, r.tone, 44);
+  if (o.muted) tile.opacity = 0.55;
+  const c = row({ name: r.name, w: 'fill', gap: 12, pad: [12, 14] }, [
+    tile,
+    col({ name: 'Text', gap: 2, w: 'fill' }, [
+      row({ name: 'Top', gap: 8, w: 'fill' }, [
+        text(r.name, o.unread ? 'bodyStrong' : 'body', o.muted ? 'text/secondary' : 'text/primary', { w: 'fill', maxLines: 1 }),
+        text(time, 'caption', o.unread ? 'brand/fg' : 'text/tertiary'),
+      ]),
+      row({ name: 'Bottom', gap: 8, w: 'fill' }, [
+        text(preview, 'small', 'text/secondary', { w: 'fill', maxLines: 1 }),
+        o.unread ? unreadBadge(o.unread) : o.muted ? icon('bell-off', 16, 'text/tertiary') : null,
+      ]),
+    ]),
+  ]);
+  return target ? link(c, target) : c;
+}
+
+function discoverRow(r: Room, target?: string): SceneNode {
   const trailing =
-    r.state === 'joined' ? icon('chevron-right', 20, 'text/tertiary') : r.state === 'pending' ? pill('Pending', 'warning', 'clock') : r.state === 'invite' ? pill('Invite only', 'neutral', 'lock') : pill('Join', 'brand');
-  const c = row({ name: r.name, w: 'fill', gap: 12, pad: 16, radius: 16, fill: 'bg/surface', stroke: 'border/default', cross: 'start' }, [
-    iconTile(r.iconName, r.tone, 44),
-    col({ name: 'Text', gap: 4, w: 'fill' }, [
-      text(r.name, 'bodyStrong', 'text/primary', { w: 'fill' }),
-      text(r.desc, 'small', 'text/secondary', { w: 'fill' }),
-      row({ name: 'Meta', gap: 8 }, [text(r.members, 'caption', 'text/tertiary'), text('·', 'caption', 'text/tertiary'), text(r.mode, 'caption', 'text/tertiary')]),
+    r.state === 'pending'
+      ? pill('Pending', 'warning', 'clock')
+      : r.state === 'invite'
+        ? row({ name: 'Invite', gap: 4 }, [icon('lock', 14, 'text/tertiary'), text('Invite', 'label', 'text/tertiary')])
+        : use('Button', { Variant: 'Secondary', Size: 'Small' }, { label: 'Join' });
+  const c = row({ name: r.name, w: 'fill', gap: 12, pad: [12, 14] }, [
+    iconTile(r.iconName, r.tone, 40),
+    col({ name: 'Text', gap: 2, w: 'fill' }, [
+      text(r.name, 'bodyStrong', 'text/primary', { w: 'fill', maxLines: 1 }),
+      row({ name: 'Meta', gap: 6 }, [icon('users', 12, 'text/tertiary'), text(r.members.replace(' members', ''), 'caption', 'text/tertiary'), text('·', 'caption', 'text/tertiary'), text(r.mode, 'caption', 'text/tertiary')]),
     ]),
     trailing,
   ]);
   return target ? link(c, target) : c;
 }
 
-function post(type: string, nick: string, tone: Tone, meta: string, body: string, replies: string, target?: string): SceneNode {
-  const p = fill(use('PostCard', { Type: type }, { nickname: nick, meta, body, replies, initials: nick.slice(0, 2).toUpperCase() }));
-  if (target) link(p, target);
-  return p;
-}
-
-// ---------------------------------------------------------------- browse and join
-
 export function roomsList(): FrameNode {
+  const safety: Room = { ...ROOMS[4], state: 'joined' };
   return screen(
-    { name: 'Rooms', tab: 'Rooms', nav: { type: 'Large', title: 'Rooms', action: 'shield', actionTo: 'myStanding' }, gap: 14 },
+    { name: 'Rooms', tab: 'Rooms', nav: { type: 'Large', title: 'Rooms', action: 'shield', actionTo: 'myStanding' }, gap: 10 },
     [
-      note('users', 'Share your own experience. Never name or identify anyone. Rooms are moderated by Libra Bot and real people.', 'brand'),
+      fill(use('TextField', { State: 'Default' }, { value: 'Search rooms' }, { hide: ['label'], show: ['leading'], icons: { leading: 'search' } })),
+      row({ name: 'Rule', gap: 8, w: 'fill', pad: [2, 4] }, [icon('users', 14, 'brand/fg'), text('Share your own experience. Never identify anyone.', 'caption', 'text/secondary', { w: 'fill' })]),
       groupTitle('Your rooms'),
-      roomCard(ROOMS[0], 'roomFeed'),
-      roomCard(ROOMS[1], 'roomFeed'),
+      group(
+        [
+          joinedRow(ROOMS[0], 'NaijaBelle: Is that normal or a red flag for you all?', '2m', { unread: '12' }, 'roomFeed'),
+          joinedRow(safety, 'Mod_Tunde: New scam pattern, fake courier fees', '1h', { unread: '3' }, 'roomFeed'),
+          joinedRow(ROOMS[1], 'Tayo_Writes: Update on the cinema date…', 'Mon', { muted: true }, 'roomFeed'),
+        ],
+        'Your rooms',
+        70,
+      ),
       groupTitle('Discover'),
-      roomCard(ROOMS[2], 'roomAbout'),
-      roomCard(ROOMS[3], 'joinPending'),
-      roomCard(ROOMS[4]),
+      group([discoverRow(ROOMS[2], 'roomAbout'), discoverRow(ROOMS[3], 'joinPending'), discoverRow({ ...ROOMS[2], name: 'Money and Dating', iconName: 'card', tone: 'positive', members: '930 members', mode: 'Approval required' }, 'roomAbout')], 'Discover', 66),
     ],
   );
 }
@@ -142,56 +170,7 @@ export function roomWelcome(): FrameNode {
   );
 }
 
-// ---------------------------------------------------------------- feed and posts
-
-export function roomFeed(): FrameNode {
-  return screen(
-    {
-      name: 'Room feed',
-      nav: { title: 'Talking Stage Diaries', action: 'more', backTo: 'roomsList', actionTo: 'reportPost' },
-      gap: 12,
-      footer: [link(btn('Share something', 'Primary', 'Large', 'pencil'), 'composer')],
-    },
-    [
-      row({ name: 'Filters', gap: 8 }, [chip('All', true), chip('Story'), chip('Question'), chip('Advice'), chip('Win')]),
-      row({ name: 'Slow mode', w: 'fill', gap: 8, pad: [10, 14], radius: 12, fill: 'warning/subtle' }, [icon('clock', 16, 'warning/fg'), text('Slow mode is on: one post every 5 minutes.', 'small', 'text/primary', { w: 'fill' })]),
-      post('Win', 'QuietStorm_24', 'brand', '2h ago', 'He said "no pressure" and actually meant it. Waited two weeks for me to feel ready, then picked somewhere public without me asking.', '14', 'thread'),
-      post('Question', 'NaijaBelle', 'warning', '5h ago', 'Someone I met last week keeps asking to move to WhatsApp on day one. Is that normal or a red flag for you all?', '32'),
-      post('Advice', 'Tayo_Writes', 'neutral', 'Yesterday', 'If anyone asks you for "small money" before you have met, that is your sign. Every scam story here started that way.', '21'),
-    ],
-  );
-}
-
-export function thread(): FrameNode {
-  const reply = (nick: string, tone: Tone, body: string, time: string, count: string, mod = false) =>
-    row({ name: nick, w: 'fill', gap: 10, cross: 'start' }, [
-      nickAvatar(nick, tone, 32),
-      col({ name: 'Reply', w: 'fill', gap: 4, pad: [10, 12], radius: 14, fill: mod ? 'brand/subtle' : 'bg/surface', stroke: mod ? 'brand/border' : 'border/default' }, [
-        row({ name: 'Head', gap: 6, w: 'fill' }, [text(nick, 'smallStrong', 'text/primary'), mod ? pill('Moderator', 'brand') : null, box({ name: 'Spacer', w: 'fill', h: 1 }), text(time, 'caption', 'text/tertiary')]),
-        text(body, 'small', 'text/primary', { w: 'fill' }),
-        row({ name: 'Actions', gap: 12 }, [row({ name: 'Support', gap: 4 }, [icon('heart', 14, 'text/secondary'), text(count, 'label', 'text/secondary')]), text('Reply', 'label', 'text/secondary')]),
-      ]),
-    ]);
-  const composer = row({ name: 'Reply bar', w: 'fill', gap: 10 }, [
-    box({ name: 'Input', dir: 'h', w: 'fill', h: 44, pad: [0, 16], radius: 22, fill: 'bg/surface', stroke: 'border/strong', cross: 'center' }, [text('Reply as QuietStorm_24', 'body', 'text/tertiary')]),
-    use('IconButton', { Style: 'Solid' }, {}, { icons: { icon: 'arrow-right' } }),
-  ]);
-  return screen(
-    {
-      name: 'Thread',
-      nav: { title: 'Thread', action: 'flag', backTo: 'roomFeed', actionTo: 'reportPost' },
-      gap: 12,
-      footer: [composer],
-    },
-    [
-      post('Win', 'QuietStorm_24', 'brand', '2h ago', 'He said "no pressure" and actually meant it. Waited two weeks for me to feel ready, then picked somewhere public without me asking.', '14'),
-      text('14 replies', 'overline', 'text/tertiary'),
-      reply('NaijaBelle', 'warning', 'This is the energy we deserve. Happy for you!', '1h', '9'),
-      reply('Tayo_Writes', 'neutral', 'Picking a public place without being asked is such a green flag.', '58m', '6'),
-      reply('Mod_Kemi', 'brand', 'Lovely to see wins shared here. Reminder: keep details that could identify him out of replies.', '40m', '12', true),
-    ],
-  );
-}
+// ---------------------------------------------------------------- posting
 
 export function composer(blocked = false): FrameNode {
   const body = blocked
@@ -221,7 +200,6 @@ export function composer(blocked = false): FrameNode {
   );
 }
 
-export const composerBlocked = () => composer(true);
 
 export function postHeld(): FrameNode {
   return screen(

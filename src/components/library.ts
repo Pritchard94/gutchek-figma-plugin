@@ -28,7 +28,7 @@ import {
 import { ICONS, iconSvg } from '../icons';
 import { glyph } from '../brand';
 import { Tilt, scaleDial } from './scale';
-import { bubble, nickAvatar, reactionBar } from './chat';
+import { bubble, roomMessage } from './chat';
 
 type Props = Record<string, string>;
 
@@ -467,18 +467,21 @@ define('PatternCard', 'Conversations', 'One behaviour pattern from a conversatio
   ]);
 });
 
-const POST_TONE: Record<string, Tone> = { Story: 'brand', Question: 'warning', Advice: 'neutral', Win: 'positive' };
-
-define('PostCard', 'Rooms', 'A member post in a Gossip Room. Nicknames only, never real names. Supportive reactions only; there are no downvotes.', cross({ Type: ['Story', 'Question', 'Advice', 'Win'] }), (p) =>
-  col({ name: 'PostCard', w: 353, pad: 16, gap: 12, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
-    row({ name: 'Author', gap: 10, w: 'fill' }, [
-      nickAvatar('SoftLife', 'brand', 36),
-      col({ name: 'Who', gap: 0, w: 'fill' }, [text('SoftLife_Ada', 'smallStrong', 'text/primary', { name: 'nickname' }), text('2h ago', 'caption', 'text/tertiary', { name: 'meta' })]),
-      pill(p.Type, POST_TONE[p.Type], undefined, 'type-pill'),
+define(
+  'RoomMessage',
+  'Rooms',
+  'A message in a Gossip Room, in a Discord-style stream: nickname, role badge, post type and time, then replies quoted above, supportive reactions and a thread link. No downvotes, never real names.',
+  cross({ Kind: ['Member', 'Reply', 'Moderator', 'Bot'] }),
+  (p) =>
+    col({ name: 'RoomMessage', w: 353 }, [
+      p.Kind === 'Bot'
+        ? roomMessage({ nick: 'Libra Bot', tone: 'brand', role: 'bot', time: 'Today 21:02', body: 'Your message includes a phone number. Remove it to post.', ephemeral: true })
+        : p.Kind === 'Moderator'
+          ? roomMessage({ nick: 'Mod_Kemi', tone: 'brand', role: 'mod', time: 'Today 20:40', body: 'Reminder: keep details that could identify anyone out of posts and replies.', reactions: [[0, 12]] })
+          : p.Kind === 'Reply'
+            ? roomMessage({ nick: 'Tayo_Writes', tone: 'neutral', time: 'Today 20:12', body: 'Anyone who sulks when you say no is showing you who they are.', replyTo: { nick: 'NaijaBelle', tone: 'warning', text: 'Is that normal or a red flag for you all?' }, reactions: [[0, 14], [1, 6]] })
+            : roomMessage({ nick: 'QuietStorm_24', tone: 'brand', type: 'Win', time: 'Today 19:58', body: 'He said "no pressure" and actually meant it. Waited two weeks, then picked somewhere public.', reactions: [[0, 24], [3, 11]], mine: 0, thread: { count: '14 replies', last: '10m ago', people: [['NaijaBelle', 'warning'], ['Tayo', 'neutral'], ['Mod', 'brand']] } }),
     ]),
-    text('He said "no pressure" and actually meant it. Waited two weeks for me to feel ready to meet, then picked somewhere public without me asking.', 'body', 'text/primary', { name: 'body', w: 'fill' }),
-    row({ name: 'Footer', w: 'fill', gap: 8 }, [reactionBar([24, 9, 3, 11]), box({ name: 'Spacer', w: 'fill', h: 1 }), row({ name: 'Replies', gap: 4 }, [icon('message', 16, 'text/secondary'), text('14', 'label', 'text/secondary', { name: 'replies' })])]),
-  ]),
 );
 
 define('ProgressStep', 'Libra report', 'Staged progress on the processing screen.', cross({ State: ['Done', 'Active', 'Pending'] }), (p) => {
@@ -601,7 +604,7 @@ const GROUP_NOTES: Record<string, string> = {
   'Libra report': 'The building blocks of a Libra report. Every number expands into evidence.',
   'Content and feedback': 'Lists, people and system messages.',
   Conversations: 'Chat analysis: uploaded messages as evidence, and the behaviour patterns found in them.',
-  Rooms: 'Gossip Rooms: member posts under nicknames, with supportive reactions only.',
+  Rooms: 'Gossip Rooms: a Discord-style message stream under nicknames, with supportive reactions only, over a doodle wallpaper.',
 };
 
 function sectionFor(groups: Map<string, FrameNode>, root: FrameNode, group: string): FrameNode {
