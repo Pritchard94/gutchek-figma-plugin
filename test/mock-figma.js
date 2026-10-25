@@ -389,6 +389,31 @@ const mock = {
   createText: () => track(new TextNode()),
   createRectangle: () => track(new ShapeNode('RECTANGLE')),
   createEllipse: () => track(new ShapeNode('ELLIPSE')),
+  createVector() {
+    const v = track(new ShapeNode('VECTOR'));
+    Object.defineProperty(v, 'vectorPaths', {
+      set(paths) {
+        if (!Array.isArray(paths) || !paths.every((p) => typeof p.data === 'string' && /^M /.test(p.data))) throw new Error('Bad vectorPaths');
+        this._paths = paths;
+      },
+      get() {
+        return this._paths || [];
+      },
+    });
+    return v;
+  },
+  createVector() {
+    const v = track(new ShapeNode('VECTOR'));
+    let paths = [];
+    Object.defineProperty(v, 'vectorPaths', {
+      get: () => paths,
+      set: (p) => {
+        if (!Array.isArray(p) || !p.every((x) => typeof x.data === 'string' && /^M /.test(x.data))) throw new Error('Bad vectorPaths');
+        paths = p;
+      },
+    });
+    return v;
+  },
   createLine() {
     const l = track(new ShapeNode('LINE'));
     l.height = 0;

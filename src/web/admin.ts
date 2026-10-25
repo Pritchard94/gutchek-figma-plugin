@@ -12,9 +12,17 @@ type NavItem = [string, string, string, string?];
 
 const NAV_GROUPS: Array<[string, NavItem[]]> = [
   [
+    'Analytics',
+    [
+      ['trending-up', 'Growth', 'adminGrowth'],
+      ['users', 'Engagement', 'adminEngagement'],
+      ['card', 'Revenue', 'adminRevenue'],
+    ],
+  ],
+  [
     'Rooms',
     [
-      ['home', 'Overview', 'adminOverview'],
+      ['home', 'Moderation', 'adminOverview'],
       ['messages', 'Rooms', 'adminRooms'],
       ['flag', 'Flagged posts', 'adminFlagged', '24'],
       ['users', 'Join requests', 'adminJoins', '9'],
@@ -33,10 +41,10 @@ const NAV_GROUPS: Array<[string, NavItem[]]> = [
   [
     'Platform',
     [
-      ['card', 'Users and billing', 'adminUsers'],
+      ['user', 'Users and billing', 'adminUsers'],
       ['sliders', 'Bot rules', 'adminBotRules'],
       ['lock', 'Staff and roles', 'adminRoles'],
-      ['trending-up', 'Targets', 'adminTargets'],
+      ['check-circle', 'Targets', 'adminTargets'],
       ['file', 'Audit log', 'adminAudit'],
     ],
   ],
@@ -46,7 +54,7 @@ function sidebar(active: string): FrameNode {
   const item = ([iconName, label, id, count]: NavItem) => {
     const on = id === active;
     return wlink(
-      row({ name: label, w: 'fill', gap: 10, pad: [7, 10], radius: 9, fill: on ? 'brand/subtle' : null }, [
+      row({ name: label, w: 'fill', gap: 10, pad: [6, 10], radius: 9, fill: on ? 'brand/subtle' : null }, [
         icon(iconName, 18, on ? 'brand/fg' : 'text/secondary'),
         text(label, on ? 'smallStrong' : 'small', on ? 'brand/on-subtle' : 'text/secondary', { w: 'fill' }),
         count ? pill(count, on ? 'brand' : 'neutral') : null,
@@ -54,37 +62,65 @@ function sidebar(active: string): FrameNode {
       id,
     );
   };
-  return col({ name: 'Sidebar', w: 256, h: H, pad: [20, 14], gap: 14, fill: 'bg/surface', stroke: 'border/default' }, [
-    row({ name: 'Brand', gap: 10, pad: [0, 8] }, [lockup(24), pill('Admin', 'brand')]),
-    ...NAV_GROUPS.map(([title, items]) => col({ name: title, w: 'fill', gap: 1 }, [text(title, 'overline', 'text/tertiary', { name: 'Group title' }), ...items.map(item)])),
+  return col({ name: 'Sidebar', w: 256, h: H, pad: [20, 14], gap: 12, fill: 'bg/surface', stroke: 'border/default' }, [
+    row({ name: 'Brand', gap: 10, pad: [0, 8, 4, 8] }, [lockup(24), pill('Admin', 'brand')]),
+    ...NAV_GROUPS.map(([title, items]) => col({ name: title, w: 'fill', gap: 0 }, [box({ name: 'Group title', dir: 'h', pad: [0, 10, 4, 10] }, [text(title, 'overline', 'text/tertiary')]), ...items.map(item)])),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
-    col({ name: 'Wellbeing', w: 'fill', gap: 6, pad: 12, radius: 12, fill: 'bg/subtle' }, [
-      text('Exposure today', 'label', 'text/secondary'),
-      box({ name: 'Track', dir: 'h', w: 'fill', h: 6, radius: 3, fill: 'bg/muted' }, [rect(110, 6, 'warning/fg', 3, 'Bar')]),
-      text('1h 20m of 2h limit · images blurred', 'caption', 'text/tertiary', { w: 'fill' }),
+    row({ name: 'Me', w: 'fill', gap: 10, pad: [8, 8], radius: 12, fill: 'bg/subtle' }, [avatar('AP', 32, 'warning'), col({ name: 'Text', gap: 0, w: 'fill' }, [text('Admin_Pritchard', 'smallStrong', 'text/primary'), text('Admin · MFA on', 'caption', 'text/tertiary')])]),
+  ]);
+}
+
+function crumbFor(active: string): string {
+  for (const [group, items] of NAV_GROUPS) {
+    const hit = items.find((i) => i[2] === active);
+    if (hit) return 'Admin  /  ' + group + '  /  ' + hit[1];
+  }
+  return 'Admin';
+}
+
+/** Slim global bar: where you are, which environment, search and alerts. Page actions live in the page header. */
+function topbar(active: string): FrameNode {
+  return row({ name: 'Top bar', w: 'fill', h: 60, pad: [0, 32], gap: 12, cross: 'center', fill: 'bg/surface' }, [
+    text(crumbFor(active), 'small', 'text/tertiary', { w: 'fill' }),
+    row({ name: 'Exposure', gap: 6, pad: [5, 10], radius: 999, fill: 'warning/subtle' }, [icon('clock', 14, 'warning/fg'), text('Exposure 1h 20m of 2h · images blurred', 'label', 'warning/fg')]),
+    pill('Production', 'positive'),
+    box({ name: 'Search', dir: 'h', w: 300, h: 36, pad: [0, 12], gap: 8, radius: 10, fill: 'bg/subtle', cross: 'center' }, [
+      icon('search', 16, 'text/tertiary'),
+      text('Search members, posts, rooms, users', 'small', 'text/tertiary', { w: 'fill' }),
+      box({ name: 'Key', dir: 'h', pad: [1, 6], radius: 4, stroke: 'border/strong' }, [text('⌘K', 'caption', 'text/tertiary')]),
     ]),
-    row({ name: 'Me', w: 'fill', gap: 10, pad: [4, 8] }, [avatar('AP', 36, 'warning'), col({ name: 'Text', gap: 0, w: 'fill' }, [text('Admin_Pritchard', 'smallStrong', 'text/primary'), text('Admin · MFA on', 'caption', 'text/tertiary')])]),
+    box({ name: 'Bell', dir: 'h', w: 36, h: 36, radius: 18, main: 'center', cross: 'center' }, [icon('bell', 18, 'text/primary')]),
+    avatar('AP', 32, 'warning'),
   ]);
 }
 
-function topbar(title: string, sub: string, actions: Kid[] = []): FrameNode {
-  return row({ name: 'Top bar', w: 'fill', pad: [24, 32], gap: 16, cross: 'center' }, [
-    col({ name: 'Title', gap: 2, w: 'fill' }, [text(title, 'h2', 'text/primary'), text(sub, 'small', 'text/secondary')]),
-    ...actions,
-    box({ name: 'Search', dir: 'h', w: 280, h: 40, pad: [0, 14], gap: 8, radius: 10, fill: 'bg/surface', stroke: 'border/strong', cross: 'center' }, [icon('search', 18, 'text/tertiary'), text('Search members, posts, rooms', 'small', 'text/tertiary')]),
-    box({ name: 'Bell', dir: 'h', w: 40, h: 40, radius: 20, fill: 'bg/surface', stroke: 'border/default', main: 'center', cross: 'center' }, [icon('bell', 18, 'text/primary')]),
-  ]);
-}
-
+/** Page frame. Pages grow to fit their content (minimum 1024) so nothing is clipped. */
 export function shell(name: string, active: string, title: string, sub: string, content: Kid[], actions: Kid[] = []): FrameNode {
-  const main = col({ name: 'Main', w: 'fill', h: H, gap: 0, fill: 'bg/canvas', clip: true }, [
-    topbar(title, sub, actions),
-    divider(),
-    col({ name: 'Content', w: 'fill', pad: [24, 32], gap: 24 }, content),
+  const header = row({ name: 'Page header', w: 'fill', gap: 12, cross: 'end' }, [
+    col({ name: 'Title', gap: 4, w: 'fill' }, [text(title, 'h2', 'text/primary'), text(sub, 'small', 'text/secondary', { w: 'fill' })]),
+    ...actions,
   ]);
-  const f = row({ name, w: W, h: H, fill: 'bg/canvas', clip: true, cross: 'start' }, [sidebar(active), main]);
+  const main = col({ name: 'Main', w: 'fill', gap: 0, fill: 'bg/canvas' }, [topbar(active), divider(), col({ name: 'Content', w: 'fill', pad: [28, 32, 48, 32], gap: 20 }, [header, ...content])]);
+  const side = sidebar(active);
+  const f = row({ name, w: W, fill: 'bg/canvas', clip: true, cross: 'start' }, [side, main]);
+  const h = Math.max(H, Math.round(main.height));
+  side.resize(side.width, h);
+  f.layoutSizingVertical = 'FIXED';
+  f.resize(W, h);
+  if (h === H) main.layoutSizingVertical = 'FILL';
   f.setPluginData('webpage', '1');
   return f;
+}
+
+/** Give every card in a row the height of the tallest one. */
+export function equalize<T extends FrameNode>(r: T): T {
+  const kids = r.children.filter((c) => c.type === 'FRAME' || c.type === 'INSTANCE') as FrameNode[];
+  const tallest = kids.reduce((m, c) => Math.max(m, c.height), 0);
+  for (const c of kids) {
+    c.layoutSizingVertical = 'FIXED';
+    c.resize(c.width, tallest);
+  }
+  return r;
 }
 
 export function card(title: string | null, kids: Kid[], w: number | 'fill' = 'fill', action?: string): FrameNode {
@@ -138,8 +174,8 @@ export function who(nick: string, sub: string, tone: Tone = 'brand'): FrameNode 
   return row({ name: nick, gap: 10 }, [avatar(nick.slice(0, 2).toUpperCase(), 32, tone), col({ name: 'Text', gap: 0 }, [text(nick, 'smallStrong', 'text/primary'), text(sub, 'caption', 'text/tertiary')])]);
 }
 
-export function small(t: string, token: Token = 'text/secondary', w: number | 'fill' = 'fill'): TextNode {
-  return text(t, 'small', token, { w });
+export function small(t: string, token: Token = 'text/secondary', w: number | 'fill' = 'fill', maxLines?: number): TextNode {
+  return text(t, 'small', token, { w, maxLines });
 }
 
 // ---------------------------------------------------------------- pages
@@ -148,11 +184,11 @@ export function adminOverview(): FrameNode {
   const days = [12, 18, 9, 22, 15, 11, 26, 14, 19, 8, 16, 21, 13, 17];
   const chart = row(
     { name: 'Chart', w: 'fill', h: 180, gap: 10, cross: 'end' },
-    days.map((d, i) => col({ name: 'Day ' + (i + 1), w: 'fill', gap: 2, cross: 'center' }, [rect(28, Math.round(d * 4), 'warning/fg', 4, 'Held'), rect(28, Math.round(d * 1.8), 'caution/fg', 4, 'Removed')])),
+    days.map((d, i) => col({ name: 'Day ' + (i + 1), w: 'fill', gap: 2, cross: 'center' }, [rect(22, Math.round(d * 4), 'brand/border', 4, 'Held'), rect(22, Math.round(d * 1.8), 'brand/solid', 4, 'Removed')])),
   );
   const queue = (iconName: string, label: string, count: string, sub: string, tone: Tone, target: string) =>
     wlink(row({ name: label, w: 'fill', gap: 12, pad: [12, 0] }, [box({ name: 'Icon', dir: 'h', w: 36, h: 36, radius: 10, fill: toneTokens[tone].bg, main: 'center', cross: 'center' }, [icon(iconName, 18, toneTokens[tone].fg)]), col({ name: 'Text', gap: 0, w: 'fill' }, [text(label, 'smallStrong', 'text/primary'), text(sub, 'caption', 'text/tertiary')]), text(count, 'h3', 'text/primary')]), target);
-  return shell('Admin · Overview', 'adminOverview', 'Overview', 'All rooms · last 14 days', [
+  return shell('Admin · Moderation', 'adminOverview', 'Moderation', 'All rooms · last 14 days', [
     row({ name: 'KPIs', w: 'fill', gap: 16 }, [
       kpi('Posts held by bot', '186', '4.1% of posts', 'warning'),
       kpi('Open reports', '24', 'Oldest 1h 40m', 'caution'),
@@ -160,8 +196,8 @@ export function adminOverview(): FrameNode {
       kpi('Appeals in SLA', '5 of 5', 'Target 72h', 'positive'),
       kpi('Overturn rate', '14%', 'Target under 25%', 'positive'),
     ]),
-    row({ name: 'Middle', w: 'fill', gap: 16, cross: 'start' }, [
-      card('Held and removed posts', [chart, row({ name: 'Legend', gap: 16 }, [row({ name: 'Held', gap: 6 }, [rect(10, 10, 'warning/fg', 3, 'Swatch'), text('Held by bot', 'caption', 'text/secondary')]), row({ name: 'Removed', gap: 6 }, [rect(10, 10, 'caution/fg', 3, 'Swatch'), text('Removed', 'caption', 'text/secondary')])])]),
+    equalize(row({ name: 'Middle', w: 'fill', gap: 16, cross: 'start' }, [
+      card('Held and removed posts', [chart, row({ name: 'Legend', gap: 16 }, [row({ name: 'Held', gap: 6 }, [rect(10, 10, 'brand/border', 3, 'Swatch'), text('Held by bot', 'caption', 'text/secondary')]), row({ name: 'Removed', gap: 6 }, [rect(10, 10, 'brand/solid', 3, 'Swatch'), text('Removed', 'caption', 'text/secondary')])])]),
       card('Queues', [
         queue('flag', 'Flagged posts', '24', '3 severe · oldest 1h 40m', 'caution', 'adminFlagged'),
         divider(),
@@ -171,8 +207,8 @@ export function adminOverview(): FrameNode {
         divider(),
         queue('trash', 'Removal requests', '3', 'From people mentioned in posts', 'neutral', 'adminRemovals'),
       ], 400),
-    ]),
-    row({ name: 'Bottom', w: 'fill', gap: 16, cross: 'start' }, [
+    ])),
+    equalize(row({ name: 'Bottom', w: 'fill', gap: 16, cross: 'start' }, [
       card('Bot rule performance', [
         table(
           [
@@ -195,18 +231,18 @@ export function adminOverview(): FrameNode {
         who('Admin_Pritchard', 'Final say on permanent bans', 'warning'),
         small('Rotation every 2 hours. Images are blurred by default.', 'text/tertiary'),
       ], 400),
-    ]),
+    ])),
   ]);
 }
 
 export function adminFlagged(): FrameNode {
   const rows: Kid[][] = [
-    [sev('Severe'), small('Talking Stage Diaries'), small('"…his number is 0803 *** **99 and he works at…"', 'text/primary'), small('Bot · identifiers'), sla('1h 40m', 'caution')],
-    [sev('High'), small('Lagos Dating Life'), small('"[Name] is a scammer, everyone avoid…"', 'text/primary'), small('Bot · accusation'), sla('52m', 'warning')],
-    [sev('Medium'), small('First Date Stories'), small('"Some of you are so dramatic, honestly…"', 'text/primary'), small('3 user reports'), sla('34m', 'neutral')],
-    [sev('Low'), small('Talking Stage Diaries'), small('"DM me for the dating course link…"', 'text/primary'), small('Bot · spam'), sla('12m', 'neutral')],
+    [sev('Severe'), small('Talking Stage Diaries'), small('"…his number is 0803 *** **99 and he works at…"', 'text/primary', 'fill', 2), small('Bot · identifiers'), sla('1h 40m', 'caution')],
+    [sev('High'), small('Lagos Dating Life'), small('"[Name] is a scammer, everyone avoid…"', 'text/primary', 'fill', 2), small('Bot · accusation'), sla('52m', 'warning')],
+    [sev('Medium'), small('First Date Stories'), small('"Some of you are so dramatic, honestly…"', 'text/primary', 'fill', 2), small('3 user reports'), sla('34m', 'neutral')],
+    [sev('Low'), small('Talking Stage Diaries'), small('"DM me for the dating course link…"', 'text/primary', 'fill', 2), small('Bot · spam'), sla('12m', 'neutral')],
   ];
-  const detail = col({ name: 'Detail', w: 460, gap: 16 }, [
+  const detail = col({ name: 'Detail', w: 440, gap: 16 }, [
     card('Post', [
       who('NaijaBelle', 'Talking Stage Diaries · 2h ago', 'warning'),
       small('Be careful with K***** from **** Lekki, his number is 0803 *** **99. He did the same thing to my friend and she lost 200k.', 'text/primary'),
@@ -234,7 +270,7 @@ export function adminFlagged(): FrameNode {
       table(
         [
           { label: 'Severity', w: 80 },
-          { label: 'Room', w: 150 },
+          { label: 'Room', w: 140 },
           { label: 'Excerpt', w: 'fill' },
           { label: 'Source', w: 110 },
           { label: 'Waiting', w: 90 },

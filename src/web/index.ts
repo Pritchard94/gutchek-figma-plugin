@@ -6,6 +6,7 @@ import { dispute, helpCentre, howItWorks, mobileOptout, notFound, optout, pricin
 import { chatAnalysisPage, communityGuidelines, sharedPost } from './addendum';
 import { ADMIN_PAGES } from './admin';
 import { ADMIN_EXTRA } from './admin2';
+import { ANALYTICS_PAGES } from './admin3';
 
 interface WebDef {
   id: string;
@@ -93,11 +94,11 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
 
   const desktop = build(DESKTOP_PAGES);
   const mobile = build(MOBILE_PAGES);
-  const adminDefs = [ADMIN_PAGES[0], ADMIN_EXTRA[0], ADMIN_EXTRA[1], ...ADMIN_PAGES.slice(1), ...ADMIN_EXTRA.slice(2)];
+  const adminDefs = [...ANALYTICS_PAGES, ADMIN_PAGES[0], ADMIN_EXTRA[0], ADMIN_EXTRA[1], ...ADMIN_PAGES.slice(1), ...ADMIN_EXTRA.slice(2)];
   const admin = build(adminDefs.map(([id, label, fn]) => ({ id, label, build: () => fn() })));
   let y = sectionFor(page, 'Website · Desktop 1440', 'Marketing site, public opt-out and dispute flow, help centre and legal pages. Click through with Play.', desktop, 0);
   y = sectionFor(page, 'Website · Mobile 390', 'Responsive versions of the most-visited pages: the homepage and the opt-out form.', mobile, y, 80);
-  sectionFor(page, 'Admin and moderation dashboard · Web app', 'Staff-only dashboard for Gossip Rooms: queues, appeals, members, room settings and an immutable audit log. Role-based access with MFA.', admin, y, 80);
+  sectionFor(page, 'Admin dashboard · Web app', 'Staff-only admin: growth, engagement and revenue analytics with a timeline filter, room creation and moderation, trust and safety queues, users and billing, bot rules, staff roles and an immutable audit log. Role-based access with MFA.', admin, y, 80);
 
   const mobileTargets: Record<string, string> = { landing: 'mLanding', optout: 'mOptout' };
   const topOf = (n: BaseNode): BaseNode | null => {
@@ -121,7 +122,7 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
     page.flowStartingPoints = [
       { nodeId: frames.landing && frames.landing.id, name: 'Website · Desktop' },
       { nodeId: frames.mLanding && frames.mLanding.id, name: 'Website · Mobile' },
-      { nodeId: frames.adminOverview && frames.adminOverview.id, name: 'Admin dashboard' },
+      { nodeId: frames.adminGrowth && frames.adminGrowth.id, name: 'Admin dashboard' },
     ].filter((p) => !!p.nodeId);
   } catch (_) {
     warn('Could not set website prototype starting points.');
