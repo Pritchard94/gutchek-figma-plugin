@@ -1,7 +1,7 @@
 import { Tone, abs, add, box, col, divider, fill, gradient, hexPaint, icon, pill, row, text } from '../core/ui';
 import { glyph } from '../brand';
 import { use } from '../components/library';
-import { RoomMsg, composerBar, filledIcon, nickAvatar, roomMessage, streamDivider, systemLine } from '../components/chat';
+import { RoomMsg, composerBar, filledIcon, nameToken, nickAvatar, roomMessage, streamDivider, systemLine } from '../components/chat';
 import { addWallpaper } from '../components/doodles';
 import { APP_H, APP_W, RAIL_W, alink, appFrame, btn, iconTileW, modal } from './shell';
 
@@ -110,7 +110,7 @@ function streamColumn(width: number): FrameNode {
 
 function infoPanel(): FrameNode {
   const member = (nick: string, tone: Tone, role?: string) =>
-    row({ name: nick, w: 'fill', gap: 10 }, [nickAvatar(nick, tone, 28), text(nick, 'small', 'text/primary', { w: 'fill' }), role ? pill(role, 'brand') : null]);
+    row({ name: nick, w: 'fill', gap: 10 }, [nickAvatar(nick, tone, 28), text(nick, 'smallStrong', nameToken(nick), { w: 'fill' }), role ? pill(role, 'brand') : null]);
   const rules = ['Share your own experience only', 'Never identify anyone', 'No threats, hate or selling', 'Nothing involving minors', 'Share only with the Share button'];
   return col({ name: 'Room info', w: PANEL_W, h: APP_H, pad: [20, 20], gap: 20, fill: 'bg/surface', stroke: 'border/default' }, [
     row({ name: 'Head', w: 'fill', gap: 8 }, [text('About this room', 'title', 'text/primary', { w: 'fill' }), alink(box({ name: 'Close', dir: 'h', w: 32, h: 32, radius: 16, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('x', 16, 'text/secondary')]), 'wRooms')]),

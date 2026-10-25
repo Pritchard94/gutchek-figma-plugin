@@ -78,7 +78,7 @@ const FEED_NEW: RoomMsg[] = [
 
 function feed(o: { blocked?: boolean; name?: string } = {}): FrameNode {
   const header = chrome(
-    roomHeader({ title: ROOM, sub: '1.2k members · 48 online · tap for info', backTo: 'roomsList', bellTo: 'muteSheet', moreTo: 'roomInfo', infoTo: 'roomInfo' }),
+    roomHeader({ title: ROOM, sub: '48 online · tap for room info', backTo: 'roomsList', bellTo: 'muteSheet', moreTo: 'roomInfo', infoTo: 'roomInfo' }),
     pinnedBar('Pinned · Share your own experience. Never name or identify anyone.'),
   );
   const kids: SceneNode[] = [
@@ -131,7 +131,7 @@ function feed(o: { blocked?: boolean; name?: string } = {}): FrameNode {
         row({ name: 'Composer meta', w: 'fill', gap: 8 }, [typeChips, box({ name: 'Spacer', w: 'fill', h: 1 }), row({ name: 'Slow', gap: 4 }, [icon('clock', 12, 'text/tertiary'), text('5m', 'caption', 'text/tertiary')])]),
         o.blocked
           ? composerBar('', 'Be careful with Kunle from Access Bank Lekki, his number is 0803 555 0199', true)
-          : link(composerBar('Message ' + ROOM), 'composer'),
+          : link(composerBar('Message the room'), 'composer'),
       ],
     },
     [stream(kids)],

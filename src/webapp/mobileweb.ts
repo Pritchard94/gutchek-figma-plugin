@@ -254,7 +254,7 @@ export function mwRoom(): FrameNode {
       pad: 12,
       gap: 12,
       main: 'end',
-      footer: col({ name: 'Composer', w: 'fill', pad: [10, 12, 12, 12], fill: 'bg/canvas' }, [composerBar('Message ' + ROOM)]),
+      footer: col({ name: 'Composer', w: 'fill', pad: [10, 12, 12, 12], fill: 'bg/canvas' }, [composerBar('Message the room')]),
     },
     [streamDivider('New', 'new'), ...MW_STREAM.map((m) => roomMessage(m))],
   );

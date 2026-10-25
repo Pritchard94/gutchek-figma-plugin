@@ -10,6 +10,16 @@ interface Pending {
   h?: 'fill';
   abs?: { x: number; y: number };
   grow?: boolean;
+  lines?: number;
+}
+
+function applyTruncation(t: TextNode, lines: number) {
+  try {
+    t.textTruncation = 'ENDING';
+    t.maxLines = lines;
+  } catch (_) {
+    /* older API */
+  }
 }
 const pending = new WeakMap<SceneNode, Pending>();
 
@@ -109,7 +119,10 @@ export function add(parent: BaseNode & ChildrenMixin, kid: Kid) {
   const k = kid as FrameNode;
   if (p.w === 'fill') {
     k.layoutSizingHorizontal = 'FILL';
-    if (kid.type === 'TEXT') kid.textAutoResize = 'HEIGHT';
+    if (kid.type === 'TEXT') {
+      kid.textAutoResize = 'HEIGHT';
+      if (p.lines) applyTruncation(kid, p.lines);
+    }
   }
   if (p.h === 'fill') k.layoutSizingVertical = 'FILL';
   if (p.grow) k.layoutGrow = 1;
@@ -302,12 +315,8 @@ export function text(str: string, style: TypeKey | CustomType, color: Token = 't
     t.textAutoResize = 'HEIGHT';
   }
   if (o.maxLines) {
-    try {
-      t.textTruncation = 'ENDING';
-      t.maxLines = o.maxLines;
-    } catch (_) {
-      /* older API */
-    }
+    applyTruncation(t, o.maxLines);
+    if (o.w === 'fill') setPending(t, { lines: o.maxLines });
   }
   return t;
 }

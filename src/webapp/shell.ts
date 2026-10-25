@@ -51,7 +51,7 @@ export function sidebar(active: string): FrameNode {
       col({ name: 'Plan', w: 'fill', gap: 8, pad: 14, radius: 12, fill: 'bg/subtle' }, [
         row({ name: 'Head', gap: 6, w: 'fill' }, [icon('star', 16, 'brand/fg'), text('Libra Plus', 'smallStrong', 'text/primary', { w: 'fill' }), text('Manage', 'label', 'brand/fg')]),
         box({ name: 'Track', dir: 'h', w: 'fill', h: 6, radius: 3, fill: 'bg/muted' }, [rect(80, 6, 'brand/solid', 3, 'Bar')]),
-        text('3 of 5 reports left · 1 free chat analysis', 'caption', 'text/tertiary'),
+        text('3 of 5 reports left · 1 free chat analysis', 'caption', 'text/tertiary', { w: 'fill' }),
       ]),
       'wBilling',
     ),

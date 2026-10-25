@@ -237,7 +237,7 @@ function actionItem(iconName: string, label: string | null, token: Token, filled
 }
 
 export function postActions(a: NonNullable<RoomMsg['actions']>): FrameNode {
-  return row({ name: 'Post actions', w: 'fill', gap: 0, main: 'between', pad: [2, 0, 0, 0] }, [
+  const r = row({ name: 'Post actions', w: 'fill', gap: 0, main: 'between', pad: [2, 0, 0, 0] }, [
     actionItem('heart', String(a.likes), a.liked ? 'caution/fg' : 'text/secondary', !!a.liked, 'like'),
     actionItem('smile', null, 'text/secondary', false, 'react'),
     actionItem('message', a.replies !== undefined ? String(a.replies) : null, 'text/secondary', false, 'reply'),
@@ -245,6 +245,8 @@ export function postActions(a: NonNullable<RoomMsg['actions']>): FrameNode {
     actionItem('bookmark', null, a.saved ? 'brand/fg' : 'text/secondary', !!a.saved, 'save'),
     actionItem('share', null, 'text/secondary', false, 'share'),
   ]);
+  r.maxWidth = 380;
+  return r;
 }
 
 export function quoteEmbed(q: NonNullable<RoomMsg['quote']>): FrameNode {
