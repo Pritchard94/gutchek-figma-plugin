@@ -3,6 +3,7 @@ import { Kid, Tone, abs, add, avatar, box, col, divider, fill, icon, pill, rect,
 import { lockup } from '../brand';
 import { use } from '../components/library';
 import { user } from '../screens/data';
+import { modeSwitch } from '../components/appearance';
 
 export const APP_W = 1440;
 export const APP_H = 1024;
@@ -45,6 +46,7 @@ export function sidebar(active: string): FrameNode {
     alink(fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'New Libra' }, { show: ['icon'], icons: { icon: 'plus' } })), 'wSearch'),
     col({ name: 'Nav', w: 'fill', gap: 2 }, NAV.map(item)),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
+    col({ name: 'Appearance', w: 'fill', gap: 6 }, [text('Appearance', 'overline', 'text/tertiary'), alink(modeSwitch('system'), 'wSettings')]),
     alink(
       col({ name: 'Plan', w: 'fill', gap: 8, pad: 14, radius: 12, fill: 'bg/subtle' }, [
         row({ name: 'Head', gap: 6, w: 'fill' }, [icon('star', 16, 'brand/fg'), text('Libra Plus', 'smallStrong', 'text/primary', { w: 'fill' }), text('Manage', 'label', 'brand/fg')]),

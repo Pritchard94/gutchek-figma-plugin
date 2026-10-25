@@ -2,6 +2,7 @@ import { Token } from '../tokens';
 import { avatar, box, col, fill, icon, paint, pill, rect, row, text } from '../core/ui';
 import { btn, center, chip, group, groupTitle, iconTile, link, listRow, note, screen, surface, use, withDialog } from './kit';
 import { seun, tobi, user } from './data';
+import { modeOption } from '../components/appearance';
 
 // ---------------------------------------------------------------- personality
 
@@ -190,10 +191,28 @@ export function settings(): FrameNode {
         link(listRow('Search history', null, 'clock', 'Value', '12'), 'history'),
         del,
       ]),
+      groupTitle('Display'),
+      group([link(listRow('Appearance', null, 'moon', 'Value', 'System'), 'appearance')]),
       groupTitle('Notifications'),
       link(group([listRow('Report ready', null, 'bell', 'SwitchOn'), listRow('Report changes', 'Monitoring alerts · Pro', 'trending-up', 'SwitchOff')]), 'notifSettings'),
       groupTitle('Support and legal'),
       group([link(listRow('Help and support', null, 'help'), 'help'), listRow('Terms and privacy', null, 'file'), listRow('Public opt-out page', null, 'globe')]),
+    ],
+  );
+}
+
+export function appearance(): FrameNode {
+  return screen(
+    { name: 'Appearance', nav: { title: 'Appearance', action: null, backTo: 'settings' }, gap: 16 },
+    [
+      text('Choose how Libra looks', 'h2', 'text/primary', { w: 'fill' }),
+      text('System matches your phone, including automatic switching at sunset.', 'small', 'text/secondary', { w: 'fill' }),
+      row({ name: 'Options', gap: 10, w: 'fill', cross: 'start' }, [modeOption('system', true, 111, 150), modeOption('light', false, 111, 150), modeOption('dark', false, 111, 150)]),
+      group([
+        fill(use('ListRow', { Trailing: 'SwitchOn' }, { title: 'Chat wallpaper', subtitle: 'Doodles behind Rooms messages' }, { icons: { icon: 'sparkle' } })),
+        fill(use('ListRow', { Trailing: 'SwitchOff' }, { title: 'Dim wallpaper in dark mode', subtitle: 'Lower contrast at night' }, { icons: { icon: 'moon' } })),
+      ]),
+      note('info', 'Scores, signals and evidence look the same in every mode. Colours always come with icons and labels.', 'neutral'),
     ],
   );
 }

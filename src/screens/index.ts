@@ -6,7 +6,7 @@ import { purpose, signIn, verify, welcome } from './auth';
 import { home, homeEmpty, saved } from './home';
 import { matchCompared, matchConfirm, newSearch, newSearchPlatform, processing } from './search';
 import { evidence, report, reportLow, reportSevere, signalsCaution, signalsPositive } from './report';
-import { compare, deleteData, personality, plans, safety, settings } from './more';
+import { appearance, compare, deleteData, personality, plans, safety, settings } from './more';
 import { appLocked, idIntro, intro, notifPrompt, selfie } from './onboarding';
 import { analyse, chatBlocked, chatConsent, chatLimited, chatProcessing, chatReport, chatUpload, combinedView, createSheet, exportGuide, pasteText, patternDetail, safetyCard, sampleReport, speakers } from './chat';
 import { appeal, banNotice, composer, joinPending, myStanding, postHeld, reportPost, roomAbout, roomWelcome, roomsList } from './rooms';
@@ -162,6 +162,7 @@ const DEFS: Group[] = [
       ['settings', 'Settings', settings],
       ['account', 'Account', account],
       ['history', 'Search history', history],
+      ['appearance', 'Appearance', appearance],
       ['notifSettings', 'Notification settings', notifSettings],
       ['help', 'Help', help],
       ['appLocked', 'App locked', appLocked],

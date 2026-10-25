@@ -3,6 +3,7 @@ import { use } from '../components/library';
 import { user } from '../screens/data';
 import { alink, appFrame, btn, card, field, iconTileW, kv, modal, table } from './shell';
 import { planCard } from '../web/landing';
+import { modeOption } from '../components/appearance';
 
 // ---------------------------------------------------------------- safety
 
@@ -76,6 +77,10 @@ export function wSettings(): FrameNode {
           row({ name: 'Fields', gap: 16, w: 'fill' }, [field('Full name', user.name), field('Email', user.email)]),
           row({ name: 'Fields 2', gap: 16, w: 'fill' }, [field('Phone', '803 555 0142', 'Filled', { prefix: '+234' }), field('Sign-in methods', 'Phone, Apple', 'Filled', { trailing: 'chevron-down' })]),
         ], { action: 'Save changes' }),
+        card('Appearance', [
+          text('System follows your computer, including automatic switching at sunset. You can also switch from the sidebar.', 'small', 'text/secondary', { w: 'fill' }),
+          row({ name: 'Options', gap: 24, w: 'fill', cross: 'start' }, [modeOption('system', true, 256, 140, 'desktop'), modeOption('light', false, 256, 140, 'desktop'), modeOption('dark', false, 256, 140, 'desktop')]),
+        ]),
         card('Privacy and security', [
           toggle('Lock Libra with a passkey', 'Required on this browser after 15 minutes away.', true),
           divider(),
