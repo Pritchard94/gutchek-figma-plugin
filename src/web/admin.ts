@@ -8,39 +8,62 @@ import { wlink } from './kit';
 const W = 1440;
 const H = 1024;
 
-const NAV: Array<[string, string, string, string?]> = [
-  ['home', 'Overview', 'adminOverview'],
-  ['flag', 'Flagged posts', 'adminFlagged', '24'],
-  ['users', 'Join requests', 'adminJoins', '9'],
-  ['refresh', 'Appeals', 'adminAppeals', '5'],
-  ['trash', 'Removal requests', 'adminRemovals', '3'],
-  ['user', 'Members', 'adminMember'],
-  ['sliders', 'Rooms', 'adminRoom'],
-  ['file', 'Audit log', 'adminAudit'],
+type NavItem = [string, string, string, string?];
+
+const NAV_GROUPS: Array<[string, NavItem[]]> = [
+  [
+    'Rooms',
+    [
+      ['home', 'Overview', 'adminOverview'],
+      ['messages', 'Rooms', 'adminRooms'],
+      ['flag', 'Flagged posts', 'adminFlagged', '24'],
+      ['users', 'Join requests', 'adminJoins', '9'],
+      ['refresh', 'Appeals', 'adminAppeals', '5'],
+      ['trash', 'Removal requests', 'adminRemovals', '3'],
+      ['user', 'Members', 'adminMember'],
+    ],
+  ],
+  [
+    'Trust and safety',
+    [
+      ['scale', 'Report disputes', 'adminDisputes', '7'],
+      ['shield', 'Chat safety', 'adminChatSafety', '2'],
+    ],
+  ],
+  [
+    'Platform',
+    [
+      ['card', 'Users and billing', 'adminUsers'],
+      ['sliders', 'Bot rules', 'adminBotRules'],
+      ['lock', 'Staff and roles', 'adminRoles'],
+      ['trending-up', 'Targets', 'adminTargets'],
+      ['file', 'Audit log', 'adminAudit'],
+    ],
+  ],
 ];
 
 function sidebar(active: string): FrameNode {
-  const item = ([iconName, label, id, count]: (typeof NAV)[number]) => {
+  const item = ([iconName, label, id, count]: NavItem) => {
     const on = id === active;
     return wlink(
-      row({ name: label, w: 'fill', gap: 12, pad: [10, 12], radius: 10, fill: on ? 'brand/subtle' : null }, [
-        icon(iconName, 20, on ? 'brand/fg' : 'text/secondary'),
+      row({ name: label, w: 'fill', gap: 10, pad: [7, 10], radius: 9, fill: on ? 'brand/subtle' : null }, [
+        icon(iconName, 18, on ? 'brand/fg' : 'text/secondary'),
         text(label, on ? 'smallStrong' : 'small', on ? 'brand/on-subtle' : 'text/secondary', { w: 'fill' }),
         count ? pill(count, on ? 'brand' : 'neutral') : null,
       ]),
       id,
     );
   };
-  return col({ name: 'Sidebar', w: 256, h: H, pad: [24, 16], gap: 24, fill: 'bg/surface', stroke: 'border/default' }, [
-    row({ name: 'Brand', gap: 10, pad: [0, 8] }, [lockup(24), pill('Moderation', 'brand')]),
-    col({ name: 'Nav', w: 'fill', gap: 4 }, NAV.map(item)),
+  return col({ name: 'Sidebar', w: 256, h: H, pad: [20, 14], gap: 14, fill: 'bg/surface', stroke: 'border/default' }, [
+    row({ name: 'Brand', gap: 10, pad: [0, 8] }, [lockup(24), pill('Admin', 'brand')]),
+    ...NAV_GROUPS.map(([title, items]) => col({ name: title, w: 'fill', gap: 1 }, [text(title, 'overline', 'text/tertiary', { name: 'Group title' }), ...items.map(item)])),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
-    col({ name: 'Wellbeing', w: 'fill', gap: 6, pad: 14, radius: 12, fill: 'bg/subtle' }, [
+    col({ name: 'Wellbeing', w: 'fill', gap: 6, pad: 12, radius: 12, fill: 'bg/subtle' }, [
       text('Exposure today', 'label', 'text/secondary'),
       box({ name: 'Track', dir: 'h', w: 'fill', h: 6, radius: 3, fill: 'bg/muted' }, [rect(110, 6, 'warning/fg', 3, 'Bar')]),
-      text('1h 20m of 2h limit · images blurred', 'caption', 'text/tertiary'),
+      text('1h 20m of 2h limit · images blurred', 'caption', 'text/tertiary', { w: 'fill' }),
     ]),
-    row({ name: 'Me', w: 'fill', gap: 10, pad: [8, 8] }, [avatar('MK', 36, 'brand'), col({ name: 'Text', gap: 0, w: 'fill' }, [text('Mod_Kemi', 'smallStrong', 'text/primary'), text('Moderator · MFA on', 'caption', 'text/tertiary')])]),
+    row({ name: 'Me', w: 'fill', gap: 10, pad: [4, 8] }, [avatar('AP', 36, 'warning'), col({ name: 'Text', gap: 0, w: 'fill' }, [text('Admin_Pritchard', 'smallStrong', 'text/primary'), text('Admin · MFA on', 'caption', 'text/tertiary')])]),
   ]);
 }
 
@@ -53,7 +76,7 @@ function topbar(title: string, sub: string, actions: Kid[] = []): FrameNode {
   ]);
 }
 
-function shell(name: string, active: string, title: string, sub: string, content: Kid[], actions: Kid[] = []): FrameNode {
+export function shell(name: string, active: string, title: string, sub: string, content: Kid[], actions: Kid[] = []): FrameNode {
   const main = col({ name: 'Main', w: 'fill', h: H, gap: 0, fill: 'bg/canvas', clip: true }, [
     topbar(title, sub, actions),
     divider(),
@@ -64,19 +87,19 @@ function shell(name: string, active: string, title: string, sub: string, content
   return f;
 }
 
-function card(title: string | null, kids: Kid[], w: number | 'fill' = 'fill', action?: string): FrameNode {
+export function card(title: string | null, kids: Kid[], w: number | 'fill' = 'fill', action?: string): FrameNode {
   return col({ name: title || 'Card', w, gap: 16, pad: 20, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
     title ? row({ name: 'Head', gap: 8, w: 'fill' }, [text(title, 'title', 'text/primary', { w: 'fill' }), action ? text(action, 'smallStrong', 'brand/fg') : null]) : null,
     ...kids,
   ]);
 }
 
-interface Col {
+export interface Col {
   label: string;
   w: number | 'fill';
 }
 
-function table(cols: Col[], rows: Kid[][], selected = -1): FrameNode {
+export function table(cols: Col[], rows: Kid[][], selected = -1): FrameNode {
   const cell = (k: Kid, c: Col) => box({ name: 'Cell', dir: 'h', w: c.w, cross: 'center' }, [k]);
   const head = row({ name: 'Head', w: 'fill', pad: [12, 16], gap: 16, fill: 'bg/subtle' }, cols.map((c) => cell(text(c.label, 'overline', 'text/tertiary'), c)));
   const body: SceneNode[] = [];
@@ -87,16 +110,16 @@ function table(cols: Col[], rows: Kid[][], selected = -1): FrameNode {
   return col({ name: 'Table', w: 'fill', radius: 16, fill: 'bg/surface', stroke: 'border/default', clip: true }, [head, ...body]);
 }
 
-function sev(level: 'High' | 'Medium' | 'Low' | 'Severe'): FrameNode {
+export function sev(level: 'High' | 'Medium' | 'Low' | 'Severe'): FrameNode {
   const t: Tone = level === 'Severe' || level === 'High' ? 'caution' : level === 'Medium' ? 'warning' : 'neutral';
   return pill(level, t);
 }
 
-function sla(label: string, tone: Tone): FrameNode {
+export function sla(label: string, tone: Tone): FrameNode {
   return pill(label, tone, 'clock');
 }
 
-function kpi(label: string, value: string, note: string, tone: Tone = 'neutral'): FrameNode {
+export function kpi(label: string, value: string, note: string, tone: Tone = 'neutral'): FrameNode {
   return col({ name: label, w: 'fill', gap: 6, pad: 20, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
     text(label, 'small', 'text/secondary'),
     text(value, { family: 'display', weight: 800, size: 32, line: 38, tracking: -1.5 }, 'text/primary'),
@@ -104,18 +127,18 @@ function kpi(label: string, value: string, note: string, tone: Tone = 'neutral')
   ]);
 }
 
-function btnRow(items: Array<[string, string, string?]>): FrameNode {
+export function btnRow(items: Array<[string, string, string?]>): FrameNode {
   return row(
     { name: 'Actions', gap: 10, wrap: true, wrapGap: 10 },
     items.map(([label, variant, iconName]) => use('Button', { Variant: variant, Size: 'Medium' }, { label }, iconName ? { show: ['icon'], icons: { icon: iconName } } : {})),
   );
 }
 
-function who(nick: string, sub: string, tone: Tone = 'brand'): FrameNode {
+export function who(nick: string, sub: string, tone: Tone = 'brand'): FrameNode {
   return row({ name: nick, gap: 10 }, [avatar(nick.slice(0, 2).toUpperCase(), 32, tone), col({ name: 'Text', gap: 0 }, [text(nick, 'smallStrong', 'text/primary'), text(sub, 'caption', 'text/tertiary')])]);
 }
 
-function small(t: string, token: Token = 'text/secondary', w: number | 'fill' = 'fill'): TextNode {
+export function small(t: string, token: Token = 'text/secondary', w: number | 'fill' = 'fill'): TextNode {
   return text(t, 'small', token, { w });
 }
 
@@ -332,7 +355,7 @@ export function adminMember(): FrameNode {
 }
 
 export function adminRoom(): FrameNode {
-  return shell('Admin · Room settings', 'adminRoom', 'Talking Stage Diaries', 'Room settings · 1.2k members', [
+  return shell('Admin · Room settings', 'adminRooms', 'Talking Stage Diaries', 'Rooms / Room settings · 1.2k members', [
     row({ name: 'Columns', w: 'fill', gap: 16, cross: 'start' }, [
       card('About', [
         fill(use('TextField', { State: 'Filled' }, { label: 'Room name', value: 'Talking Stage Diaries' })),

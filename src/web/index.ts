@@ -5,6 +5,7 @@ import { Screens, landing, mobileLanding } from './landing';
 import { dispute, helpCentre, howItWorks, mobileOptout, notFound, optout, pricing, privacy, requestStatus, terms, trust } from './pages';
 import { chatAnalysisPage, communityGuidelines, sharedPost } from './addendum';
 import { ADMIN_PAGES } from './admin';
+import { ADMIN_EXTRA } from './admin2';
 
 interface WebDef {
   id: string;
@@ -92,7 +93,8 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
 
   const desktop = build(DESKTOP_PAGES);
   const mobile = build(MOBILE_PAGES);
-  const admin = build(ADMIN_PAGES.map(([id, label, fn]) => ({ id, label, build: () => fn() })));
+  const adminDefs = [ADMIN_PAGES[0], ADMIN_EXTRA[0], ADMIN_EXTRA[1], ...ADMIN_PAGES.slice(1), ...ADMIN_EXTRA.slice(2)];
+  const admin = build(adminDefs.map(([id, label, fn]) => ({ id, label, build: () => fn() })));
   let y = sectionFor(page, 'Website · Desktop 1440', 'Marketing site, public opt-out and dispute flow, help centre and legal pages. Click through with Play.', desktop, 0);
   y = sectionFor(page, 'Website · Mobile 390', 'Responsive versions of the most-visited pages: the homepage and the opt-out form.', mobile, y, 80);
   sectionFor(page, 'Admin and moderation dashboard · Web app', 'Staff-only dashboard for Gossip Rooms: queues, appeals, members, room settings and an immutable audit log. Role-based access with MFA.', admin, y, 80);
