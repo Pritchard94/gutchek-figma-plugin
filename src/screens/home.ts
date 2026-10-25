@@ -117,6 +117,7 @@ export function saved(): FrameNode {
       footer: [link(btn('Compare two people', 'Secondary', 'Large', 'columns'), 'comparePicker')],
     },
     [
+      link(fill(use('Segmented', { Active: 'First' }, { first: 'People', second: 'Threads' })), 'savedThreads'),
       field('Search', 'Search saved people', { state: 'Default', leading: 'search', hideLabel: true }),
       row({ name: 'Filters', gap: 8 }, [chip('All', true), chip('Positive'), chip('Caution'), chip('Low data')]),
       card(tobi, 'report'),

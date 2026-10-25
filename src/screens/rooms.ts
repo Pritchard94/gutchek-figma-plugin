@@ -98,7 +98,7 @@ export function roomAbout(): FrameNode {
     'No threats, sexual violence content or revenge.',
     'No hate, harassment, selling or money requests.',
     'Nothing involving anyone under 18.',
-    'What is said in the room stays in the room. No screenshots.',
+    'Share posts only with the Share button, as anonymous cards. No screenshots.',
   ];
   return screen(
     {

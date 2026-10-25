@@ -145,6 +145,50 @@ export interface RoomMsg {
   cont?: boolean;
   ephemeral?: boolean;
   edited?: boolean;
+  /** Post actions bar: like, react, reply, quote, save, share. */
+  actions?: { likes: number; liked?: boolean; replies?: number; quotes?: number; saved?: boolean };
+  /** Quoted post embedded below the body. */
+  quote?: { nick: string; tone: Tone; type?: PostType; text: string; room?: string };
+}
+
+/** Outline icon with its shapes filled, for active states like a liked heart or a saved bookmark. */
+export function filledIcon(name: string, size: number, token: Token): SceneNode {
+  const n = icon(name, size, token);
+  const p = paint(token);
+  if ('findAll' in n) {
+    for (const v of (n as InstanceNode).findAll((c) => c.type === 'VECTOR' || c.type === 'ELLIPSE' || c.type === 'RECTANGLE')) (v as VectorNode).fills = [p];
+  }
+  return n;
+}
+
+function actionItem(iconName: string, label: string | null, token: Token, filled = false, name?: string): FrameNode {
+  return row({ name: name || iconName, gap: 5, pad: [4, 2] }, [
+    filled ? filledIcon(iconName, 18, token) : icon(iconName, 18, token),
+    label !== null ? text(label, 'label', token) : null,
+  ]);
+}
+
+export function postActions(a: NonNullable<RoomMsg['actions']>): FrameNode {
+  return row({ name: 'Post actions', w: 'fill', gap: 0, main: 'between', pad: [2, 0, 0, 0] }, [
+    actionItem('heart', String(a.likes), a.liked ? 'caution/fg' : 'text/secondary', !!a.liked, 'like'),
+    actionItem('smile', null, 'text/secondary', false, 'react'),
+    actionItem('message', a.replies !== undefined ? String(a.replies) : null, 'text/secondary', false, 'reply'),
+    actionItem('quote', a.quotes !== undefined ? String(a.quotes) : null, 'text/secondary', false, 'quote'),
+    actionItem('bookmark', null, a.saved ? 'brand/fg' : 'text/secondary', !!a.saved, 'save'),
+    actionItem('share', null, 'text/secondary', false, 'share'),
+  ]);
+}
+
+export function quoteEmbed(q: NonNullable<RoomMsg['quote']>): FrameNode {
+  return col({ name: 'Quoted post', w: 'fill', gap: 6, pad: 12, radius: 12, fill: 'bg/surface', stroke: 'border/strong' }, [
+    row({ name: 'Head', gap: 6, w: 'fill' }, [
+      nickAvatar(q.nick, q.tone, 18),
+      text(q.nick, 'smallStrong', 'text/primary'),
+      q.type ? typeTag(q.type) : null,
+      q.room ? text('in ' + q.room, 'caption', 'text/tertiary', { w: 'fill', maxLines: 1 }) : null,
+    ]),
+    text(q.text, 'small', 'text/secondary', { w: 'fill', maxLines: 3 }),
+  ]);
 }
 
 function roleBadge(label: string): FrameNode {
@@ -222,8 +266,10 @@ export function roomMessage(m: RoomMsg): FrameNode {
       text(m.body, 'body', 'text/primary', { name: 'body', w: 'fill' }),
     ]),
     m.edited ? text('(edited)', 'caption', 'text/tertiary') : null,
+    m.quote ? quoteEmbed(m.quote) : null,
     m.reactions && m.reactions.length ? reactionChips(m.reactions, m.mine) : null,
     m.thread ? threadChip(m.thread) : null,
+    m.actions ? postActions(m.actions) : null,
     m.ephemeral
       ? row({ name: 'Ephemeral', gap: 6 }, [icon('eye-off', 13, 'text/tertiary'), text('Only you can see this ·', 'caption', 'text/tertiary'), text('Dismiss', 'caption', 'brand/fg')])
       : null,

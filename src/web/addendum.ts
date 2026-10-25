@@ -1,6 +1,7 @@
 import { Token } from '../tokens';
-import { box, col, icon, pill, row, text } from '../core/ui';
-import { GUTTER, ctaBand, display, featureCard, heading, lead, phone, section, webFooter, webNav, webPage, wlink } from './kit';
+import { box, col, gradient, icon, pill, row, text } from '../core/ui';
+import { glyph } from '../brand';
+import { GUTTER, MOBILE, ctaBand, display, featureCard, heading, lead, mobileNav, phone, section, storeBadge, webFooter, webNav, webPage, wlink } from './kit';
 import { Screens } from './landing';
 import { use } from '../components/library';
 
@@ -84,6 +85,36 @@ export function chatAnalysisPage(s: Screens): FrameNode {
   ]);
 }
 
+/** Public page a shared room post opens to, Substack-style: the post as a card, then a reason to read the rest in the app. */
+export function sharedPost(): FrameNode {
+  const card = col({ name: 'Shared card', w: 'fill', pad: 24, gap: 16, radius: 24, fill: [gradient([['#7556E3', 0], ['#2C1E66', 1]], 135)] }, [
+    row({ name: 'Brand', gap: 8, w: 'fill' }, [glyph(22, 'text/on-solid'), text('Libra Rooms', 'smallStrong', 'text/on-solid', { w: 'fill' }), text('Win', 'label', 'text/on-solid')]),
+    icon('quote', 28, 'text/on-solid'),
+    text('He said "no pressure" and actually meant it. Waited two weeks for me to feel ready, then picked somewhere public without me asking.', { family: 'display', weight: 700, size: 22, line: 30, tracking: -0.5 }, 'text/on-solid', { w: 'fill' }),
+    text('A member of Talking Stage Diaries', 'caption', 'text/on-solid', { opacity: 0.8 }),
+  ]);
+  const stat = (iconName: string, label: string) => row({ name: label, gap: 6 }, [icon(iconName, 16, 'text/secondary'), text(label, 'smallStrong', 'text/secondary')]);
+  return webPage(
+    'Shared post · Mobile',
+    [
+      mobileNav(),
+      col({ name: 'Body', w: 'fill', pad: [28, 20, 40, 20], gap: 20 }, [
+        text('Shared from a Libra Room', 'overline', 'brand/fg'),
+        card,
+        row({ name: 'Stats', gap: 16 }, [stat('heart', '86'), stat('messages', '14 replies'), stat('quote', '5 quotes')]),
+        col({ name: 'Locked', w: 'fill', gap: 12, pad: 20, radius: 20, fill: 'bg/surface', stroke: 'border/default' }, [
+          row({ name: 'Head', gap: 8 }, [icon('lock', 18, 'brand/fg'), text('The full thread is for members', 'title', 'text/primary')]),
+          text('Rooms are private, moderated spaces where people share their own dating experiences under nicknames. Join Libra and request to join this room to read the replies.', 'small', 'text/secondary', { w: 'fill' }),
+          row({ name: 'Badges', gap: 10 }, [storeBadge('apple', 0.9), storeBadge('google', 0.9)]),
+        ]),
+        row({ name: 'Privacy', gap: 8, w: 'fill' }, [icon('eye-off', 14, 'text/tertiary'), text('Shared posts never show nicknames or replies. Authors can turn sharing off at any time.', 'caption', 'text/tertiary', { w: 'fill' })]),
+      ]),
+      webFooter(true),
+    ],
+    MOBILE,
+  );
+}
+
 export function communityGuidelines(): FrameNode {
   const rule = (n: string, title: string, body: string, ok: boolean) =>
     row({ name: title, w: 'fill', gap: 20, pad: 28, radius: 20, fill: 'bg/surface', stroke: 'border/default', cross: 'start' }, [
@@ -109,7 +140,7 @@ export function communityGuidelines(): FrameNode {
       rule('4', 'No hate, harassment or pile-ons', 'There are no downvotes for a reason. Disagree kindly.', false),
       rule('5', 'No selling or money requests', 'No promotions, links to paid services or requests for money.', false),
       rule('6', 'Nothing involving minors', 'Any content involving under-18s leads to an immediate ban and a safety report.', false),
-      rule('7', 'Keep the room private', 'No screenshots of room content outside Libra.', false),
+      rule('7', 'Keep the room private', 'Share a post only with the Share button, which creates an anonymous card without nicknames or replies. Authors can turn sharing off. No screenshots.', false),
     ], { gap: 16 }),
     section('Strikes', [
       heading('Enforcement', 'How strikes and bans work', 'Strikes expire after 90 days of clean behaviour. Every decision records the rule, the post, the time and who or what made it.'),

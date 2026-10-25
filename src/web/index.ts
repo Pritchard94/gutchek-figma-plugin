@@ -3,7 +3,7 @@ import { hexPaint, text } from '../core/ui';
 import { webLinks } from './kit';
 import { Screens, landing, mobileLanding } from './landing';
 import { dispute, helpCentre, howItWorks, mobileOptout, notFound, optout, pricing, privacy, requestStatus, terms, trust } from './pages';
-import { chatAnalysisPage, communityGuidelines } from './addendum';
+import { chatAnalysisPage, communityGuidelines, sharedPost } from './addendum';
 import { ADMIN_PAGES } from './admin';
 
 interface WebDef {
@@ -31,6 +31,7 @@ const DESKTOP_PAGES: WebDef[] = [
 const MOBILE_PAGES: WebDef[] = [
   { id: 'mLanding', label: 'Home · Mobile', build: mobileLanding },
   { id: 'mOptout', label: 'Opt out · Mobile', build: mobileOptout },
+  { id: 'mShared', label: 'Shared post · Mobile', build: () => sharedPost() },
 ];
 
 const GAP = 120;

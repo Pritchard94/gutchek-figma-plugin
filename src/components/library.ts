@@ -471,10 +471,14 @@ define(
   'RoomMessage',
   'Rooms',
   'A message in a Gossip Room, in a Discord-style stream: nickname, role badge, post type and time, then replies quoted above, supportive reactions and a thread link. No downvotes, never real names.',
-  cross({ Kind: ['Member', 'Reply', 'Moderator', 'Bot'] }),
+  cross({ Kind: ['Post', 'Member', 'Reply', 'Quote', 'Moderator', 'Bot'] }),
   (p) =>
     col({ name: 'RoomMessage', w: 353 }, [
-      p.Kind === 'Bot'
+      p.Kind === 'Post'
+        ? roomMessage({ nick: 'QuietStorm_24', tone: 'brand', type: 'Win', time: 'Today 19:58', body: 'He said "no pressure" and actually meant it.', reactions: [[0, 24]], mine: 0, actions: { likes: 86, liked: true, replies: 14, quotes: 5, saved: true } })
+        : p.Kind === 'Quote'
+          ? roomMessage({ nick: 'Ronke.writes', tone: 'positive', type: 'Story', time: 'Today 20:21', body: 'The ones who respect your pace are the keepers.', quote: { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', text: 'He said "no pressure" and actually meant it.' }, actions: { likes: 19, replies: 2, quotes: 0 } })
+          : p.Kind === 'Bot'
         ? roomMessage({ nick: 'Libra Bot', tone: 'brand', role: 'bot', time: 'Today 21:02', body: 'Your message includes a phone number. Remove it to post.', ephemeral: true })
         : p.Kind === 'Moderator'
           ? roomMessage({ nick: 'Mod_Kemi', tone: 'brand', role: 'mod', time: 'Today 20:40', body: 'Reminder: keep details that could identify anyone out of posts and replies.', reactions: [[0, 12]] })

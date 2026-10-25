@@ -10,7 +10,7 @@ import { compare, deleteData, personality, plans, safety, settings } from './mor
 import { appLocked, idIntro, intro, notifPrompt, selfie } from './onboarding';
 import { analyse, chatBlocked, chatConsent, chatLimited, chatProcessing, chatReport, chatUpload, combinedView, createSheet, exportGuide, pasteText, patternDetail, safetyCard, sampleReport, speakers } from './chat';
 import { appeal, banNotice, composer, joinPending, myStanding, postHeld, reportPost, roomAbout, roomWelcome, roomsList } from './rooms';
-import { messageActions, muteSheet, roomFeed, roomFeedBlocked, thread } from './roomchat';
+import { messageActions, muteSheet, quoteComposer, roomFeed, roomFeedBlocked, savedThreads, shareSheet, thread, threadSaved } from './roomchat';
 import {
   account,
   addNote,
@@ -63,6 +63,7 @@ const DEFS: Group[] = [
       ['homeEmpty', 'Home · first time', homeEmpty],
       ['notificationsList', 'Notifications', notificationsList],
       ['saved', 'Saved', saved],
+      ['savedThreads', 'Saved · Threads', savedThreads],
       ['addNote', 'Private note', addNote],
     ],
   },
@@ -140,6 +141,9 @@ const DEFS: Group[] = [
       ['roomWelcome', 'Rules and nickname', roomWelcome],
       ['roomFeed', 'Room feed', roomFeed],
       ['thread', 'Thread', thread],
+      ['threadSaved', 'Thread · saved', threadSaved],
+      ['quoteComposer', 'Quote post', quoteComposer],
+      ['shareSheet', 'Share post', shareSheet],
       ['messageActions', 'Message actions', messageActions],
       ['muteSheet', 'Mute room', muteSheet],
       ['composer', 'New post', () => composer()],
