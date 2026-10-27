@@ -16,7 +16,9 @@ import {
 } from '../tokens';
 
 export const PLUGIN_KEY = 'libra';
-export const NAME_PREFIX = 'Libra';
+export const NAME_PREFIX = 'Gutchek';
+/** Prefixes from earlier runs, including the product's former name, removed before regenerating. */
+const OLD_PREFIXES = [NAME_PREFIX, 'Libra'];
 
 type FontMap = Record<Weight, FontName>;
 
@@ -300,13 +302,14 @@ export function shadowEffects(key: keyof typeof elevation): Effect[] {
 // ---------------------------------------------------------------- cleanup
 
 export async function removePrevious() {
+  const ours = (name: string, sep: string) => OLD_PREFIXES.some((p) => name.indexOf(p + sep) === 0);
   for (const c of await figma.variables.getLocalVariableCollectionsAsync()) {
-    if (c.name.indexOf(NAME_PREFIX + ' / ') === 0) c.remove();
+    if (ours(c.name, ' / ')) c.remove();
   }
   for (const s of await figma.getLocalTextStylesAsync()) {
-    if (s.name.indexOf(NAME_PREFIX + '/') === 0) s.remove();
+    if (ours(s.name, '/')) s.remove();
   }
   for (const s of await figma.getLocalEffectStylesAsync()) {
-    if (s.name.indexOf(NAME_PREFIX + '/') === 0) s.remove();
+    if (ours(s.name, '/')) s.remove();
   }
 }

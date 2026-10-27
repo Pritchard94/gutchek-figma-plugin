@@ -87,7 +87,7 @@ export function buildFoundations(page: PageNode): PageNode {
   ctx.theme = 'light';
 
   const tokens = board(
-    'Libra · Foundations',
+    'Gutchek · Foundations',
     'Colour tokens',
     'Every screen is built from semantic tokens, bound to Figma variables. Light and Dark are modes of the same collection, so switching a frame\'s mode re-themes it. The class column is the NativeWind name used in code.',
     [row({ name: 'Tables', gap: 32, w: 'fill', cross: 'start' }, [tokenTable('light'), tokenTable('dark')])],
@@ -95,7 +95,7 @@ export function buildFoundations(page: PageNode): PageNode {
   );
 
   const prims = board(
-    'Libra · Foundations',
+    'Gutchek · Foundations',
     'Primitive palette',
     'Raw colour ramps. Never use these directly in UI; reference a semantic token instead so dark mode and future rebrands stay a token change.',
     Object.keys(primitives).map((r) => rampRow(r)),
@@ -103,7 +103,7 @@ export function buildFoundations(page: PageNode): PageNode {
   );
 
   const type = board(
-    'Libra · Foundations',
+    'Gutchek · Foundations',
     'Type styles',
     'Plus Jakarta Sans carries headlines and score numerals; Inter carries everything users read at length. Sizes follow iOS Dynamic Type defaults so the scale grows with user settings.',
     [col({ name: 'Styles', gap: 0, w: 'fill' }, (Object.keys(typeScale) as TypeKey[]).map(typeRow))],
@@ -111,7 +111,7 @@ export function buildFoundations(page: PageNode): PageNode {
   );
 
   const space = board(
-    'Libra · Foundations',
+    'Gutchek · Foundations',
     'Spacing, radius and elevation',
     'A 4pt grid. Screen margins are 20, cards pad 16 to 20, sections separate by 32. Corners get rounder as surfaces get larger.',
     [

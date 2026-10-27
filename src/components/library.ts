@@ -167,24 +167,24 @@ define('HomeIndicator', 'System', 'iOS home indicator area, 34pt.', [{}], () =>
 
 const TABS = [
   { key: 'Home', icon: 'home' },
+  { key: 'Gists', icon: 'messages' },
   { key: 'Saved', icon: 'bookmark' },
-  { key: 'Rooms', icon: 'message' },
-  { key: 'Safety', icon: 'shield' },
-  { key: 'Settings', icon: 'settings' },
+  { key: 'Stay Safe', icon: 'shield' },
+  { key: 'Me', icon: 'user' },
 ];
 
 define(
   'TabBar',
   'Navigation',
-  'Floating glass tab bar in the iOS 26 style: a translucent capsule for the four destinations, with the selected tab in an indigo pill, and a separate New Libra action. Content scrolls underneath.',
+  'Floating glass tab bar in the iOS 26 style: a translucent capsule for Home, Gists, Saved, Stay Safe and Me, with the selected tab in an indigo pill, and a separate start-a-check action. Content scrolls underneath.',
   cross({ Active: TABS.map((t) => t.key) }),
   (p) => {
     const tabs = TABS.map((t) => {
       const on = p.Active === t.key;
       const c: Token = on ? 'brand/fg' : 'text/secondary';
-      return col({ name: 'tab-' + t.key.toLowerCase(), w: 'fill', h: 'fill', gap: 2, main: 'center', cross: 'center', radius: 26, fill: on ? 'brand/subtle' : null }, [
+      return col({ name: 'tab-' + t.key.toLowerCase().replace(' ', '-'), w: 'fill', h: 'fill', gap: 2, main: 'center', cross: 'center', radius: 26, fill: on ? 'brand/subtle' : null }, [
         icon(t.icon, 22, c),
-        text(t.key, { family: 'ui', weight: on ? 600 : 500, size: 10, line: 12 }, c, { name: 'label-' + t.key.toLowerCase() }),
+        text(t.key, { family: 'ui', weight: on ? 600 : 500, size: 10, line: 12 }, c, { name: 'label-' + t.key.toLowerCase().replace(' ', '-') }),
       ]);
     });
     const capsule = row({ name: 'Capsule', w: 'fill', h: 62, pad: 4, gap: 0, radius: 31, fill: 'bg/raised', fillOpacity: 0.84, stroke: 'border/default', shadow: 'glass' }, tabs);
@@ -225,11 +225,11 @@ const BTN_PAD: Props = { Large: '20', Medium: '16', Small: '12' };
 define(
   'Button',
   'Actions and inputs',
-  'One primary action per screen. Destructive is reserved for deleting data. Use the hidden icon layer for leading icons.',
-  cross({ Variant: ['Primary', 'Secondary', 'Tertiary', 'Destructive'], Size: ['Large', 'Medium', 'Small'] }),
+  'Primary is the one Action Amber button on a screen, always with dark ink text. Brand is the indigo solid for supporting actions. Destructive is reserved for deleting data. Use the hidden icon layer for leading icons.',
+  cross({ Variant: ['Primary', 'Brand', 'Secondary', 'Tertiary', 'Destructive'], Size: ['Large', 'Medium', 'Small'] }),
   (p) => {
-    const fg: Token = p.Variant === 'Secondary' ? 'text/primary' : p.Variant === 'Tertiary' ? 'brand/fg' : 'text/on-solid';
-    const bg: Token | null = p.Variant === 'Primary' ? 'brand/solid' : p.Variant === 'Destructive' ? 'caution/solid' : p.Variant === 'Secondary' ? 'bg/surface' : null;
+    const fg: Token = p.Variant === 'Primary' ? 'action/on' : p.Variant === 'Secondary' ? 'text/primary' : p.Variant === 'Tertiary' ? 'brand/fg' : 'text/on-solid';
+    const bg: Token | null = p.Variant === 'Primary' ? 'action/solid' : p.Variant === 'Brand' ? 'brand/solid' : p.Variant === 'Destructive' ? 'caution/solid' : p.Variant === 'Secondary' ? 'bg/surface' : null;
     const style: TypeKey = p.Size === 'Small' ? 'smallStrong' : 'bodyStrong';
     return row(
       {
@@ -338,9 +338,9 @@ define('CheckRow', 'Actions and inputs', 'Attestations and checklists. The whole
 });
 
 define(
-  'ScaleDial',
-  'Libra report',
-  'The signature element. Tilts toward the heavier side; Pending animates while loading, Low shows capped scores in neutral.',
+  'GutMeter',
+  'Gutchek report',
+  'The Gut Meter, the signature element: a semi-circle dial with a red half and a green half. Each half fills with its own 1 to 10 score and the needle settles toward the heavier side. Pending animates while loading; Low shows capped scores in neutral.',
   cross({ Tilt: ['Positive', 'Balanced', 'Caution', 'Pending', 'Low'] }),
   (p) => {
     const scores: Record<string, [string, string]> = { Positive: ['2', '8'], Balanced: ['5', '5'], Caution: ['8', '3'], Pending: ['–', '–'], Low: ['1', '2'] };
@@ -349,11 +349,11 @@ define(
   },
 );
 
-define('ScoreBadge', 'Libra report', 'Compact score for lists. Icon plus label, never colour alone.', cross({ Side: ['Caution', 'Positive'] }), (p) =>
+define('ScoreBadge', 'Gutchek report', 'Compact score for lists. Icon plus label, never colour alone.', cross({ Side: ['Caution', 'Positive'] }), (p) =>
   pill(p.Side === 'Caution' ? 'Caution 2' : 'Positive 8', p.Side === 'Caution' ? 'caution' : 'positive', p.Side === 'Caution' ? 'alert-triangle' : 'check-circle', 'ScoreBadge'),
 );
 
-define('ConfidenceBadge', 'Libra report', 'Shown next to every score. Low data means low confidence, never a neutral result.', cross({ Level: ['High', 'Medium', 'Low'] }), (p) => {
+define('ConfidenceBadge', 'Gutchek report', 'Shown next to every score. Low data means low confidence, never a neutral result.', cross({ Level: ['High', 'Medium', 'Low'] }), (p) => {
   const tone: Tone = p.Level === 'High' ? 'brand' : p.Level === 'Medium' ? 'warning' : 'neutral';
   const t = toneTokens[tone];
   const n = p.Level === 'High' ? 3 : p.Level === 'Medium' ? 2 : 1;
@@ -363,7 +363,7 @@ define('ConfidenceBadge', 'Libra report', 'Shown next to every score. Low data m
   ]);
 });
 
-define('SignalCard', 'Libra report', 'One finding, always linked to its source. Wording describes content, never the person.', cross({ Side: ['Caution', 'Positive'] }), (p) => {
+define('SignalCard', 'Gutchek report', 'One finding, always linked to its source. Wording describes content, never the person.', cross({ Side: ['Caution', 'Positive'] }), (p) => {
   const caution = p.Side === 'Caution';
   const t = toneTokens[caution ? 'caution' : 'positive'];
   const sev = pill(caution ? 'High' : 'Strong', 'neutral', undefined, 'severity-pill');
@@ -383,8 +383,8 @@ define('SignalCard', 'Libra report', 'One finding, always linked to its source. 
       text(caution ? '"Women only want you for what you can buy them. Learnt that the hard way."' : '"Proud of you! Your talk on accessibility was the best one today."', 'small', 'text/primary', { name: 'snippet', w: 'fill' }),
     ]),
     row({ name: 'Actions', gap: 20, w: 'fill' }, [
-      row({ name: 'View source', gap: 6 }, [icon('external-link', 16, 'brand/fg'), text('View source', 'smallStrong', 'brand/fg', { name: 'view-source' })]),
-      row({ name: 'Not relevant', gap: 6 }, [icon('eye-off', 16, 'text/secondary'), text('Not relevant', 'smallStrong', 'text/secondary', { name: 'not-relevant' })]),
+      row({ name: 'See the proof', gap: 6 }, [icon('external-link', 16, 'brand/fg'), text('See the proof', 'smallStrong', 'brand/fg', { name: 'view-source' })]),
+      row({ name: "Doesn't apply", gap: 6 }, [icon('eye-off', 16, 'text/secondary'), text("Doesn't apply", 'smallStrong', 'text/secondary', { name: 'not-relevant' })]),
     ]),
   ]);
 });
@@ -393,7 +393,7 @@ function fact(iconName: string, label: string, layer: string): FrameNode {
   return row({ name: 'Fact ' + layer, gap: 8, w: 'fill' }, [icon(iconName, 16, 'text/tertiary'), text(label, 'small', 'text/secondary', { name: layer, w: 'fill' })]);
 }
 
-define('MatchCard', 'Libra report', 'Candidate account in the confirmation stack. Possible matches are excluded from scoring unless confirmed.', cross({ Tier: ['Confirmed', 'Likely', 'Possible'] }), (p) => {
+define('MatchCard', 'Gutchek report', 'Candidate account in the confirmation stack. Possible matches are excluded from scoring unless confirmed.', cross({ Tier: ['Confirmed', 'Likely', 'Possible'] }), (p) => {
   const pct = p.Tier === 'Confirmed' ? 92 : p.Tier === 'Likely' ? 64 : 31;
   const tone: Tone = p.Tier === 'Confirmed' ? 'positive' : p.Tier === 'Likely' ? 'warning' : 'neutral';
   const t = toneTokens[tone];
@@ -420,7 +420,7 @@ define('MatchCard', 'Libra report', 'Candidate account in the confirmation stack
   ]);
 });
 
-define('TraitBar', 'Libra report', 'Communication-style trait on a five-step scale. Observations of public behaviour, not diagnoses.', cross({ Level: ['1', '2', '3', '4', '5'] }), (p) => {
+define('TraitBar', 'Gutchek report', 'Communication-style trait on a five-step scale. Observations of public behaviour, not diagnoses.', cross({ Level: ['1', '2', '3', '4', '5'] }), (p) => {
   const level = parseInt(p.Level, 10);
   return col({ name: 'TraitBar', w: 353, gap: 8 }, [
     row({ name: 'Head', gap: 8, w: 'fill' }, [text('Tone', 'bodyStrong', 'text/primary', { name: 'label', w: 'fill' }), text('Warm', 'smallStrong', 'brand/fg', { name: 'value' })]),
@@ -470,7 +470,7 @@ define('PatternCard', 'Conversations', 'One behaviour pattern from a conversatio
 define(
   'RoomMessage',
   'Rooms',
-  'A message in a Gossip Room, in a Discord-style stream: nickname, role badge, post type and time, then replies quoted above, supportive reactions and a thread link. No downvotes, never real names.',
+  'A message in a Gist Room, in a Discord-style stream: nickname, role badge, post type and time, then replies quoted above, supportive reactions and a thread link. No downvotes, never real names.',
   cross({ Kind: ['Post', 'Member', 'Reply', 'Quote', 'Moderator', 'Bot'] }),
   (p) =>
     col({ name: 'RoomMessage', w: 353 }, [
@@ -479,7 +479,7 @@ define(
         : p.Kind === 'Quote'
           ? roomMessage({ nick: 'Ronke.writes', tone: 'positive', type: 'Story', time: 'Today 20:21', body: 'The ones who respect your pace are the keepers.', quote: { nick: 'QuietStorm_24', tone: 'brand', type: 'Win', text: 'He said "no pressure" and actually meant it.' }, actions: { likes: 19, replies: 2, quotes: 0 } })
           : p.Kind === 'Bot'
-        ? roomMessage({ nick: 'Libra Bot', tone: 'brand', role: 'bot', time: 'Today 21:02', body: 'Your message includes a phone number. Remove it to post.', ephemeral: true })
+        ? roomMessage({ nick: 'Gist Bot', tone: 'brand', role: 'bot', time: 'Today 21:02', body: 'Your message includes a phone number. Remove it to post.', ephemeral: true })
         : p.Kind === 'Moderator'
           ? roomMessage({ nick: 'Mod_Kemi', tone: 'brand', role: 'mod', time: 'Today 20:40', body: 'Reminder: keep details that could identify anyone out of posts and replies.', reactions: [[0, 12]] })
           : p.Kind === 'Reply'
@@ -488,7 +488,7 @@ define(
     ]),
 );
 
-define('ProgressStep', 'Libra report', 'Staged progress on the processing screen.', cross({ State: ['Done', 'Active', 'Pending'] }), (p) => {
+define('ProgressStep', 'Gutchek report', 'Staged progress on the processing screen.', cross({ State: ['Done', 'Active', 'Pending'] }), (p) => {
   let indicator: FrameNode;
   if (p.State === 'Done') {
     indicator = box({ name: 'Indicator', dir: 'h', w: 28, h: 28, radius: 14, fill: 'positive/solid', main: 'center', cross: 'center' }, [icon('check', 16, 'text/on-solid')]);
@@ -524,7 +524,7 @@ define('ListRow', 'Content and feedback', 'Settings and navigation rows. Group r
   ]);
 });
 
-define('Avatar', 'Content and feedback', 'Initials only. Libra never shows a searched person\'s photo outside match confirmation.', cross({ Size: ['32', '40', '56', '72'] }), (p) => avatar('AO', parseInt(p.Size, 10), 'brand'));
+define('Avatar', 'Content and feedback', 'Initials only. Gutchek never shows a searched person\'s photo outside match confirmation.', cross({ Size: ['32', '40', '56', '72'] }), (p) => avatar('AO', parseInt(p.Size, 10), 'brand'));
 
 define('Toast', 'Content and feedback', 'Brief confirmation. Auto-dismisses after 4 seconds; never carries the only copy of important information.', cross({ Tone: ['Neutral', 'Positive', 'Caution'] }), (p) =>
   row({ name: 'Toast', w: 353, pad: [14, 16], gap: 12, radius: 14, fill: 'bg/inverse', shadow: 'e2' }, [
@@ -603,12 +603,12 @@ function buildIcons(): FrameNode {
 
 const GROUP_NOTES: Record<string, string> = {
   System: 'Device chrome shared by every screen.',
-  Navigation: 'How people move through Libra.',
+  Navigation: 'How people move through Gutchek.',
   'Actions and inputs': 'Controls with 44pt minimum touch targets and visible focus.',
-  'Libra report': 'The building blocks of a Libra report. Every number expands into evidence.',
+  'Gutchek report': 'The building blocks of a Gutchek report. Every number expands into evidence.',
   'Content and feedback': 'Lists, people and system messages.',
-  Conversations: 'Chat analysis: uploaded messages as evidence, and the behaviour patterns found in them.',
-  Rooms: 'Gossip Rooms: a Discord-style message stream under nicknames, with supportive reactions only, over a doodle wallpaper.',
+  Conversations: 'Check a Chat: uploaded messages as evidence, and the behaviour patterns found in them.',
+  Rooms: 'Gist Rooms: a Discord-style message stream under nicknames, with supportive reactions only, over a doodle wallpaper.',
 };
 
 function sectionFor(groups: Map<string, FrameNode>, root: FrameNode, group: string): FrameNode {
@@ -656,10 +656,10 @@ export function buildLibrary(page: PageNode, sharedMode: boolean): FrameNode[] {
     ctx.theme = theme;
     const root = col({ name: 'Components · ' + (theme === 'dark' ? 'Dark' : 'Light'), w: 2600, pad: 96, gap: 96, fill: 'bg/canvas', radius: 40 }, [
       col({ name: 'Header', gap: 12, w: 'fill' }, [
-        text('Libra · Components', 'overline', 'brand/fg'),
+        text('Gutchek · Components', 'overline', 'brand/fg'),
         text('Component library', { family: 'display', weight: 800, size: 64, line: 72, tracking: -2.5 }, 'text/primary'),
         text(
-          'Every component is bound to Libra colour variables and text styles. Switch a frame to the Dark mode and instances re-theme automatically. Variant properties mirror the props used in code (src/components).',
+          'Every component is bound to Gutchek colour variables and text styles. Switch a frame to the Dark mode and instances re-theme automatically. Variant properties mirror the props used in code (src/components).',
           { family: 'ui', weight: 400, size: 20, line: 32 },
           'text/secondary',
           { w: 1100 },

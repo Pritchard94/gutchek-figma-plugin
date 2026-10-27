@@ -35,10 +35,10 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
   ctx.theme = 'light';
   const root = col({ name: 'User flow', gap: 64, pad: 96, fill: 'bg/canvas', radius: 48 }, [
     col({ name: 'Header', gap: 12 }, [
-      text('Libra · User flow', 'overline', 'brand/fg'),
+      text('Gutchek · User flow', 'overline', 'brand/fg'),
       text('Main flow', { family: 'display', weight: 800, size: 64, line: 72, tracking: -2.5 }, 'text/primary'),
       text(
-        'From the spec, section 7.2: sign in, confirm purpose and age, start a Libra, confirm matches, wait while the scale weighs, then read, save and share. Press Play on the Screens · Light page to click through the prototype.',
+        'From the spec, section 7.2: sign in, confirm purpose and age, start a Gutchek, confirm matches, wait while the scale weighs, then read, save and share. Press Play on the Screens · Light page to click through the prototype.',
         { family: 'ui', weight: 400, size: 20, line: 32 },
         'text/secondary',
         { w: 1200 },
@@ -51,7 +51,7 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
       [frames.purpose, 'Age and purpose'],
       [frames.home, 'Home'],
     ]),
-    lane('Run a Libra', 'Name and one handle in; the user confirms every account before anything is analysed.', [
+    lane('Run a Gutchek', 'Name and one handle in; the user confirms every account before anything is analysed.', [
       [frames.search, 'New search'],
       [frames.match, 'Confirm matches'],
       [frames.processing, 'Weighing'],
@@ -64,15 +64,15 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
       [frames.personality, 'Personality'],
       [frames.compare, 'Compare'],
     ]),
-    lane('Analyse a chat', 'User-provided evidence: consent, upload, confirm speakers, then safety before scores.', [
-      [frames.analyse, 'Analyse a chat'],
+    lane('Check a Chat', 'User-provided evidence: consent, upload, confirm speakers, then safety before scores.', [
+      [frames.analyse, 'Check a Chat'],
       [frames.chatConsent, 'Consent'],
       [frames.chatUpload, 'Upload'],
       [frames.speakers, 'Confirm speakers'],
       [frames.chatProcessing, 'Processing'],
       [frames.chatReport, 'Conversation report'],
     ]),
-    lane('Gossip Rooms', 'Join, accept the rules, post through Libra Bot, and appeal any ban.', [
+    lane('Gist Rooms', 'Join, accept the rules, post through Gist Bot, and appeal any ban.', [
       [frames.roomsList, 'Rooms'],
       [frames.roomAbout, 'Room details'],
       [frames.roomWelcome, 'Rules and nickname'],
@@ -83,7 +83,7 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
     ]),
     lane('Alternate outcomes', 'The same flow ends differently when the evidence is serious or thin.', [
       [frames.reportSevere, 'Serious concerns'],
-      [frames.safety, 'Safety Hub'],
+      [frames.safety, 'Stay Safe'],
       [frames.reportLow, 'Low confidence'],
     ]),
   ]);

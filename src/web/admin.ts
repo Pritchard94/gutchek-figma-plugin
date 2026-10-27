@@ -103,6 +103,13 @@ export function shell(name: string, active: string, title: string, sub: string, 
   const main = col({ name: 'Main', w: 'fill', gap: 0, fill: 'bg/canvas' }, [topbar(active), divider(), col({ name: 'Content', w: 'fill', pad: [28, 32, 48, 32], gap: 20 }, [header, ...content])]);
   const side = sidebar(active);
   const f = row({ name, w: W, fill: 'bg/canvas', clip: true, cross: 'start' }, [side, main]);
+  const rows = main.findAll((n) => n.getPluginData('equalize') === '1') as FrameNode[];
+  const depth = (n: BaseNode) => {
+    let d = 0;
+    for (let p = n.parent; p; p = p.parent) d++;
+    return d;
+  };
+  rows.sort((a, b) => depth(b) - depth(a)).forEach(matchHeights);
   const h = Math.max(H, Math.round(main.height));
   side.resize(side.width, h);
   f.layoutSizingVertical = 'FIXED';
@@ -112,15 +119,19 @@ export function shell(name: string, active: string, title: string, sub: string, 
   return f;
 }
 
-/** Give every card in a row the height of the tallest one. */
+/** Give every card in a row the height of the tallest one. Measured in shell(), once the row has its final width. */
 export function equalize<T extends FrameNode>(r: T): T {
+  r.setPluginData('equalize', '1');
+  return r;
+}
+
+function matchHeights(r: FrameNode) {
   const kids = r.children.filter((c) => c.type === 'FRAME' || c.type === 'INSTANCE') as FrameNode[];
   const tallest = kids.reduce((m, c) => Math.max(m, c.height), 0);
   for (const c of kids) {
     c.layoutSizingVertical = 'FIXED';
     c.resize(c.width, tallest);
   }
-  return r;
 }
 
 export function card(title: string | null, kids: Kid[], w: number | 'fill' = 'fill', action?: string): FrameNode {
@@ -248,7 +259,7 @@ export function adminFlagged(): FrameNode {
       small('Be careful with K***** from **** Lekki, his number is 0803 *** **99. He did the same thing to my friend and she lost 200k.', 'text/primary'),
       row({ name: 'Detected', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, [pill('Phone number', 'caution'), pill('Name and workplace', 'caution'), pill('Accusation', 'warning')]),
     ]),
-    card('Libra Bot reasoning', [
+    card('Gist Bot reasoning', [
       small('Rules: phone number pattern matched (0.99). Classifier: low toxicity (0.18). LLM context: warning others with identifying details, not a personal story only (0.81).', 'text/primary'),
       small('Action taken: blocked before publishing; author asked to remove details.', 'text/tertiary'),
     ]),
@@ -339,8 +350,8 @@ export function adminAppeals(): FrameNode {
         ],
         [
           [who('QuietStorm_24', 'Talking Stage Diaries'), pill('7-day ban', 'caution'), small('Mod_Tunde'), sla('54h', 'positive')],
-          [who('NaijaBelle', 'Lagos Dating Life', 'warning'), pill('Strike 1', 'warning'), small('Libra Bot'), sla('31h', 'positive')],
-          [who('Tayo_Writes', 'First Date Stories', 'neutral'), pill('24h mute', 'warning'), small('Libra Bot'), sla('18h', 'warning')],
+          [who('NaijaBelle', 'Lagos Dating Life', 'warning'), pill('Strike 1', 'warning'), small('Gist Bot'), sla('31h', 'positive')],
+          [who('Tayo_Writes', 'First Date Stories', 'neutral'), pill('24h mute', 'warning'), small('Gist Bot'), sla('18h', 'warning')],
           [who('SoftLife_Ada', 'Talking Stage Diaries'), pill('Permanent', 'caution'), small('Admin review'), sla('6h', 'caution')],
         ],
         0,
@@ -375,8 +386,8 @@ export function adminMember(): FrameNode {
           ],
           [
             [small('24 Oct'), pill('7-day ban', 'caution'), small('Identifying information', 'text/primary'), small('Mod_Tunde'), pill('Appealed', 'brand')],
-            [small('2 Jul'), pill('Strike 1', 'warning'), small('Selling', 'text/primary'), small('Libra Bot'), pill('Expired', 'neutral')],
-            [small('18 Jun'), pill('Warning', 'neutral'), small('Rude tone', 'text/primary'), small('Libra Bot'), pill('Expired', 'neutral')],
+            [small('2 Jul'), pill('Strike 1', 'warning'), small('Selling', 'text/primary'), small('Gist Bot'), pill('Expired', 'neutral')],
+            [small('18 Jun'), pill('Warning', 'neutral'), small('Rude tone', 'text/primary'), small('Gist Bot'), pill('Expired', 'neutral')],
           ],
         ),
       ]),
@@ -396,7 +407,7 @@ export function adminRoom(): FrameNode {
       card('About', [
         fill(use('TextField', { State: 'Filled' }, { label: 'Room name', value: 'Talking Stage Diaries' })),
         textArea('Description', 'Stories and advice from the early days of getting to know someone.', false, 70),
-        textArea('Rules shown to members', '1. Share your own experience.\n2. No names, handles, photos or workplaces.\n3. No threats, sexual violence or revenge.\n4. No hate, harassment, selling or money requests.\n5. Nothing involving anyone under 18.\n6. No screenshots outside Libra.', false, 170),
+        textArea('Rules shown to members', '1. Share your own experience.\n2. No names, handles, photos or workplaces.\n3. No threats, sexual violence or revenge.\n4. No hate, harassment, selling or money requests.\n5. Nothing involving anyone under 18.\n6. No screenshots outside Gutchek.', false, 170),
       ]),
       col({ name: 'Right', w: 'fill', gap: 16 }, [
         card('Joining', [radioGroup([{ label: 'Open with bot', detail: 'Low-risk requests are approved automatically.' }, { label: 'Approval required', detail: 'An admin reviews every request.', on: true }, { label: 'Invite only' }])]),
@@ -424,10 +435,10 @@ export function adminAudit(): FrameNode {
         { label: 'Rule', w: 'fill' },
       ],
       [
-        [small('15:42:10'), actor('Libra Bot', true), pill('Blocked post', 'caution'), small('NaijaBelle · post 8821'), small('Personal identifiers')],
+        [small('15:42:10'), actor('Gist Bot', true), pill('Blocked post', 'caution'), small('NaijaBelle · post 8821'), small('Personal identifiers')],
         [small('15:31:02'), actor('Mod_Kemi'), pill('Reduced ban', 'brand'), small('QuietStorm_24 · appeal 112'), small('Identifying information')],
         [small('15:20:44'), actor('Mod_Kemi'), pill('Revealed account', 'warning'), small('BigBoyz_'), small('Ban evasion check')],
-        [small('15:02:19'), actor('Libra Bot', true), pill('Held for review', 'warning'), small('Tayo_Writes · post 8817'), small('Named crime accusation')],
+        [small('15:02:19'), actor('Gist Bot', true), pill('Held for review', 'warning'), small('Tayo_Writes · post 8817'), small('Named crime accusation')],
         [small('14:48:55'), actor('Mod_Tunde'), pill('Removed and strike', 'caution'), small('Ade_new · post 8809'), small('Harassment')],
         [small('14:30:12'), actor('Admin_Pritchard'), pill('Changed room rules', 'neutral'), small('Talking Stage Diaries'), small('Rules text v4')],
       ],
@@ -438,7 +449,7 @@ export function adminAudit(): FrameNode {
 
 export function adminRemovals(): FrameNode {
   const detail = col({ name: 'Detail', w: 460, gap: 16 }, [
-    card('Request LBR-RM-0193', [
+    card('Request GCK-RM-0193', [
       small('"Posts in Lagos Dating Life describe me with my workplace and first initial. Please remove them."', 'text/primary'),
       small('From k****@gmail.com · identity verified · 23 Oct', 'text/tertiary'),
     ]),
@@ -464,9 +475,9 @@ export function adminRemovals(): FrameNode {
           { label: 'Status', w: 120 },
         ],
         [
-          [small('LBR-RM-0193 · k****@gmail.com', 'text/primary'), small('2'), small('Lagos Dating Life'), pill('Verified', 'positive')],
-          [small('LBR-RM-0192 · t****@yahoo.com', 'text/primary'), small('1'), small('First Date Stories'), pill('Awaiting ID', 'warning')],
-          [small('LBR-RM-0190 · +234 ***4410', 'text/primary'), small('4'), small('Talking Stage Diaries'), pill('Removed', 'neutral')],
+          [small('GCK-RM-0193 · k****@gmail.com', 'text/primary'), small('2'), small('Lagos Dating Life'), pill('Verified', 'positive')],
+          [small('GCK-RM-0192 · t****@yahoo.com', 'text/primary'), small('1'), small('First Date Stories'), pill('Awaiting ID', 'warning')],
+          [small('GCK-RM-0190 · +234 ***4410', 'text/primary'), small('4'), small('Talking Stage Diaries'), pill('Removed', 'neutral')],
         ],
         0,
       ),

@@ -46,7 +46,7 @@ export function section(name: string, kids: Kid[], o: { fill?: Token; pad?: [num
 
 const NAV: Array<[string, string]> = [
   ['How it works', 'how'],
-  ['Chat analysis', 'chat'],
+  ['Check a Chat', 'chat'],
   ['Trust and safety', 'trust'],
   ['Pricing', 'pricing'],
   ['Help', 'helpcenter'],
@@ -87,14 +87,14 @@ export function webFooter(mobile = false): FrameNode {
   const columns = [
     colFor('Product', [
       ['How it works', 'how'],
-      ['Chat analysis', 'chat'],
+      ['Check a Chat', 'chat'],
       ['Pricing', 'pricing'],
       ['Download the app', 'landing'],
     ]),
     colFor('Safety', [
       ['Trust and safety', 'trust'],
       ['Community guidelines', 'guidelines'],
-      ['Opt out of Libra', 'optout'],
+      ['Opt out of Gutchek', 'optout'],
       ['Dispute a finding', 'dispute'],
       ['Check a request', 'status'],
     ]),
@@ -118,8 +118,8 @@ export function webFooter(mobile = false): FrameNode {
     mobile ? col({ name: 'Top', gap: 32, w: 'fill' }, [brand, row({ name: 'Columns', gap: 24, w: 'fill', wrap: true, wrapGap: 32 }, columns)]) : row({ name: 'Top', gap: 48, w: 'fill', cross: 'start', main: 'between' }, [brand, row({ name: 'Columns', gap: 40 }, columns)]),
     box({ name: 'Rule', dir: 'h', w: 'fill', h: 1, fill: [hexPaint('#FFFFFF', 0.12)] }),
     (mobile ? col : row)({ name: 'Bottom', gap: 16, w: 'fill', main: mobile ? undefined : 'between' }, [
-      inverseText('© 2026 Libra Technologies Ltd. Lagos, Nigeria.', 'caption', 0.6),
-      inverseText('Libra is not a consumer reporting agency. Do not use Libra for employment, housing, credit or tenancy decisions.', 'caption', 0.6),
+      inverseText('© 2026 Gutchek Technologies Ltd. Lagos, Nigeria.', 'caption', 0.6),
+      inverseText('Gutchek is not a consumer reporting agency. Do not use Gutchek for employment, housing, credit or tenancy decisions.', 'caption', 0.6),
     ]),
   ]);
 }

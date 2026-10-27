@@ -137,9 +137,9 @@ const FIXED_HUES: Record<string, string> = {
   BigBoyz_: 'brown',
 };
 
-/** Stable identity colour for a nickname. Moderators and the bot always use Libra Indigo. */
+/** Stable identity colour for a nickname. Moderators and the bot always use Gutchek Indigo. */
 export function nameHue(nick: string): string | null {
-  if (/^mod/i.test(nick) || nick === 'Libra Bot' || /^admin/i.test(nick)) return null;
+  if (/^mod/i.test(nick) || nick === 'Gist Bot' || /^admin/i.test(nick)) return null;
   if (FIXED_HUES[nick]) return FIXED_HUES[nick];
   let h = 0;
   for (let i = 0; i < nick.length; i++) h = (h * 31 + nick.charCodeAt(i)) >>> 0;

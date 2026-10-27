@@ -24,7 +24,7 @@ function roomsColumn(): FrameNode {
       'wRooms',
     );
   return col({ name: 'Rooms list', w: LIST_W, h: APP_H, pad: [20, 12], gap: 12, fill: 'bg/surface', stroke: 'border/default' }, [
-    row({ name: 'Head', w: 'fill', gap: 8, pad: [0, 8] }, [text('Rooms', 'h3', 'text/primary', { w: 'fill' }), alink(icon('shield', 20, 'text/secondary'), 'wRooms')]),
+    row({ name: 'Head', w: 'fill', gap: 8, pad: [0, 8] }, [text('Gists', 'h3', 'text/primary', { w: 'fill' }), alink(icon('shield', 20, 'text/secondary'), 'wRooms')]),
     box({ name: 'Search', dir: 'h', w: 'fill', h: 36, pad: [0, 12], gap: 8, radius: 10, fill: 'bg/subtle', cross: 'center' }, [icon('search', 16, 'text/tertiary'), text('Find a room', 'small', 'text/tertiary')]),
     text('Your rooms', 'overline', 'text/tertiary'),
     col({ name: 'Joined', w: 'fill', gap: 2 }, [
@@ -99,7 +99,7 @@ function streamColumn(width: number): FrameNode {
         row({ name: t, pad: [4, 10], radius: 999, fill: i === 0 ? 'brand/subtle' : 'bg/subtle', stroke: i === 0 ? 'brand/border' : undefined }, [text(t, 'label', i === 0 ? 'brand/on-subtle' : 'text/secondary')]),
       ),
       box({ name: 'Spacer', w: 'fill', h: 1 }),
-      text('Posting as QuietStorm_24 · Libra Bot checks every post', 'caption', 'text/tertiary'),
+      text('Posting as QuietStorm_24 · Gist Bot checks every post', 'caption', 'text/tertiary'),
     ]),
     composerBar('Message ' + ROOM),
   ]);
@@ -195,10 +195,10 @@ export function wRoomsShare(): FrameNode {
       text(label, 'caption', 'text/secondary', { align: 'center' }),
     ]);
   const cardNode = col({ name: 'Share card', w: 'fill', pad: 28, gap: 16, radius: 24, fill: [gradient([['#7556E3', 0], ['#2C1E66', 1]], 135)] }, [
-    row({ name: 'Brand', gap: 8, w: 'fill' }, [glyph(22, 'text/on-solid'), text('Libra Rooms', 'smallStrong', 'text/on-solid', { w: 'fill' }), box({ name: 'Tag', dir: 'h', pad: [2, 8], radius: 6, fill: [hexPaint('#FFFFFF', 0.16)] }, [text('Win', 'label', 'text/on-solid')])]),
+    row({ name: 'Brand', gap: 8, w: 'fill' }, [glyph(22, 'text/on-solid'), text('Gist Rooms', 'smallStrong', 'text/on-solid', { w: 'fill' }), box({ name: 'Tag', dir: 'h', pad: [2, 8], radius: 6, fill: [hexPaint('#FFFFFF', 0.16)] }, [text('Win', 'label', 'text/on-solid')])]),
     icon('quote', 28, 'text/on-solid'),
     text(WIN, { family: 'display', weight: 700, size: 22, line: 30, tracking: -0.5 }, 'text/on-solid', { w: 'fill' }),
-    row({ name: 'Footer', gap: 8, w: 'fill' }, [text('A member of ' + ROOM, 'caption', 'text/on-solid', { w: 'fill', opacity: 0.8 }), text('libra.app/r/tsd-8821', 'caption', 'text/on-solid', { opacity: 0.8 })]),
+    row({ name: 'Footer', gap: 8, w: 'fill' }, [text('A member of ' + ROOM, 'caption', 'text/on-solid', { w: 'fill', opacity: 0.8 }), text('gutchek.app/r/tsd-8821', 'caption', 'text/on-solid', { opacity: 0.8 })]),
   ]);
   const dialog = col({ name: 'Share dialog', w: 560, gap: 20, pad: 28, radius: 28, fill: 'bg/raised', shadow: 'e3' }, [
     row({ name: 'Head', w: 'fill', gap: 8 }, [text('Share post', 'h2', 'text/primary', { w: 'fill' }), alink(box({ name: 'Close', dir: 'h', w: 36, h: 36, radius: 18, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('x', 18, 'text/secondary')]), 'wRooms')]),
@@ -215,9 +215,9 @@ export function wDiscover(): FrameNode {
     col({ name, w: 'fill', gap: 12, pad: 24, radius: 20, fill: 'bg/surface', stroke: 'border/default' }, [
       row({ name: 'Head', gap: 12, w: 'fill' }, [iconTileW(iconName, tone, 48), col({ name: 'Title', gap: 2, w: 'fill' }, [text(name, 'title', 'text/primary', { w: 'fill' }), text(members + ' · ' + mode, 'caption', 'text/tertiary')])]),
       text(desc, 'small', 'text/secondary', { w: 'fill' }),
-      state === 'join' ? btn('Request to join', 'Secondary', 'Medium') : state === 'pending' ? pill('Request pending', 'warning', 'clock') : pill('Invite only', 'neutral', 'lock'),
+      state === 'join' ? btn('Join the Gist', 'Secondary', 'Medium') : state === 'pending' ? pill('Request pending', 'warning', 'clock') : pill('Invite only', 'neutral', 'lock'),
     ]);
-  return appFrame({ name: 'Discover rooms', active: 'wRooms', title: 'Discover rooms', crumb: 'Rooms / Discover', collapsed: true }, [
+  return appFrame({ name: 'Discover rooms', active: 'wRooms', title: 'Discover rooms', crumb: 'Gists / Discover', collapsed: true }, [
     row({ name: 'Filters', gap: 8 }, [use('Chip', { Selected: 'On' }, { label: 'All' }), use('Chip', { Selected: 'Off' }, { label: 'Open with bot' }), use('Chip', { Selected: 'Off' }, { label: 'Approval required' }), use('Chip', { Selected: 'Off' }, { label: 'Lagos' }), use('Chip', { Selected: 'Off' }, { label: 'Abuja' })]),
     row({ name: 'Row 1', w: 'fill', gap: 20, cross: 'start' }, [
       roomCard('map-pin', 'warning', 'Lagos Dating Life', 'Dating in the city: places, culture and safety tips.', '2.4k members', 'Open with bot', 'join'),
@@ -229,6 +229,6 @@ export function wDiscover(): FrameNode {
       roomCard('sparkle', 'brand', 'First Date Ideas', 'Public, fun and safe places to meet for the first time.', '1.6k members', 'Open with bot', 'join'),
       roomCard('shield-check', 'neutral', 'Safety First', 'Scam warnings, safety habits and support.', '310 members', 'Invite only', 'invite'),
     ]),
-    row({ name: 'Note', gap: 8 }, [icon('info', 16, 'text/tertiary'), text('Rooms are created by the Libra team. Requests need 18+, phone verification and an account older than 24 hours.', 'small', 'text/tertiary')]),
+    row({ name: 'Note', gap: 8 }, [icon('info', 16, 'text/tertiary'), text('Rooms are created by the Gutchek team. Requests need 18+, phone verification and an account older than 24 hours.', 'small', 'text/tertiary')]),
   ]);
 }

@@ -23,9 +23,9 @@ export function alink<T extends SceneNode>(node: T, target: string): T {
 const NAV: Array<[string, string, string, string?]> = [
   ['home', 'Home', 'wHome'],
   ['bookmark', 'Saved', 'wSaved'],
-  ['message', 'Analyse a chat', 'wAnalyse'],
-  ['messages', 'Rooms', 'wRooms', '15'],
-  ['shield', 'Safety', 'wSafety'],
+  ['message', 'Check a Chat', 'wAnalyse'],
+  ['messages', 'Gists', 'wRooms', '15'],
+  ['shield', 'Stay Safe', 'wSafety'],
   ['settings', 'Settings', 'wSettings'],
 ];
 
@@ -43,15 +43,15 @@ export function sidebar(active: string): FrameNode {
   };
   return col({ name: 'Sidebar', w: SIDEBAR_W, h: APP_H, pad: [24, 16, 20, 16], gap: 20, fill: 'bg/surface', stroke: 'border/default' }, [
     row({ name: 'Brand', pad: [0, 8] }, [alink(lockup(28), 'wHome')]),
-    alink(fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'New Libra' }, { show: ['icon'], icons: { icon: 'plus' } })), 'wSearch'),
+    alink(fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Run a Gutchek' }, { show: ['icon'], icons: { icon: 'plus' } })), 'wSearch'),
     col({ name: 'Nav', w: 'fill', gap: 2 }, NAV.map(item)),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
     col({ name: 'Appearance', w: 'fill', gap: 6 }, [text('Appearance', 'overline', 'text/tertiary'), alink(modeSwitch('system'), 'wSettings')]),
     alink(
       col({ name: 'Plan', w: 'fill', gap: 8, pad: 14, radius: 12, fill: 'bg/subtle' }, [
-        row({ name: 'Head', gap: 6, w: 'fill' }, [icon('star', 16, 'brand/fg'), text('Libra Plus', 'smallStrong', 'text/primary', { w: 'fill' }), text('Manage', 'label', 'brand/fg')]),
+        row({ name: 'Head', gap: 6, w: 'fill' }, [icon('star', 16, 'brand/fg'), text('Gutchek Plus', 'smallStrong', 'text/primary', { w: 'fill' }), text('Manage', 'label', 'brand/fg')]),
         box({ name: 'Track', dir: 'h', w: 'fill', h: 6, radius: 3, fill: 'bg/muted' }, [rect(80, 6, 'brand/solid', 3, 'Bar')]),
-        text('3 of 5 reports left · 1 free chat analysis', 'caption', 'text/tertiary', { w: 'fill' }),
+        text('3 of 5 reports left · 1 free chat check', 'caption', 'text/tertiary', { w: 'fill' }),
       ]),
       'wBilling',
     ),
@@ -79,7 +79,7 @@ export function railSidebar(active: string): FrameNode {
   };
   return col({ name: 'Sidebar · collapsed', w: RAIL_W, h: APP_H, pad: [20, 12], gap: 14, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
     alink(box({ name: 'Logo', dir: 'h', w: 44, h: 44, radius: 12, fill: 'brand/solid', main: 'center', cross: 'center' }, [glyph(28, 'text/on-solid')]), 'wHome'),
-    alink(box({ name: 'New Libra', dir: 'h', w: 44, h: 44, radius: 22, fill: 'brand/subtle', main: 'center', cross: 'center' }, [icon('plus', 22, 'brand/fg')]), 'wSearch'),
+    alink(box({ name: 'Run a Gutchek', dir: 'h', w: 44, h: 44, radius: 22, fill: 'brand/subtle', main: 'center', cross: 'center' }, [icon('plus', 22, 'brand/fg')]), 'wSearch'),
     divider(),
     ...NAV.map(item),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),

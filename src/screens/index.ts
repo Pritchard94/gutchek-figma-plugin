@@ -46,7 +46,7 @@ const DEFS: Group[] = [
     note: 'Sign up, verify, agree to the purpose and age rules, and optionally verify identity before the first search.',
     screens: [
       ['welcome', 'Welcome', welcome],
-      ['intro', 'How Libra works', intro],
+      ['intro', 'How Gutchek works', intro],
       ['signin', 'Sign in', signIn],
       ['verify', 'Verify code', verify],
       ['purpose', 'Age and purpose', purpose],
@@ -57,7 +57,7 @@ const DEFS: Group[] = [
   },
   {
     title: '2 · Home and saved',
-    note: 'The hub: start a Libra, revisit reports, notifications and saved people.',
+    note: 'The hub: start a Gutchek, revisit reports, notifications and saved people.',
     screens: [
       ['home', 'Home', home],
       ['homeEmpty', 'Home · first time', homeEmpty],
@@ -68,7 +68,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '3 · New Libra',
+    title: '3 · Run a Gutchek',
     note: 'Name and one handle in, confirmed accounts out. Friction here is deliberate, and every dead end explains itself.',
     screens: [
       ['search', 'New search', newSearch],
@@ -103,7 +103,7 @@ const DEFS: Group[] = [
     title: '5 · Safety',
     note: 'Share my date, trusted contacts and local support, one tap from anywhere.',
     screens: [
-      ['safety', 'Safety Hub', safety],
+      ['safety', 'Stay Safe', safety],
       ['shareSetup', 'Share my date · set up', shareSetup],
       ['shareLive', 'Share my date · live', shareLive],
       ['trustedContacts', 'Trusted contacts', trustedContacts],
@@ -111,11 +111,11 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '7 · Chat analysis',
+    title: '7 · Check a Chat',
     note: 'Upload a conversation, confirm who said what, and get a behaviour report with the exact messages as evidence. Safety comes before scores.',
     screens: [
       ['create', 'Start something', createSheet],
-      ['analyse', 'Analyse a chat', analyse],
+      ['analyse', 'Check a Chat', analyse],
       ['sampleReport', 'Sample report', sampleReport],
       ['exportGuide', 'Export guide', exportGuide],
       ['chatConsent', 'Before you upload', chatConsent],
@@ -132,8 +132,8 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '8 · Gossip Rooms',
-    note: 'Moderated rooms for sharing your own experience under a nickname. Libra Bot screens every post; bans always come with a reason and an appeal.',
+    title: '8 · Gist Rooms',
+    note: 'Moderated rooms for sharing your own experience under a nickname. Gist Bot screens every post; bans always come with a reason and an appeal.',
     screens: [
       ['roomsList', 'Rooms', roomsList],
       ['roomAbout', 'Room details', roomAbout],
@@ -148,7 +148,7 @@ const DEFS: Group[] = [
       ['muteSheet', 'Mute room', muteSheet],
       ['roomInfo', 'Room info', roomInfo],
       ['composer', 'New post', () => composer()],
-      ['roomFeedBlocked', 'Blocked by Libra Bot', roomFeedBlocked],
+      ['roomFeedBlocked', 'Blocked by Gist Bot', roomFeedBlocked],
       ['postHeld', 'Post held for review', postHeld],
       ['reportPost', 'Report a post', reportPost],
       ['banNotice', 'Ban notice', banNotice],
@@ -174,7 +174,7 @@ const DEFS: Group[] = [
   },
 ];
 
-const ORDER = ['Onboarding', 'Home and saved', 'New Libra', 'Report', 'Chat analysis', 'Gossip Rooms', 'Safety', 'Settings and account'];
+const ORDER = ['Onboarding', 'Home and saved', 'Run a Gutchek', 'Report', 'Check a Chat', 'Gist Rooms', 'Safety', 'Settings and account'];
 DEFS.sort((a, b) => ORDER.indexOf(a.title) - ORDER.indexOf(b.title));
 
 export const GROUPS: Array<{ title: string; note: string; screens: ScreenDef[] }> = DEFS.map((g, gi) => ({

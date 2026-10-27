@@ -41,15 +41,15 @@ export function chatAnalysisPage(s: Screens): FrameNode {
   art.appendChild(p2);
   p2.x = 276;
   p2.y = 96;
-  return webPage('Chat analysis', [
+  return webPage('Check a Chat', [
     webNav('chat'),
     row({ name: 'Hero', w: 'fill', pad: [72, GUTTER, 96, GUTTER], gap: 64, cross: 'center' }, [
       col({ name: 'Copy', gap: 26, w: 'fill' }, [
-        pill('New · Chat analysis', 'brand', 'message'),
+        pill('New · Check a Chat', 'brand', 'message'),
         text('How are they really talking to you?', display(68, 76), 'text/primary', { w: 'fill' }),
-        text('Upload screenshots or a chat export. Libra spots patterns like pressure, love-bombing or money requests, and the good stuff too, with the exact messages as evidence.', lead, 'text/secondary', { w: 'fill' }),
+        text('Upload screenshots or a chat export. Gutchek spots patterns like pressure, love-bombing or money requests, and the good stuff too, with the exact messages as evidence.', lead, 'text/secondary', { w: 'fill' }),
         row({ name: 'Points', gap: 24 }, [
-          row({ name: 'Free', gap: 8 }, [icon('sparkle', 18, 'brand/fg'), text('2 free a month', 'smallStrong', 'text/secondary')]),
+          row({ name: 'Free', gap: 8 }, [icon('sparkle', 18, 'brand/fg'), text('1 free a month', 'smallStrong', 'text/secondary')]),
           row({ name: 'Delete', gap: 8 }, [icon('trash', 18, 'brand/fg'), text('Uploads deleted in 24h', 'smallStrong', 'text/secondary')]),
           row({ name: 'Mask', gap: 8 }, [icon('eye-off', 18, 'brand/fg'), text('Numbers and addresses masked', 'smallStrong', 'text/secondary')]),
         ]),
@@ -58,7 +58,7 @@ export function chatAnalysisPage(s: Screens): FrameNode {
       art,
     ]),
     section('Patterns', [
-      heading('What Libra looks for', 'Patterns, not single messages', 'Each pattern has a written definition and needs at least three instances before it is labelled. Banter is checked on both sides first.', { align: 'center', w: 900 }),
+      heading('What Gutchek looks for', 'Patterns, not single messages', 'Each pattern has a written definition and needs at least three instances before it is labelled. Banter is checked on both sides first.', { align: 'center', w: 900 }),
       row({ name: 'Caution', w: 'fill', gap: 24, wrap: true, wrapGap: 24 }, CAUTION.map(([t, b]) => patternTile(t, b, 'caution'))),
       row({ name: 'Positive', w: 'fill', gap: 24, wrap: true, wrapGap: 24 }, POSITIVE.map(([t, b]) => patternTile(t, b, 'positive'))),
     ], { fill: 'bg/surface', cross: 'center' }),
@@ -76,11 +76,11 @@ export function chatAnalysisPage(s: Screens): FrameNode {
         icon('info', 40, 'warning/fg'),
         col({ name: 'Copy', gap: 12, w: 'fill' }, [
           text('Honest about its limits', display(36, 44), 'text/primary', { w: 'fill' }),
-          text('A report is based only on the messages you provide. Screenshots can be cropped, edited or miss context, and Libra cannot verify them. Chat signals sit next to public signals, never mixed in.', lead, 'text/secondary', { w: 'fill' }),
+          text('A report is based only on the messages you provide. Screenshots can be cropped, edited or miss context, and Gutchek cannot verify them. Chat signals sit next to public signals, never mixed in.', lead, 'text/secondary', { w: 'fill' }),
         ]),
       ]),
     ], { pad: [0, GUTTER] }),
-    section('CTA', [ctaBand('See the conversation clearly', 'Your first two chat analyses each month are free.')], { pad: [96, GUTTER] }),
+    section('CTA', [ctaBand('See the conversation clearly', 'Your first two chat checks each month are free.')], { pad: [96, GUTTER] }),
     webFooter(),
   ]);
 }
@@ -88,7 +88,7 @@ export function chatAnalysisPage(s: Screens): FrameNode {
 /** Public page a shared room post opens to, Substack-style: the post as a card, then a reason to read the rest in the app. */
 export function sharedPost(): FrameNode {
   const card = col({ name: 'Shared card', w: 'fill', pad: 24, gap: 16, radius: 24, fill: [gradient([['#7556E3', 0], ['#2C1E66', 1]], 135)] }, [
-    row({ name: 'Brand', gap: 8, w: 'fill' }, [glyph(22, 'text/on-solid'), text('Libra Rooms', 'smallStrong', 'text/on-solid', { w: 'fill' }), text('Win', 'label', 'text/on-solid')]),
+    row({ name: 'Brand', gap: 8, w: 'fill' }, [glyph(22, 'text/on-solid'), text('Gist Rooms', 'smallStrong', 'text/on-solid', { w: 'fill' }), text('Win', 'label', 'text/on-solid')]),
     icon('quote', 28, 'text/on-solid'),
     text('He said "no pressure" and actually meant it. Waited two weeks for me to feel ready, then picked somewhere public without me asking.', { family: 'display', weight: 700, size: 22, line: 30, tracking: -0.5 }, 'text/on-solid', { w: 'fill' }),
     text('A member of Talking Stage Diaries', 'caption', 'text/on-solid', { opacity: 0.8 }),
@@ -99,12 +99,12 @@ export function sharedPost(): FrameNode {
     [
       mobileNav(),
       col({ name: 'Body', w: 'fill', pad: [28, 20, 40, 20], gap: 20 }, [
-        text('Shared from a Libra Room', 'overline', 'brand/fg'),
+        text('Shared from a Gutchek Room', 'overline', 'brand/fg'),
         card,
         row({ name: 'Stats', gap: 16 }, [stat('heart', '86'), stat('messages', '14 replies'), stat('quote', '5 quotes')]),
         col({ name: 'Locked', w: 'fill', gap: 12, pad: 20, radius: 20, fill: 'bg/surface', stroke: 'border/default' }, [
           row({ name: 'Head', gap: 8 }, [icon('lock', 18, 'brand/fg'), text('The full thread is for members', 'title', 'text/primary')]),
-          text('Rooms are private, moderated spaces where people share their own dating experiences under nicknames. Join Libra and request to join this room to read the replies.', 'small', 'text/secondary', { w: 'fill' }),
+          text('Rooms are private, moderated spaces where people share their own dating experiences under nicknames. Join Gutchek and request to join this room to read the replies.', 'small', 'text/secondary', { w: 'fill' }),
           row({ name: 'Badges', gap: 10 }, [storeBadge('apple', 0.9), storeBadge('google', 0.9)]),
         ]),
         row({ name: 'Privacy', gap: 8, w: 'fill' }, [icon('eye-off', 14, 'text/tertiary'), text('Shared posts never show nicknames or replies. Authors can turn sharing off at any time.', 'caption', 'text/tertiary', { w: 'fill' })]),
@@ -131,7 +131,7 @@ export function communityGuidelines(): FrameNode {
   return webPage('Community guidelines', [
     webNav(),
     col({ name: 'Hero', w: 'fill', pad: [96, GUTTER, 80, GUTTER], cross: 'center', fill: 'bg/surface' }, [
-      heading('Gossip Rooms', 'Community guidelines', 'Rooms are for sharing your own experience and supporting each other. They are not for exposing anyone. These rules apply in every room.', { align: 'center', w: 880, size: 60 }),
+      heading('Gist Rooms', 'Community guidelines', 'Rooms are for sharing your own experience and supporting each other. They are not for exposing anyone. These rules apply in every room.', { align: 'center', w: 880, size: 60 }),
     ]),
     section('Rules', [
       rule('1', 'Share your own experience', '"This happened to me" is welcome. Accusing a named person of a crime is not, and is held for review.', true),
@@ -156,7 +156,7 @@ export function communityGuidelines(): FrameNode {
       ]),
       col({ name: 'Mentioned', w: 'fill', gap: 12, pad: 40, radius: 28, fill: 'brand/subtle' }, [
         text('Mentioned in a post?', 'h2', 'text/primary'),
-        text('If a room post describes you, you can ask us to remove it, even without a Libra account.', lead, 'text/secondary', { w: 'fill' }),
+        text('If a room post describes you, you can ask us to remove it, even without a Gutchek account.', lead, 'text/secondary', { w: 'fill' }),
         wlink(row({ name: 'CTA', gap: 8 }, [text('Request removal', 'bodyStrong', 'brand/fg'), icon('arrow-right', 18, 'brand/fg')]), 'optout'),
       ]),
     ]),

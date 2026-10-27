@@ -26,9 +26,9 @@ const STEPS: Array<[string, string, string, string]> = [
 
 const FEATURES: Array<[string, string, string]> = [
   ['file', 'Evidence viewer', 'Every flag and every positive opens the original post, with date, platform and context checks.'],
-  ['message', 'Chat analysis', 'Upload a conversation and see patterns like pressure, love-bombing or money requests, with the exact messages.'],
+  ['message', 'Check a Chat', 'Upload a conversation and see patterns like pressure, love-bombing or money requests, with the exact messages.'],
   ['sparkle', 'Personality snapshot', 'How someone communicates online: tone, humour, conflict style. Observations, never diagnoses.'],
-  ['users', 'Gossip Rooms', 'Moderated rooms to share your own experience under a nickname. Never a place to expose anyone.'],
+  ['users', 'Gist Rooms', 'Moderated rooms to share your own experience under a nickname. Never a place to expose anyone.'],
   ['navigation', 'Share my date', 'Send plans and live location to a trusted friend, with check-ins that escalate if you miss one.'],
   ['lock', 'Private by design', 'Searches stay private, reports are encrypted, and you can delete everything in a tap.'],
 ];
@@ -41,10 +41,10 @@ const PRINCIPLES: Array<[string, string, string]> = [
 ];
 
 const FAQ: Array<[string, string]> = [
-  ['Will the person know I looked them up?', 'No. Libra never notifies the person, never shows who searched whom, and keeps your search history private to you.'],
-  ['Where does Libra get its information?', 'Only from public content: official platform APIs, licensed data providers and anything you choose to upload. We never access private accounts.'],
+  ['Will the person know I looked them up?', 'No. Gutchek never notifies the person, never shows who searched whom, and keeps your search history private to you.'],
+  ['Where does Gutchek get its information?', 'Only from public content: official platform APIs, licensed data providers and anything you choose to upload. We never access private accounts.'],
   ['How accurate are the scores?', 'Every score comes with a confidence level and links to its evidence. Thin data means low confidence, not a clean result. You make the call.'],
-  ['Can I use Libra to screen tenants or employees?', 'No. Libra is for dating and personal safety only. Using it for employment, housing or credit decisions is against our terms.'],
+  ['Can I use Gutchek to screen tenants or employees?', 'No. Gutchek is for dating and personal safety only. Using it for employment, housing or credit decisions is against our terms.'],
   ['What if someone looks me up?', 'You can opt out or dispute any finding on our public opt-out page. Requests are reviewed by a person, usually within a week.'],
 ];
 
@@ -74,7 +74,7 @@ function stepCard(s: Screens, [n, id, title, body]: (typeof STEPS)[number]): Fra
 }
 
 function scaleCard(w: number | 'fill' = 520): FrameNode {
-  const dial = use('ScaleDial', { Tilt: 'Positive' }) as InstanceNode;
+  const dial = use('GutMeter', { Tilt: 'Positive' }) as InstanceNode;
   const mobile = w === 'fill';
   if (mobile) dial.rescale(0.86);
   return col({ name: 'Scale card', w, pad: mobile ? [28, 8] : [40, 32], gap: 18, radius: 32, fill: 'bg/surface', stroke: 'border/default', shadow: 'e2', cross: 'center' }, [
@@ -110,7 +110,7 @@ function principlesBand(mobile = false): FrameNode {
     col({ name: 'Heading', gap: 14, w: mobile ? 'fill' : 760 }, [
       text('Our principles', 'overline', 'text/inverse', { opacity: 0.6 }),
       text('Built with guardrails, not loopholes', display(mobile ? 32 : 48, mobile ? 38 : 56), 'text/inverse', { w: 'fill' }),
-      text('Libra handles information about real people. These rules are product requirements, and they decide what we will never build.', mobile ? 'body' : lead, 'text/inverse', { w: 'fill', opacity: 0.72 }),
+      text('Gutchek handles information about real people. These rules are product requirements, and they decide what we will never build.', mobile ? 'body' : lead, 'text/inverse', { w: 'fill', opacity: 0.72 }),
     ]),
     (mobile ? col : row)({ name: 'Items', gap: mobile ? 28 : 40, w: 'fill', cross: 'start' }, PRINCIPLES.map(item)),
     wlink(row({ name: 'Link', gap: 8 }, [text('Read our Trust and safety principles', 'bodyStrong', 'text/inverse'), icon('arrow-right', 18, 'text/inverse')]), 'trust'),
@@ -146,9 +146,9 @@ export function planCard(name: string, price: string, per: string, items: string
 export function pricingPreview(): SceneNode[] {
   return [
     row({ name: 'Plans', w: 'fill', gap: 24, cross: 'start' }, [
-      planCard('Free', '$0', 'per month', ['1 lite report a month', 'Scores and summary', 'Safety Hub and Share my date']),
-      planCard('Libra Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer and personality', 'Private notes'], true, 'Start with Plus'),
-      planCard('Libra Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts and compare', 'PDF export']),
+      planCard('Free', '$0', 'per month', ['1 lite report a month', 'Scores and summary', 'Stay Safe hub and Share my date']),
+      planCard('Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer and personality', 'Private notes'], true, 'Start with Plus'),
+      planCard('Gutchek Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts and compare', 'PDF export']),
     ]),
     wlink(text('Need just one? Pay per report for $2.99, with local payment options.', 'bodyStrong', 'brand/fg'), 'pricing'),
   ];
@@ -164,7 +164,7 @@ export function landing(s: Screens): FrameNode {
       col({ name: 'Copy', gap: 28, w: 'fill' }, [
         pill('Now in beta in Lagos and Abuja', 'brand', 'sparkle'),
         text('Know the person behind the DMs', display(76, 84), 'text/primary', { w: 'fill' }),
-        text('Libra weighs what someone has shared publicly, the good and the concerning, and shows you the evidence behind every score. So you can decide with clear eyes.', lead, 'text/secondary', { w: 'fill' }),
+        text('Gutchek weighs what someone has shared publicly, the good and the concerning, and shows you the evidence behind every score. So you can decide with clear eyes.', lead, 'text/secondary', { w: 'fill' }),
         row({ name: 'Badges', gap: 12 }, [storeBadge('apple'), storeBadge('google')]),
         trustRow(),
       ]),
@@ -175,10 +175,10 @@ export function landing(s: Screens): FrameNode {
       heading('How it works', 'Three steps to a clearer picture', 'A fast second opinion before you invest emotionally or meet in person.', { align: 'center' }),
       row({ name: 'Steps', w: 'fill', gap: 24, cross: 'start' }, STEPS.map((st) => stepCard(s, st))),
     ], { cross: 'center' }),
-    section('The Libra Scale', [
+    section('The Gut Meter', [
       row({ name: 'Scale', w: 'fill', gap: 80, cross: 'center' }, [
         scaleCard(),
-        col({ name: 'Explainer', gap: 28, w: 'fill' }, [heading('The Libra Scale', 'Two pans, weighed separately', null), ...scaleExplainer()]),
+        col({ name: 'Explainer', gap: 28, w: 'fill' }, [heading('The Gut Meter', 'Two pans, weighed separately', null), ...scaleExplainer()]),
       ]),
     ], { fill: 'bg/surface' }),
     section('Features', [
@@ -189,7 +189,7 @@ export function landing(s: Screens): FrameNode {
     section('Voices', [heading('From our beta', 'People are more than their posts', null, { align: 'center' }), quotes()], { cross: 'center' }),
     section('Pricing', [heading('Pricing', 'Start free. Upgrade when you need more.', null, { align: 'center' }), ...pricingPreview()], { fill: 'bg/surface', cross: 'center' }),
     section('FAQ', [heading('Questions', 'Good questions to ask', null, { align: 'center' }), col({ name: 'FAQ wrap', w: 880 }, [faq(FAQ)])], { cross: 'center' }),
-    section('Closing CTA', [ctaBand('Date with clear eyes', 'Download Libra and run your first report free.')], { pad: [0, GUTTER] }),
+    section('Closing CTA', [ctaBand('Date with clear eyes', 'Download Gutchek and run your first report free.')], { pad: [0, GUTTER] }),
     box({ name: 'Spacer', w: DESKTOP, h: 96, dir: 'v' }),
     webFooter(),
   ]);
@@ -209,14 +209,14 @@ export function mobileLanding(s: Screens): FrameNode {
       col({ name: 'Hero', w: 'fill', pad: [32, 20, 40, 20], gap: 20 }, [
         pill('Now in beta in Lagos and Abuja', 'brand', 'sparkle'),
         text('Know the person behind the DMs', display(42, 48), 'text/primary', { w: 'fill' }),
-        text('Libra weighs what someone has shared publicly, the good and the concerning, and shows you the evidence behind every score.', 'body', 'text/secondary', { w: 'fill' }),
+        text('Gutchek weighs what someone has shared publicly, the good and the concerning, and shows you the evidence behind every score.', 'body', 'text/secondary', { w: 'fill' }),
         row({ name: 'Badges', gap: 10 }, [storeBadge('apple', 0.92), storeBadge('google', 0.92)]),
         trustRow(),
         art,
       ]),
       stats(true),
       col({ name: 'How it works', w: 'fill', pad: [48, 20], gap: 24 }, [heading('How it works', 'Three steps to a clearer picture', null, { mobile: true }), ...STEPS.map(step)]),
-      col({ name: 'Scale', w: 'fill', pad: [48, 20], gap: 24, fill: 'bg/surface' }, [heading('The Libra Scale', 'Two pans, weighed separately', null, { mobile: true }), scaleCard('fill')]),
+      col({ name: 'Scale', w: 'fill', pad: [48, 20], gap: 24, fill: 'bg/surface' }, [heading('The Gut Meter', 'Two pans, weighed separately', null, { mobile: true }), scaleCard('fill')]),
       principlesBand(true),
       col({ name: 'FAQ', w: 'fill', pad: [48, 20], gap: 24 }, [heading('Questions', 'Good questions to ask', null, { mobile: true }), faq(FAQ.slice(0, 3))]),
       col({ name: 'CTA', w: 'fill', pad: [0, 20, 48, 20] }, [ctaBand('Date with clear eyes', 'Run your first report free.', true)]),

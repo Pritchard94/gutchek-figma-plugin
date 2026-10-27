@@ -17,7 +17,7 @@ interface WebDef {
 const DESKTOP_PAGES: WebDef[] = [
   { id: 'landing', label: 'Home', build: landing },
   { id: 'how', label: 'How it works', build: howItWorks },
-  { id: 'chat', label: 'Chat analysis', build: chatAnalysisPage },
+  { id: 'chat', label: 'Check a Chat', build: chatAnalysisPage },
   { id: 'trust', label: 'Trust and safety', build: trust },
   { id: 'guidelines', label: 'Community guidelines', build: () => communityGuidelines() },
   { id: 'pricing', label: 'Pricing', build: pricing },

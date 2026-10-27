@@ -86,12 +86,12 @@ function reportHead(p: Person, meta: string): FrameNode {
 }
 
 function reportActions(): SceneNode[] {
-  return [btn('Save', 'Secondary', 'Medium', 'bookmark'), btn('Compare', 'Secondary', 'Medium', 'columns', 'wCompare'), btn('Share', 'Primary', 'Medium', 'share')];
+  return [btn('Keep this', 'Secondary', 'Medium', 'bookmark'), btn('Side by side', 'Secondary', 'Medium', 'columns', 'wCompare'), btn('Share', 'Primary', 'Medium', 'share')];
 }
 
 function overview(cfg: ReportCfg, name: string): FrameNode {
-  const dial = row({ name: 'Libra Scale', w: 'fill', gap: 24, pad: 28, radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
-    use('ScaleDial', { Tilt: cfg.tilt }, { 'caution-score': cfg.caution, 'positive-score': cfg.positive }),
+  const dial = row({ name: 'Gut Meter', w: 'fill', gap: 24, pad: 28, radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
+    use('GutMeter', { Tilt: cfg.tilt }, { 'caution-score': cfg.caution, 'positive-score': cfg.positive }),
     col({ name: 'Verdict', gap: 10, w: 'fill' }, [
       text('Verdict', 'overline', 'brand/fg'),
       text(cfg.p.verdict, 'h2', 'text/primary', { w: 'fill' }),
@@ -118,7 +118,7 @@ function overview(cfg: ReportCfg, name: string): FrameNode {
     ], { action: 'Edit' }),
     card('Confidence', [kv('Public items', cfg.basis.split(' · ')[0].replace(' public items', '')), kv('Platforms', String(cfg.platforms.filter((x) => x[2]).length) + ' of ' + cfg.platforms.length), kv('Time span', cfg.basis.split(' · ')[2] || '2019 to 2026'), kv('Accounts', 'Confirmed by you', 'positive/fg')]),
     alink(
-      card('Chat signals', [text('Link a conversation to see chat signals beside public ones. They are never mixed into these scores.', 'small', 'text/secondary', { w: 'fill' }), row({ name: 'CTA', gap: 6 }, [icon('message', 16, 'brand/fg'), text('Analyse a chat', 'smallStrong', 'brand/fg')])]),
+      card('Chat signals', [text('Link a conversation to see chat signals beside public ones. They are never mixed into these scores.', 'small', 'text/secondary', { w: 'fill' }), row({ name: 'CTA', gap: 6 }, [icon('message', 16, 'brand/fg'), text('Check a Chat', 'smallStrong', 'brand/fg')])]),
       'wAnalyse',
     ),
     row({ name: 'Footnote', w: 'fill', gap: 8, pad: 16, radius: 16, fill: 'bg/subtle', cross: 'start' }, [icon('info', 16, 'text/tertiary'), text('Based on public content only. People are more than their posts.', 'small', 'text/secondary', { w: 'fill' })]),
@@ -166,7 +166,7 @@ export function wSignals(): FrameNode {
         col({ name: 'Weights', w: 'fill', gap: 12 }, [text('How much this counts', 'title', 'text/primary'), weight('Severity', 'Medium · 0.45', 0.45, 'caution/fg'), weight('Recency', '2024 · 80%', 0.8, 'brand/fg'), weight('Authorship', 'Own reply · 100%', 1, 'brand/fg'), weight('Account confidence', 'Confirmed · 100%', 1, 'positive/fg')]),
       ]),
       divider(),
-      row({ name: 'Actions', gap: 12 }, [btn('Not relevant', 'Secondary', 'Medium', 'eye-off'), btn('Add a note', 'Secondary', 'Medium', 'pencil'), btn('Report an issue', 'Tertiary', 'Medium', 'flag')]),
+      row({ name: 'Actions', gap: 12 }, [btn("Doesn't apply", 'Secondary', 'Medium', 'eye-off'), btn('Add a note', 'Secondary', 'Medium', 'pencil'), btn('Report an issue', 'Tertiary', 'Medium', 'flag')]),
     ]),
   ]);
   return appFrame({ name: 'Report · Signals', active: 'wSaved', title: 'Report', crumb: 'Saved / Tobi Adeyemi', actions: reportActions() }, [
@@ -248,7 +248,7 @@ export function wCompare(): FrameNode {
 // ---------------------------------------------------------------- saved
 
 export function wSaved(): FrameNode {
-  return appFrame({ name: 'Saved · People', active: 'wSaved', title: 'Saved', actions: [btn('Compare two people', 'Secondary', 'Medium', 'columns', 'wCompare')] }, [
+  return appFrame({ name: 'Saved · People', active: 'wSaved', title: 'Saved', actions: [btn('Side by side', 'Secondary', 'Medium', 'columns', 'wCompare')] }, [
     tabs(['People · 4', 'Threads · 3'], 0, ['wSaved', 'wSavedThreads']),
     row({ name: 'Filters', w: 'fill', gap: 8 }, [
       box({ name: 'Search', dir: 'h', w: 320, h: 40, pad: [0, 14], gap: 8, radius: 10, fill: 'bg/surface', stroke: 'border/strong', cross: 'center' }, [icon('search', 18, 'text/tertiary'), text('Search saved people', 'small', 'text/tertiary')]),

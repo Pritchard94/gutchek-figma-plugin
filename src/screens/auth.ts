@@ -4,7 +4,7 @@ import { btn, center, field, link, listRow, note, screen, use } from './kit';
 import { user } from './data';
 
 export function welcome(): FrameNode {
-  const hero = box({ name: 'Hero', dir: 'v', w: 'fill', h: 260, radius: 32, fill: 'brand/subtle', main: 'center', cross: 'center', gap: 0 }, [use('ScaleDial', { Tilt: 'Positive' })]);
+  const hero = box({ name: 'Hero', dir: 'v', w: 'fill', h: 260, radius: 32, fill: 'brand/subtle', main: 'center', cross: 'center', gap: 0 }, [use('GutMeter', { Tilt: 'Positive' })]);
   return screen(
     {
       name: 'Welcome',
@@ -12,9 +12,9 @@ export function welcome(): FrameNode {
       gap: 24,
       cross: 'center',
       footer: [
-        link(btn('Create account'), 'intro'),
+        link(btn('Get started'), 'intro'),
         link(btn('I already have an account', 'Secondary'), 'signin'),
-        center('By continuing you agree to the Terms and Privacy Policy. Libra is for adults 18 and over.', 'caption', 'text/tertiary'),
+        center('By continuing you agree to the Terms and Privacy Policy. Gutchek is for adults 18 and over.', 'caption', 'text/tertiary'),
       ],
     },
     [
@@ -22,7 +22,7 @@ export function welcome(): FrameNode {
       lockup(36),
       col({ name: 'Copy', gap: 12, w: 'fill' }, [
         center('Know the person behind the DMs', 'h1'),
-        center('Libra weighs what someone has shared publicly, the good and the concerning, so you can decide with clear eyes.', 'body', 'text/secondary'),
+        center('Gutchek weighs what someone has shared publicly, the good and the concerning, so you can decide with clear eyes.', 'body', 'text/secondary'),
       ]),
     ],
   );
@@ -95,11 +95,11 @@ export function purpose(): FrameNode {
       ],
     },
     [
-      text('Before your first Libra', 'h1', 'text/primary', { w: 'fill' }),
-      text('Libra is built for personal safety. These promises keep it that way for everyone.', 'body', 'text/secondary', { w: 'fill' }),
-      check("I'm 18 or older", 'Libra is for adults and never profiles anyone under 18.'),
-      check("I'm using Libra for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
-      check("I won't use Libra to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
+      text('Before your first Gutchek', 'h1', 'text/primary', { w: 'fill' }),
+      text('Gutchek is built for personal safety. These promises keep it that way for everyone.', 'body', 'text/secondary', { w: 'fill' }),
+      check("I'm 18 or older", 'Gutchek is for adults and never profiles anyone under 18.'),
+      check("I'm using Gutchek for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
+      check("I won't use Gutchek to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
       link(listRow('Verify your identity', 'Optional. Adds a trusted badge to your account.', 'id-card'), 'idIntro'),
     ],
   );

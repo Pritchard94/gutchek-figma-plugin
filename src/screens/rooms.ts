@@ -71,7 +71,7 @@ function discoverRow(r: Room, target?: string): SceneNode {
 export function roomsList(): FrameNode {
   const safety: Room = { ...ROOMS[4], state: 'joined' };
   return screen(
-    { name: 'Rooms', tab: 'Rooms', nav: { type: 'Large', title: 'Rooms', action: 'shield', actionTo: 'myStanding' }, gap: 10 },
+    { name: 'Gists', tab: 'Gists', nav: { type: 'Large', title: 'Gists', action: 'shield', actionTo: 'myStanding' }, gap: 10 },
     [
       fill(use('TextField', { State: 'Default' }, { value: 'Search rooms' }, { hide: ['label'], show: ['leading'], icons: { leading: 'search' } })),
       row({ name: 'Rule', gap: 8, w: 'fill', pad: [2, 4] }, [icon('users', 14, 'brand/fg'), text('Share your own experience. Never identify anyone.', 'caption', 'text/secondary', { w: 'fill' })]),
@@ -105,7 +105,7 @@ export function roomAbout(): FrameNode {
       name: 'Room details',
       nav: { title: '', action: 'more', backTo: 'roomsList' },
       gap: 16,
-      footer: [link(btn('Request to join'), 'joinPending'), center('18+, phone-verified and on Libra for at least 24 hours.', 'caption', 'text/tertiary')],
+      footer: [link(btn('Join the Gist'), 'joinPending'), center('18+, phone-verified and on Gutchek for at least 24 hours.', 'caption', 'text/tertiary')],
     },
     [
       row({ name: 'Head', w: 'fill', gap: 14 }, [
@@ -136,14 +136,14 @@ export function joinPending(): FrameNode {
       gap: 18,
       cross: 'center',
       pad: [40, 20, 24, 20],
-      footer: [link(btn('Back to Rooms', 'Secondary'), 'roomsList')],
+      footer: [link(btn('Back to Gists', 'Secondary'), 'roomsList')],
     },
     [
       heroIcon('clock', 'warning', 96),
       col({ name: 'Copy', gap: 8, w: 'fill' }, [center('Request sent', 'h2'), center('An admin reviews requests for Healing After Heartbreak, usually within a day. We will notify you.', 'body', 'text/secondary')]),
       col({ name: 'Steps', w: 'fill', gap: 16, pad: 20, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
         step('Done', 'Rules acknowledged', 'Just now'),
-        step('Done', 'Libra Bot check', 'Account and device checks passed'),
+        step('Done', 'Gist Bot check', 'Account and device checks passed'),
         step('Active', 'Admin review', 'Approval required for this room'),
       ]),
     ],
@@ -164,7 +164,7 @@ export function roomWelcome(): FrameNode {
       text('Read and accept the rules before your first post.', 'small', 'text/secondary', { w: 'fill' }),
       check('I share my own experience only', 'No accusations against named people.'),
       check("I won't identify anyone", 'No names, handles, photos, workplaces or numbers.'),
-      check('I keep the room private', 'No screenshots of room content outside Libra.'),
+      check('I keep the room private', 'No screenshots of room content outside Gutchek.'),
       fill(use('TextField', { State: 'Focused' }, { label: 'Your room nickname', value: 'QuietStorm_24', helper: 'Pick something that does not identify you. Staff can see your real account; members cannot.' }, { show: ['helper'] })),
     ],
   );
@@ -183,7 +183,7 @@ export function composer(blocked = false): FrameNode {
       gap: 14,
       footer: blocked
         ? [btn('Edit post'), link(btn('Why was this blocked?', 'Tertiary'), 'myStanding')]
-        : [link(btn('Post'), 'postHeld'), center('Libra Bot checks every post before it is published.', 'caption', 'text/tertiary')],
+        : [link(btn('Drop a gist'), 'postHeld'), center('Gist Bot checks every post before it is published.', 'caption', 'text/tertiary')],
     },
     [
       row({ name: 'Posting as', gap: 10 }, [nickAvatar('QuietStorm', 'brand', 32), text('Posting as QuietStorm_24 in Talking Stage Diaries', 'small', 'text/secondary')]),
@@ -191,7 +191,7 @@ export function composer(blocked = false): FrameNode {
       textArea('Your post', body, false, 180),
       blocked
         ? col({ name: 'Bot block', w: 'fill', gap: 10, pad: 16, radius: 16, fill: 'caution/subtle', stroke: 'caution/border' }, [
-            row({ name: 'Head', gap: 8 }, [icon('shield', 18, 'caution/fg'), text('Libra Bot: remove personal details', 'bodyStrong', 'text/primary')]),
+            row({ name: 'Head', gap: 8 }, [icon('shield', 18, 'caution/fg'), text('Gist Bot: remove personal details', 'bodyStrong', 'text/primary')]),
             text('Your post includes a name with a workplace and a phone number. Remove them to post. Warning others is welcome without identifying anyone.', 'small', 'text/primary', { w: 'fill' }),
             row({ name: 'Found', gap: 8 }, [pill('Name and workplace', 'caution'), pill('Phone number', 'caution')]),
           ])
@@ -251,7 +251,7 @@ export function banNotice(): FrameNode {
       name: 'Ban notice',
       nav: { title: '', action: 'x', back: false },
       gap: 16,
-      footer: [link(btn('Appeal this decision'), 'appeal'), link(btn('Read the rules', 'Secondary'), 'roomAbout')],
+      footer: [link(btn('Appeal this'), 'appeal'), link(btn('Read the rules', 'Secondary'), 'roomAbout')],
     },
     [
       heroIcon('ban', 'caution', 72),

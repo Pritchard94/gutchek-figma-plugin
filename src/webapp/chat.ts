@@ -23,9 +23,9 @@ export function wAnalyse(): FrameNode {
     row({ name: 'Step ' + n, gap: 10, w: 'fill' }, [box({ name: 'N', dir: 'h', w: 24, h: 24, radius: 12, fill: 'brand/subtle', main: 'center', cross: 'center' }, [text(n, 'label', 'brand/on-subtle')]), text(t, 'small', 'text/primary', { w: 'fill' })]);
   return appFrame(
     {
-      name: 'Analyse a chat',
+      name: 'Check a Chat',
       active: 'wAnalyse',
-      title: 'Analyse a chat',
+      title: 'Check a Chat',
       rail: [
         alink(
           col({ name: 'Sample', w: 'fill', gap: 10, pad: 24, radius: 20, fill: 'brand/subtle' }, [
@@ -40,11 +40,11 @@ export function wAnalyse(): FrameNode {
           step('2', 'Tap Export chat, then Without media.'),
           step('3', 'Save the file and drop it here.'),
         ]),
-        card('Your privacy', [kv('Uploads deleted', 'Within 24 hours'), kv('Numbers and addresses', 'Masked first'), kv('Shared to Rooms', 'Never'), kv('Free this month', '1 of 2 left', 'positive/fg')]),
+        card('Your privacy', [kv('Uploads deleted', 'Within 24 hours'), kv('Numbers and addresses', 'Masked first'), kv('Shared to Gists', 'Never'), kv('Free this month', '1 of 1 left', 'positive/fg')]),
       ],
     },
     [
-      col({ name: 'Heading', gap: 6, w: 'fill' }, [text('How is this conversation going?', 'h1', 'text/primary'), text('Libra reports how they communicate, with the exact messages as evidence. Safety comes before scores.', 'body', 'text/secondary', { w: 'fill' })]),
+      col({ name: 'Heading', gap: 6, w: 'fill' }, [text('How is this conversation going?', 'h1', 'text/primary'), text('Gutchek reports how they communicate, with the exact messages as evidence. Safety comes before scores.', 'body', 'text/secondary', { w: 'fill' })]),
       drop,
       row({ name: 'Options', w: 'fill', gap: 16, cross: 'start' }, [
         option('image', 'Screenshots', 'From WhatsApp, Instagram, iMessage, Hinge, Tinder and more.', true),
@@ -64,7 +64,7 @@ export function wSpeakers(): FrameNode {
   const labelled = (str: string, who: 'them' | 'you') =>
     col({ name: 'Labelled', w: 'fill', gap: 4, cross: who === 'them' ? 'start' : 'end' }, [pill(who === 'them' ? 'Them · Dayo' : 'You', who === 'them' ? 'neutral' : 'brand'), bubble(str, who, { max: 360 })]);
   const chip = (label: string, on = false) => use('Chip', { Selected: on ? 'On' : 'Off' }, { label });
-  return appFrame({ name: 'Confirm speakers', active: 'wAnalyse', title: 'Confirm speakers', crumb: 'Analyse a chat / 5 screenshots', actions: [btn('Analyse chat', 'Primary', 'Medium', 'arrow-right', 'wChatReport')] }, [
+  return appFrame({ name: 'Confirm speakers', active: 'wAnalyse', title: 'Confirm speakers', crumb: 'Check a Chat / 5 screenshots', actions: [btn('Check it', 'Primary', 'Medium', 'arrow-right', 'wChatReport')] }, [
     row({ name: 'Split', w: 'fill', gap: 24, cross: 'start' }, [
       card('Your uploads', [
         row({ name: 'Grid', w: 'fill', gap: 12, wrap: true, wrapGap: 12 }, [1, 2, 3, 4, 5].map((n) => shotThumb(n, 96))),
@@ -80,7 +80,7 @@ export function wSpeakers(): FrameNode {
           labelled('Morning! Yes thanks, you?', 'you'),
           labelled('Send me your WhatsApp now, this app is slow', 'them'),
         ]),
-        row({ name: 'Controls', gap: 12, w: 'fill' }, [btn('Swap Them and You', 'Secondary', 'Medium', 'refresh'), fill(use('TextField', { State: 'Filled' }, { label: 'Their nickname (optional)', value: 'Dayo' }, { hide: ['label'] }))]),
+        row({ name: 'Controls', gap: 12, w: 'fill' }, [btn('Swap sides', 'Secondary', 'Medium', 'refresh'), fill(use('TextField', { State: 'Filled' }, { label: 'Their nickname (optional)', value: 'Dayo' }, { hide: ['label'] }))]),
       ]),
     ]),
   ]);
@@ -97,9 +97,9 @@ export function wChatReport(): FrameNode {
       name: 'Conversation report',
       active: 'wAnalyse',
       title: 'Conversation report',
-      crumb: 'Analyse a chat / Dayo',
+      crumb: 'Check a Chat / Dayo',
       tall: true,
-      actions: [btn('Delete data', 'Tertiary', 'Medium', 'trash'), btn('Link to a Libra', 'Secondary', 'Medium', 'link', 'wCompare'), btn('Save', 'Primary', 'Medium', 'bookmark')],
+      actions: [btn('Delete my data', 'Tertiary', 'Medium', 'trash'), btn('Link to a Gutchek', 'Secondary', 'Medium', 'link', 'wCompare'), btn('Keep this', 'Primary', 'Medium', 'bookmark')],
       rail: [
         card('Tone over time', [toneTimeline(days, ['2 Oct', '21 Oct'], 312)]),
         card('Evidence', [
@@ -125,7 +125,7 @@ export function wChatReport(): FrameNode {
         col({ name: 'Chat signals', w: 'fill', gap: 12, pad: [24, 0], radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
           row({ name: 'Label', gap: 8 }, [text('Chat signals', 'overline', 'brand/fg'), pill('Provided by you', 'neutral', 'user')]),
           text('Concerning patterns', 'h2', 'text/primary'),
-          use('ScaleDial', { Tilt: 'Caution' }, { 'caution-score': '7', 'positive-score': '3' }),
+          use('GutMeter', { Tilt: 'Caution' }, { 'caution-score': '7', 'positive-score': '3' }),
           use('ConfidenceBadge', { Level: 'Medium' }),
         ]),
         card('Conversation health', [healthGauge(38, 'Strained', 'warning', 180), kv('Dayo starts', '71%'), kv('Your reply time', '12 min'), kv('Longest silence', '3 days')], { w: 280 }),

@@ -35,7 +35,7 @@ function chatScaleCard(caution: string, positive: string, tilt: string, level: s
   return col({ name: 'Chat signals', w: 'fill', pad: [18, 0, 18, 0], gap: 12, radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
     row({ name: 'Label', gap: 8 }, [text('Chat signals', 'overline', 'brand/fg'), pill('Provided by you', 'neutral', 'user')]),
     col({ name: 'Verdict', w: 'fill', pad: [0, 20] }, [center(verdict, 'h2')]),
-    use('ScaleDial', { Tilt: tilt }, { 'caution-score': caution, 'positive-score': positive }),
+    use('GutMeter', { Tilt: tilt }, { 'caution-score': caution, 'positive-score': positive }),
     use('ConfidenceBadge', { Level: level }),
   ]);
 }
@@ -48,9 +48,9 @@ export function createSheet(): FrameNode {
     base,
     'Start something',
     [
-      optionRow('search', 'New Libra', "Check someone's public posts with a name and one handle.", 'search'),
-      optionRow('message', 'Analyse a chat', 'Upload screenshots or a chat export to see how they communicate.', 'analyse', '2 free'),
-      center('You have 4 reports and 1 free chat analysis left this month.', 'caption', 'text/tertiary'),
+      optionRow('search', 'Run a Gutchek', "Check someone's public posts with a name and one handle.", 'search'),
+      optionRow('message', 'Check a Chat', 'Upload screenshots or a chat export to see how they communicate.', 'analyse', '1 free'),
+      center('You have 4 reports and 1 free chat check left this month.', 'caption', 'text/tertiary'),
     ],
     'Home · Start something',
   );
@@ -59,13 +59,13 @@ export function createSheet(): FrameNode {
 export function analyse(): FrameNode {
   return screen(
     {
-      name: 'Analyse a chat',
-      nav: { title: 'Analyse a chat', action: 'help', backTo: 'home', actionTo: 'exportGuide' },
+      name: 'Check a Chat',
+      nav: { title: 'Check a Chat', action: 'help', backTo: 'home', actionTo: 'exportGuide' },
       gap: 14,
     },
     [
       text('How is this conversation going?', 'h2', 'text/primary', { w: 'fill' }),
-      text('Upload a chat with someone you are talking to. Libra reports how they communicate, with the exact messages as evidence.', 'small', 'text/secondary', { w: 'fill' }),
+      text('Upload a chat with someone you are talking to. Gutchek reports how they communicate, with the exact messages as evidence.', 'small', 'text/secondary', { w: 'fill' }),
       optionRow('image', 'Screenshots', 'Up to 20 images from WhatsApp, Instagram, iMessage, Hinge, Tinder and more.', 'chatConsent'),
       optionRow('file', 'Chat export', 'WhatsApp, Telegram or Instagram export. The most accurate option.', 'chatConsent', 'Best'),
       optionRow('message', 'Paste text', 'Paste messages and label who said what.', 'pasteText'),
@@ -77,7 +77,7 @@ export function analyse(): FrameNode {
         ]),
         'sampleReport',
       ),
-      row({ name: 'Quota', gap: 8, w: 'fill' }, [icon('info', 16, 'text/tertiary'), text('2 free chat analyses a month, then 1 report credit each. 1 free left.', 'caption', 'text/tertiary', { w: 'fill' })]),
+      row({ name: 'Quota', gap: 8, w: 'fill' }, [icon('info', 16, 'text/tertiary'), text('Free plan: 1 chat check a month. After that, each check counts as one report.', 'caption', 'text/tertiary', { w: 'fill' })]),
     ],
   );
 }
@@ -93,7 +93,7 @@ export function chatConsent(): FrameNode {
     },
     [
       text('Before you upload', 'h1', 'text/primary', { w: 'fill' }),
-      text('Use chat analysis only for your own safety and dating decisions.', 'body', 'text/secondary', { w: 'fill' }),
+      text('Use chat check only for your own safety and dating decisions.', 'body', 'text/secondary', { w: 'fill' }),
       check('This is my own conversation', "I'm one of the two people in this chat."),
       check('No one in this chat is under 18', 'We stop the analysis if anyone appears to be a minor.'),
       check("I won't use the report to shame anyone", 'Chat reports are never shared to Rooms or used to label people.'),
@@ -116,11 +116,11 @@ export function exportGuide(): FrameNode {
       step('1', 'Open the chat and tap their name at the top.'),
       step('2', 'Scroll down and tap Export chat.'),
       step('3', 'Choose Without media.'),
-      step('4', 'Share the file to Libra.'),
+      step('4', 'Share the file to Gutchek.'),
       note('info', 'Exports give the full history with exact times and no reading errors.', 'neutral'),
       btn('Got it'),
     ],
-    'Analyse a chat · Export guide',
+    'Check a Chat · Export guide',
   );
 }
 
@@ -172,7 +172,7 @@ export function speakers(): FrameNode {
       name: 'Confirm speakers',
       nav: { title: 'Confirm speakers', action: null, backTo: 'chatUpload' },
       gap: 14,
-      footer: [link(btn('Looks right'), 'chatProcessing'), btn('Swap Them and You', 'Secondary', 'Large', 'refresh')],
+      footer: [link(btn('Looks right'), 'chatProcessing'), btn('Swap sides', 'Secondary', 'Large', 'refresh')],
     },
     [
       text('Who said what?', 'h2', 'text/primary', { w: 'fill' }),
@@ -234,7 +234,7 @@ export function safetyCard(): FrameNode {
       text("Some messages threaten to share private images unless you pay. That's serious, and it's not your fault.", 'body', 'text/secondary', { w: 'fill' }),
       group(
         [
-          step('download', 'Save the evidence', 'Keep the chat and screenshots. Libra kept a redacted copy for you.'),
+          step('download', 'Save the evidence', 'Keep the chat and screenshots. Gutchek kept a redacted copy for you.'),
           step('ban', "Don't pay or send anything more", 'Paying rarely stops threats.'),
           step('flag', 'Block and report on the app', 'Report the account to the platform, then block it.'),
           step('users', 'Tell someone you trust', 'You do not have to handle this alone.'),
@@ -273,8 +273,8 @@ function report(sample: boolean): FrameNode {
       tall: true,
       gap: 18,
       footer: sample
-        ? [link(btn('Analyse my own chat', 'Primary', 'Large', 'message'), 'chatConsent')]
-        : [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Save', 'Secondary', 'Large', 'bookmark'), link(btn('Link to a Libra', 'Primary', 'Large', 'link'), 'combinedView')])],
+        ? [link(btn('Check my own chat', 'Primary', 'Large', 'message'), 'chatConsent')]
+        : [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Keep this', 'Secondary', 'Large', 'bookmark'), link(btn('Link to a Gutchek', 'Primary', 'Large', 'link'), 'combinedView')])],
       footerDivider: true,
     },
     [
@@ -326,7 +326,7 @@ export function patternDetail(): FrameNode {
       nav: { title: 'Pressure and rushing', action: null, backTo: 'chatReport' },
       tall: true,
       gap: 14,
-      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Not relevant', 'Secondary', 'Large', 'eye-off'), btn('Add a note', 'Secondary', 'Large', 'pencil')])],
+      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn("Doesn't apply", 'Secondary', 'Large', 'eye-off'), btn('Add a note', 'Secondary', 'Large', 'pencil')])],
       footerDivider: true,
     },
     [
@@ -371,7 +371,7 @@ export function chatBlocked(): FrameNode {
   return screen(
     {
       name: 'Chat · not analysed',
-      nav: { title: 'Analyse a chat', action: 'x', back: false },
+      nav: { title: 'Check a Chat', action: 'x', back: false },
       cross: 'center',
       gap: 18,
       pad: [48, 20, 24, 20],
@@ -381,7 +381,7 @@ export function chatBlocked(): FrameNode {
       heroIcon('ban', 'neutral', 96),
       col({ name: 'Copy', gap: 8, w: 'fill' }, [
         center("We can't analyse this chat", 'h2'),
-        center('This chat may involve someone under 18, or includes content we never process. Nothing was saved, and your free analysis was not used.', 'body', 'text/secondary'),
+        center('This chat may involve someone under 18, or includes content we never process. Nothing was saved, and your free chat check was not used.', 'body', 'text/secondary'),
       ]),
       note('life-buoy', 'If a child may be at risk, contact local authorities or a child protection service.', 'brand'),
     ],

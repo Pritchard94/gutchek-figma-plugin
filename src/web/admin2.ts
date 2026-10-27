@@ -122,15 +122,21 @@ export function adminRoomCreate(): FrameNode {
   const tones: Tone[] = ['brand', 'positive', 'warning', 'caution', 'neutral'];
   const tonePick = tones.map((t, n) => box({ name: t, dir: 'h', w: 28, h: 28, radius: 14, fill: toneTokens[t].bg, stroke: n === 0 ? 'border/focus' : 'border/default', strokeW: n === 0 ? 2 : 1, main: 'center', cross: 'center' }, [box({ name: 'Dot', w: 12, h: 12, radius: 6, fill: toneTokens[t].fg, dir: 'h' })]));
   const mod = (nick: string) => row({ name: nick, w: 'fill', gap: 10, pad: [6, 0] }, [nickAvatar(nick, undefined, 28), text(nick, 'smallStrong', nameToken(nick), { w: 'fill' }), small('Moderator', 'text/tertiary', 90), icon('x', 16, 'text/tertiary')]);
-  const form = col({ name: 'Form', w: 'fill', gap: 16 }, [
-    row({ name: 'Two', w: 'fill', gap: 16, cross: 'start' }, [
+  const form = row({ name: 'Form', w: 'fill', gap: 16, cross: 'start' }, [
+    col({ name: 'Left', w: 'fill', gap: 16 }, [
       card('Basics', [
         tf('Room name', 'Long Distance'),
         textArea('Description shown to members', 'Making it work across cities and countries: visits, time zones and trust.', false, 64),
         col({ name: 'Icon', gap: 8, w: 'fill' }, [text('Icon and colour', 'label', 'text/secondary'), row({ name: 'Icons', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, iconPick), row({ name: 'Tones', gap: 8 }, tonePick)]),
         col({ name: 'Region', gap: 8, w: 'fill' }, [text('Who can find it', 'label', 'text/secondary'), row({ name: 'Chips', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, [chip('All of Nigeria', true), chip('Lagos'), chip('Abuja'), chip('Ghana')])]),
       ]),
-      col({ name: 'Right', w: 'fill', gap: 16 }, [
+      card('Rules', [
+        row({ name: 'Template', gap: 8, w: 'fill' }, [icon('file', 16, 'brand/fg'), text('Starts from Gutchek standard rules (7). Add room-specific rules below.', 'small', 'text/secondary', { w: 'fill' })]),
+        textArea('Extra rule for this room', '8. Do not share travel plans or exact dates of visits.', false, 56),
+      ]),
+      card('Moderators', [mod('Mod_Ife'), mod('Mod_Ada'), tf('Add a moderator', 'Search staff', 'Default', { leading: 'search' }), row({ name: 'Rule', gap: 8, w: 'fill' }, [icon('info', 14, 'text/tertiary'), small('Every room needs at least two moderators before it can go live.', 'text/tertiary')])]),
+    ]),
+    col({ name: 'Right', w: 'fill', gap: 16 }, [
         card('Joining', [
           radioGroup([{ label: 'Open with bot', detail: 'Low-risk requests are approved automatically.', on: true }, { label: 'Approval required', detail: 'An admin reviews every request.' }, { label: 'Invite only' }]),
           toggleRow('18+ and phone-verified', 'Required for every room', true, true),
@@ -142,14 +148,6 @@ export function adminRoomCreate(): FrameNode {
           toggleRow('Images after 7 days without strikes', 'Scanned for nudity, faces and personal details', true),
           row({ name: 'Types', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, [chip('Story', true), chip('Question', true), chip('Advice', true), chip('Win', true)]),
         ]),
-      ]),
-    ]),
-    row({ name: 'Two b', w: 'fill', gap: 16, cross: 'start' }, [
-      card('Rules', [
-        row({ name: 'Template', gap: 8, w: 'fill' }, [icon('file', 16, 'brand/fg'), text('Starts from Libra standard rules (7). Add room-specific rules below.', 'small', 'text/secondary', { w: 'fill' })]),
-        textArea('Extra rule for this room', '8. Do not share travel plans or exact dates of visits.', false, 56),
-      ]),
-      card('Moderators', [mod('Mod_Ife'), mod('Mod_Ada'), tf('Add a moderator', 'Search staff', 'Default', { leading: 'search' }), row({ name: 'Rule', gap: 8, w: 'fill' }, [icon('info', 14, 'text/tertiary'), small('Every room needs at least two moderators before it can go live.', 'text/tertiary')])]),
     ]),
   ]);
   const preview = col({ name: 'Preview', w: 360, gap: 16 }, [
@@ -177,13 +175,13 @@ export function adminRoomCreate(): FrameNode {
 
 export function adminDisputes(): FrameNode {
   const rows: Array<[string, [string, Tone], string, [string, Tone], [string, Tone]]> = [
-    ['LBR-2026-04821', ['Dispute', 'brand'], 'T. A***** · @tobiadeyemi', ['ID verified', 'positive'], ['4 days left', 'positive']],
-    ['LBR-2026-04817', ['Wrong person', 'warning'], 'K. O** · @kemi.ola', ['ID verified', 'positive'], ['2 days left', 'warning']],
-    ['LBR-2026-04810', ['Opt-out', 'neutral'], 'D. O***** · 3 handles', ['Awaiting ID', 'warning'], ['5 days left', 'positive']],
-    ['LBR-2026-04802', ['Dispute', 'brand'], 'S. B***** · @seunbakes', ['ID verified', 'positive'], ['Due today', 'caution']],
+    ['GCK-2026-04821', ['Dispute', 'brand'], 'T. A***** · @tobiadeyemi', ['ID verified', 'positive'], ['4 days left', 'positive']],
+    ['GCK-2026-04817', ['Wrong person', 'warning'], 'K. O** · @kemi.ola', ['ID verified', 'positive'], ['2 days left', 'warning']],
+    ['GCK-2026-04810', ['Opt-out', 'neutral'], 'D. O***** · 3 handles', ['Awaiting ID', 'warning'], ['5 days left', 'positive']],
+    ['GCK-2026-04802', ['Dispute', 'brand'], 'S. B***** · @seunbakes', ['ID verified', 'positive'], ['Due today', 'caution']],
   ];
   const detail = col({ name: 'Detail', w: 480, gap: 16 }, [
-    card('LBR-2026-04821 · Dispute', [
+    card('GCK-2026-04821 · Dispute', [
       row({ name: 'Meta', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, [pill('ID and selfie verified', 'positive', 'shield-check'), pill('Subject of the report', 'neutral'), pill('Received 22 Oct', 'neutral')]),
       col({ name: 'Finding', w: 'fill', gap: 6, pad: 14, radius: 12, fill: 'bg/subtle' }, [
         row({ name: 'Head', gap: 8 }, [icon('alert-triangle', 16, 'caution/fg'), text('Hostile replies during a football argument', 'smallStrong', 'text/primary')]),
@@ -245,7 +243,7 @@ export function adminChatSafety(): FrameNode {
       small('Referrals follow the law-enforcement request policy and need Trust and safety lead sign-off.', 'text/tertiary'),
     ]),
   ]);
-  return shell('Admin · Chat safety', 'adminChatSafety', 'Chat safety cases', 'Automatic safety stops from chat analysis', [
+  return shell('Admin · Chat safety', 'adminChatSafety', 'Chat safety cases', 'Automatic safety stops from chat check', [
     row({ name: 'KPIs', w: 'fill', gap: 16 }, [kpi('Open cases', '2', 'Both under 1 hour old', 'warning'), kpi('Suspected minors this month', '3', 'Analysis stopped each time', 'caution'), kpi('Threats and sextortion', '5', 'Safety card shown first', 'caution'), kpi('Median first response', '18 min', 'Target under 1 hour', 'positive')]),
     row({ name: 'Split', w: 'fill', gap: 20, cross: 'start' }, [
       table(
@@ -277,10 +275,10 @@ export function adminUsers(): FrameNode {
       row({ name: 'Privacy', w: 'fill', gap: 8, pad: 12, radius: 12, fill: 'bg/subtle', cross: 'start' }, [icon('lock', 16, 'text/tertiary'), small('Staff cannot see who a user searched, their reports or their notes. Only counts are shown.', 'text/secondary')]),
     ]),
     card('Plan and usage', [
-      row({ name: 'Plan', gap: 10, w: 'fill' }, [pill('Libra Plus', 'brand', 'star'), small('Renews 1 Nov · Paystack card 4242', 'text/secondary')]),
-      row({ name: 'Usage', gap: 16, w: 'fill' }, [col({ name: 'R', gap: 0, w: 'fill' }, [text('2 of 5', 'h3', 'text/primary'), small('Reports used')]), col({ name: 'C', gap: 0, w: 'fill' }, [text('1 of 2', 'h3', 'text/primary'), small('Free chat analyses')]), col({ name: 'S', gap: 0, w: 'fill' }, [text('3', 'h3', 'text/primary'), small('Searches blocked')])]),
+      row({ name: 'Plan', gap: 10, w: 'fill' }, [pill('Gutchek Plus', 'brand', 'star'), small('Renews 1 Nov · Paystack card 4242', 'text/secondary')]),
+      row({ name: 'Usage', gap: 16, w: 'fill' }, [col({ name: 'R', gap: 0, w: 'fill' }, [text('2 of 5', 'h3', 'text/primary'), small('Reports used')]), col({ name: 'C', gap: 0, w: 'fill' }, [text('1 of 1', 'h3', 'text/primary'), small('Free chat checks')]), col({ name: 'S', gap: 0, w: 'fill' }, [text('3', 'h3', 'text/primary'), small('Searches blocked')])]),
       divider(),
-      small('1 Oct · Libra Plus $7.99 · paid      14 Sep · One report $2.99 · paid', 'text/secondary'),
+      small('1 Oct · Gutchek Plus $7.99 · paid      14 Sep · One report $2.99 · paid', 'text/secondary'),
     ]),
     card('Actions', [
       btnRow([
@@ -357,7 +355,7 @@ export function adminBotRules(): FrameNode {
     ]),
     row({ name: 'Publish', w: 'fill', gap: 10 }, [use('Button', { Variant: 'Secondary', Size: 'Medium' }, { label: 'Save as v8 draft' }), use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Request review' }), small('Rule changes need a second admin and are versioned.', 'text/tertiary')]),
   ]);
-  return shell('Admin · Bot rules', 'adminBotRules', 'Libra Bot rules', 'What the bot detects in rooms and what it does', [
+  return shell('Admin · Bot rules', 'adminBotRules', 'Gist Bot rules', 'What the bot detects in rooms and what it does', [
     row({ name: 'Split', w: 'fill', gap: 20, cross: 'start' }, [
       table(
         [

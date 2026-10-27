@@ -97,7 +97,7 @@ const KPI: Record<Period, Array<[string, string, string, boolean, number[], stri
     ['Total users', '48,212', '+4.6%', true, SIGNUPS_D.slice(-12), 'Active accounts today'],
     ['New sign-ups', '7,212', '+23%', true, SIGNUPS_D.slice(-12), 'Last 30 days'],
     ['Daily active users', '6,740', '+9%', true, [5.9, 6.1, 6.0, 6.3, 6.2, 6.4, 6.6, 6.5, 6.7, 6.8, 6.6, 6.74], 'DAU/MAU 31%'],
-    ['Activation', '54%', '+3 pts', true, [48, 49, 50, 50, 51, 52, 52, 53, 53, 54, 54, 54], 'First report or chat analysis within 7 days'],
+    ['Activation', '54%', '+3 pts', true, [48, 49, 50, 50, 51, 52, 52, 53, 53, 54, 54, 54], 'First report or chat check within 7 days'],
     ['Paying users', '3,812', '+11%', true, [3.1, 3.2, 3.3, 3.35, 3.4, 3.5, 3.55, 3.6, 3.65, 3.7, 3.76, 3.81], '7.9% of active users'],
     ['Account deletions', '312', '+6%', false, [8, 10, 9, 12, 11, 10, 13, 11, 12, 10, 11, 12], 'Most cite "found what I needed"'],
   ],
@@ -105,7 +105,7 @@ const KPI: Record<Period, Array<[string, string, string, boolean, number[], stri
     ['Total users', '48,212', '+12.4%', true, SIGNUPS_M, 'Active accounts, end of October'],
     ['New sign-ups', '6,930', '+9.8%', true, SIGNUPS_M, 'October 2026'],
     ['Monthly active users', '21,480', '+14%', true, [12, 13, 14, 15, 15.5, 16.4, 17, 18, 19, 19.8, 20.6, 21.48], 'DAU/MAU 31%'],
-    ['Activation', '54%', '+3 pts', true, [44, 45, 47, 48, 49, 50, 51, 52, 52, 53, 54, 54], 'First report or chat analysis within 7 days'],
+    ['Activation', '54%', '+3 pts', true, [44, 45, 47, 48, 49, 50, 51, 52, 52, 53, 54, 54], 'First report or chat check within 7 days'],
     ['Paying users', '3,812', '+8%', true, [1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.55, 3.81], '7.9% of active users'],
     ['Account deletions', '1,140', '−4%', true, [140, 128, 122, 118, 110, 104, 101, 99, 96, 95, 92, 88], 'Per month, trending down'],
   ],
@@ -121,7 +121,7 @@ const KPI: Record<Period, Array<[string, string, string, boolean, number[], stri
     ['Total sign-ups', '65,830', 'since launch', true, LIFETIME, 'Jan 2025 to today'],
     ['Active accounts', '48,212', '73% kept', true, LIFETIME.map((v) => v * 0.73), 'After deletions and bans'],
     ['Reports run', '182,400', 'lifetime', true, LIFETIME.map((v) => v * 2.8), '2.8 per user on average'],
-    ['Chat analyses', '41,300', 'lifetime', true, LIFETIME.map((v) => v * 0.6), 'Since launch in May 2026'],
+    ['Chat checks', '41,300', 'lifetime', true, LIFETIME.map((v) => v * 0.6), 'Since launch in May 2026'],
     ['Lifetime revenue', '$318k', 'lifetime', true, LIFETIME.map((v) => v * 5), 'App stores, Paystack and Flutterwave'],
     ['Room members', '5,333', '6 rooms', true, LIFETIME.map((v) => v * 0.08), 'Rooms launched in August 2026'],
   ],
@@ -147,7 +147,7 @@ function growth(p: Period): FrameNode {
       signupChart(p),
       equalize(
         row({ name: 'Middle', w: 'fill', gap: 16, cross: 'start' }, [
-          card('Activation funnel', [funnel([['Visited website or store page', 118400], ['Signed up', 6930], ['Verified phone', 6120], ['First report or chat analysis', 3740], ['Became a paying user', 548]], 320)], 'fill'),
+          card('Activation funnel', [funnel([['Visited website or store page', 118400], ['Signed up', 6930], ['Verified phone', 6120], ['First report or chat check', 3740], ['Became a paying user', 548]], 320)], 'fill'),
           card('Sign-ups by platform', [row({ name: 'Donut row', w: 'fill', gap: 20 }, [donut([[52, 'brand/solid', 'iOS'], [38, 'positive/solid', 'Android'], [10, 'warning/fg', 'Web app']], 140, ['6,930', 'sign-ups']), donutLegend([[52, 'brand/solid', 'iOS'], [38, 'positive/solid', 'Android'], [10, 'warning/fg', 'Web app']])])], 'fill'),
           card('Top regions', [hbars([['Lagos', 3120], ['Abuja', 1240], ['Port Harcourt', 610], ['Accra', 540], ['Ibadan', 420]], 300)], 'fill'),
         ]),
@@ -220,7 +220,7 @@ export function adminEngagement(): FrameNode {
             ['M0', 'M1', 'M2', 'M3', 'M4', 'M5'],
           ),
         ], 'fill'),
-        card('Feature use · last 30 days', [hbars([['Reports run', 14200], ['Rooms messages', 8900], ['Chat analyses', 5100], ['Share my date', 2400], ['Compare', 1300], ['Personality viewed', 9600]], 340)], 380),
+        card('Feature use · last 30 days', [hbars([['Reports run', 14200], ['Rooms messages', 8900], ['Chat checks', 5100], ['Share my date', 2400], ['Compare', 1300], ['Personality viewed', 9600]], 340)], 380),
       ]),
     ),
     card('Rooms engagement', [
@@ -274,7 +274,7 @@ export function adminRevenue(): FrameNode {
     ], 'fill', 'Jan to Oct revenue: $186k in 2026 vs $49k in 2025'),
     equalize(
       row({ name: 'Middle', w: 'fill', gap: 16, cross: 'start' }, [
-        card('Plan mix · paying users', [row({ name: 'Donut row', w: 'fill', gap: 20 }, [donut([[64, 'brand/solid', 'Libra Plus'], [21, 'positive/solid', 'Libra Pro'], [15, 'warning/fg', 'Pay per report']], 140, ['3,812', 'paying']), donutLegend([[64, 'brand/solid', 'Libra Plus'], [21, 'positive/solid', 'Libra Pro'], [15, 'warning/fg', 'Pay per report']])])]),
+        card('Plan mix · paying users', [row({ name: 'Donut row', w: 'fill', gap: 20 }, [donut([[64, 'brand/solid', 'Gutchek Plus'], [21, 'positive/solid', 'Gutchek Pro'], [15, 'warning/fg', 'Pay per report']], 140, ['3,812', 'paying']), donutLegend([[64, 'brand/solid', 'Gutchek Plus'], [21, 'positive/solid', 'Gutchek Pro'], [15, 'warning/fg', 'Pay per report']])])]),
         card('Revenue by provider', [hbars([['App Store', 12400, '$12.4k'], ['Google Play', 8600, '$8.6k'], ['Paystack', 7100, '$7.1k'], ['Flutterwave', 3200, '$3.2k']], 320, 'positive/solid')]),
         card('Unit economics', [
           row({ name: 'LTV', w: 'fill', gap: 8 }, [small('Lifetime value', 'text/secondary', 'fill'), text('$58', 'title', 'text/primary')]),

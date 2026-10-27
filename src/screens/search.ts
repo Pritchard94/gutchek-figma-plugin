@@ -10,15 +10,15 @@ export function newSearch(): FrameNode {
   return screen(
     {
       name: 'New search',
-      nav: { title: 'New Libra', action: 'x', back: false },
+      nav: { title: 'Run a Gutchek', action: 'x', back: false },
       gap: 18,
-      footer: [link(btn('Find public profiles', 'Primary', 'Large', 'search'), 'match'), center('Uses 1 of 4 reports left this month', 'caption', 'text/tertiary')],
+      footer: [link(btn('Find them', 'Primary', 'Large', 'search'), 'match'), center('Uses 1 of 4 reports left this month', 'caption', 'text/tertiary')],
       footerDivider: true,
     },
     [
       col({ name: 'Intro', gap: 6, w: 'fill' }, [
         text('Who are you getting to know?', 'h2', 'text/primary', { w: 'fill' }),
-        text('Libra only reads public content. They are never notified.', 'small', 'text/secondary', { w: 'fill' }),
+        text('Gutchek only reads public content. They are never notified.', 'small', 'text/secondary', { w: 'fill' }),
       ]),
       row({ name: 'Name', gap: 12, w: 'fill' }, [field('First name', 'Tobi'), field('Last name', 'Adeyemi')]),
       col({ name: 'Platform', gap: 10, w: 'fill' }, [text('Where do you know them from?', 'label', 'text/secondary'), chips]),
@@ -70,7 +70,7 @@ export function matchConfirm(): FrameNode {
       cross: 'center',
       gap: 14,
       footer: [
-        row({ name: 'Decision', gap: 12, w: 'fill' }, [btn('Not them', 'Secondary', 'Large', 'x'), link(btn("Yes, that's them", 'Primary', 'Large', 'check'), 'linkedAccounts')]),
+        row({ name: 'Decision', gap: 12, w: 'fill' }, [btn('Not them', 'Secondary', 'Large', 'x'), link(btn("That's them", 'Primary', 'Large', 'check'), 'linkedAccounts')]),
         what,
       ],
     },
@@ -117,7 +117,7 @@ export function processing(): FrameNode {
       footer: [link(close, 'report')],
     },
     [
-      use('ScaleDial', { Tilt: 'Pending' }),
+      use('GutMeter', { Tilt: 'Pending' }),
       col({ name: 'Heading', gap: 6, w: 'fill' }, [center('Weighing the evidence', 'h2'), center('This usually takes under a minute.', 'small', 'text/secondary')]),
       col({ name: 'Steps', gap: 14, w: 'fill', pad: [4, 4] }, [
         step('Done', 'Finding public profiles', '3 accounts confirmed'),

@@ -71,7 +71,7 @@ export function howItWorks(s: Screens): FrameNode {
   const weight = (iconName: string, title: string, body: string) => featureCard(iconName, title, body);
   return webPage('How it works', [
     webNav('how'),
-    hero('How it works', 'From one handle to a fair, evidence-backed picture', 'Libra reads what someone has shared publicly, checks the context, and weighs the good and the concerning separately. Here is exactly how.'),
+    hero('How it works', 'From one handle to a fair, evidence-backed picture', 'Gutchek reads what someone has shared publicly, checks the context, and weighs the good and the concerning separately. Here is exactly how.'),
     section('Steps', [
       stepRow('1', 'search', 'Tell us who', 'A first name, a last name and one public handle is enough. Add a city or age range to help confirm identity.', ['Instagram, X, TikTok, Facebook, Snapchat, LinkedIn, Reddit, YouTube', 'Purpose check: dating and personal safety only'], false),
       stepRow('2', 'match', 'Confirm the right person', 'We show candidate accounts with a match strength and what we compared. You decide which accounts are theirs.', ['Linked through public signals like a link in bio', 'No face recognition, no unmasking anonymous accounts'], true),
@@ -79,17 +79,17 @@ export function howItWorks(s: Screens): FrameNode {
       stepRow('4', 'report', 'Read, save and decide', 'Two independent scores, a confidence level, a plain-language summary and every post behind every finding.', ['Mark anything not relevant to you', 'Share a summary with a trusted friend'], true),
     ], { gap: 120 }),
     section('Checks', [
-      heading('Boundaries', 'What Libra checks, and what it never does', null, { align: 'center' }),
+      heading('Boundaries', 'What Gutchek checks, and what it never does', null, { align: 'center' }),
       row({ name: 'Columns', w: 'fill', gap: 24, cross: 'start' }, [
         col({ name: 'Checks', w: 'fill', gap: 16, pad: 40, radius: 28, fill: 'bg/canvas' }, [
-          text('Libra checks', 'h3', 'text/primary'),
+          text('Gutchek checks', 'h3', 'text/primary'),
           check('Public posts, captions and comments the person wrote'),
           check('Public bios, links and cross-posted handles'),
           check('Public news mentions and anything you choose to upload'),
           check('Positive signals: kindness, accountability, community'),
         ]),
         col({ name: 'Never', w: 'fill', gap: 16, pad: 40, radius: 28, fill: 'bg/canvas' }, [
-          text('Libra never', 'h3', 'text/primary'),
+          text('Gutchek never', 'h3', 'text/primary'),
           check('Accesses private accounts or bypasses logins', false),
           check('Uses leaked databases or fake accounts', false),
           check('Uses face recognition to find people', false),
@@ -131,7 +131,7 @@ export function trust(): FrameNode {
     col({ name: l, w: 'fill', gap: 8, pad: 28, radius: 24, fill: 'bg/surface', stroke: 'border/default' }, [text(n, display(40, 48), 'brand/fg'), text(l, 'body', 'text/secondary', { w: 'fill' })]);
   return webPage('Trust and safety', [
     webNav('trust'),
-    hero('Trust and safety', 'Balance and fairness, not accusation', 'Libra holds sensitive information about real people. These rules are product requirements. They protect our users, the people they look up, and Libra itself.'),
+    hero('Trust and safety', 'Balance and fairness, not accusation', 'Gutchek holds sensitive information about real people. These rules are product requirements. They protect our users, the people they look up, and Gutchek itself.'),
     section('Guardrails', [
       heading('Guardrails', 'Nine rules we build around', null, { align: 'center' }),
       row({ name: 'Grid', w: 'fill', gap: 24, wrap: true, wrapGap: 24 }, GUARDRAILS.map(([i, t, b]) => featureCard(i, t, b, 384))),
@@ -149,10 +149,10 @@ export function trust(): FrameNode {
       row({ name: 'Panel', w: 'fill', gap: 48, pad: 56, radius: 40, fill: 'brand/subtle', cross: 'center' }, [
         col({ name: 'Copy', gap: 14, w: 'fill' }, [
           text('If someone looked you up', 'overline', 'brand/fg'),
-          text('You have a say in what Libra shows', display(40, 48), 'text/primary', { w: 'fill' }),
+          text('You have a say in what Gutchek shows', display(40, 48), 'text/primary', { w: 'fill' }),
           text('Ask us to stop analysing your public content, or dispute a specific finding. A person reviews every request, usually within 7 days.', lead, 'text/secondary', { w: 'fill' }),
         ]),
-        col({ name: 'Actions', gap: 12, w: 320 }, [fill(btn('Opt out of Libra', 'Primary', 'Large', 'optout')), fill(btn('Dispute a finding', 'Secondary', 'Large', 'dispute'))]),
+        col({ name: 'Actions', gap: 12, w: 320 }, [fill(btn('Opt out of Gutchek', 'Primary', 'Large', 'optout')), fill(btn('Dispute a finding', 'Secondary', 'Large', 'dispute'))]),
       ]),
     ]),
     section('Targets', [
@@ -172,9 +172,9 @@ export function trust(): FrameNode {
 
 export function pricing(): FrameNode {
   const plans: Array<[string, string, string, string[], boolean]> = [
-    ['Free', '$0', 'per month', ['1 lite report a month', 'Scores and summary', 'Safety Hub'], false],
-    ['Libra Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer', 'Personality and notes'], true],
-    ['Libra Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts', 'Compare and PDF export'], false],
+    ['Free', '$0', 'per month', ['1 lite report a month', 'Scores and summary', 'Stay Safe'], false],
+    ['Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer', 'Personality and notes'], true],
+    ['Gutchek Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts', 'Compare and PDF export'], false],
     ['Pay per report', '$2.99', 'per report', ['One full report', 'No subscription', 'Paystack and Flutterwave'], false],
   ];
   const features: Array<[string, string[]]> = [
@@ -182,13 +182,13 @@ export function pricing(): FrameNode {
     ['Scores, confidence and summary', ['yes', 'yes', 'yes', 'yes']],
     ['Evidence viewer', ['-', 'yes', 'yes', 'yes']],
     ['Personality snapshot', ['-', 'yes', 'yes', 'yes']],
-    ['Chat analyses', ['2 a month', '2 + credits', '2 + credits', '1 credit']],
-    ['Gossip Rooms', ['yes', 'yes', 'yes', 'yes']],
+    ['Chat checks', ['2 a month', '2 + credits', '2 + credits', '1 credit']],
+    ['Gist Rooms', ['yes', 'yes', 'yes', 'yes']],
     ['Private notes', ['-', 'yes', 'yes', '-']],
-    ['Compare two people', ['-', '-', 'yes', '-']],
+    ['Side by side', ['-', '-', 'yes', '-']],
     ['Monitoring alerts', ['-', '-', 'yes', '-']],
     ['PDF export and secure share links', ['-', '-', 'yes', '-']],
-    ['Safety Hub and Share my date', ['yes', 'yes', 'yes', 'yes']],
+    ['Stay Safe hub and Share my date', ['yes', 'yes', 'yes', 'yes']],
   ];
   const cell = (v: string, w: number | 'fill') =>
     box({ name: 'Cell', dir: 'h', w, main: 'center', cross: 'center' }, [
@@ -202,7 +202,7 @@ export function pricing(): FrameNode {
   ]);
   return webPage('Pricing', [
     webNav('pricing'),
-    hero('Pricing', 'Simple plans, honest limits', 'Start free. Every plan includes confidence levels, evidence links and the Safety Hub. Local pricing and payment options in Nigeria.'),
+    hero('Pricing', 'Simple plans, honest limits', 'Start free. Every plan includes confidence levels, evidence links and the Stay Safe hub. Local pricing and payment options in Nigeria.'),
     section('Plans', [row({ name: 'Plans', w: 'fill', gap: 20, cross: 'start' }, plans.map(([n, p, per, items, f]) => planCard(n, p, per, items, f, f ? 'Start with Plus' : 'Choose ' + n)))]),
     section('Compare', [table, row({ name: 'Payments', gap: 12, cross: 'center' }, [text('Pay with', 'small', 'text/tertiary'), pill('Card', 'neutral'), pill('Apple Pay', 'neutral'), pill('Google Pay', 'neutral'), pill('Paystack', 'neutral'), pill('Flutterwave', 'neutral')])], { pad: [0, GUTTER], gap: 24 }),
     section('FAQ', [
@@ -264,11 +264,11 @@ export function optout(): FrameNode {
   );
   return webPage('Opt out', [
     webNav(),
-    hero('Opt out and disputes', 'Your public content, your say', "Whether or not you've used Libra, you can ask us to stop analysing your public accounts or correct a finding. No account needed."),
+    hero('Opt out and disputes', 'Your public content, your say', "Whether or not you've used Gutchek, you can ask us to stop analysing your public accounts or correct a finding. No account needed."),
     section('Options', [row({ name: 'Options', w: 'fill', gap: 24, cross: 'start' }, [
-      option('ban', 'Remove me from Libra', 'We stop analysing your public accounts and remove you from existing reports. Future searches for you will be blocked.', 'Request removal', 'optout', true),
+      option('ban', 'Remove me from Gutchek', 'We stop analysing your public accounts and remove you from existing reports. Future searches for you will be blocked.', 'Request removal', 'optout', true),
       option('flag', 'Dispute a finding', 'Something wrong, out of context or about someone else? Tell us, and a person will review it.', 'Dispute a finding', 'dispute', false),
-      option('message', 'Remove a room post about me', 'If a Gossip Rooms post describes you, we can remove it, even if you are not a Libra member.', 'Request post removal', 'status', false),
+      option('message', 'Remove a room post about me', 'If a Gist Rooms post describes you, we can remove it, even if you are not a Gutchek member.', 'Request post removal', 'status', false),
     ]), timeline], { gap: 32 }),
     section('Form', [row({ name: 'Form row', w: 'fill', gap: 40, cross: 'start' }, [
       optoutForm(),
@@ -322,7 +322,7 @@ export function requestStatus(): FrameNode {
         col({ name: 'Copy', gap: 10, w: 'fill', cross: 'center' }, [
           text('Request received', display(40, 48), 'text/primary', { align: 'center', w: 'fill' }),
           text('We sent a confirmation to tobi@example.com. Keep your reference to check progress.', lead, 'text/secondary', { align: 'center', w: 'fill' }),
-          pill('Reference LBR-2026-04821', 'brand', 'file'),
+          pill('Reference GCK-2026-04821', 'brand', 'file'),
         ]),
         divider(),
         col({ name: 'Tracker', gap: 20, w: 'fill' }, [
@@ -331,7 +331,7 @@ export function requestStatus(): FrameNode {
           step('Active', 'Human review', 'Usually 2 to 5 days'),
           step('Pending', 'Resolved', 'By 29 Oct 2026 at the latest'),
         ]),
-        row({ name: 'Actions', gap: 12 }, [btn('Back to Libra', 'Secondary', 'Large', 'landing'), btn('Contact support', 'Tertiary', 'Large', 'helpcenter')]),
+        row({ name: 'Actions', gap: 12 }, [btn('Back to Gutchek', 'Secondary', 'Large', 'landing'), btn('Contact support', 'Tertiary', 'Large', 'helpcenter')]),
       ]),
     ], { cross: 'center', pad: [96, GUTTER] }),
     webFooter(),
@@ -342,7 +342,7 @@ export function requestStatus(): FrameNode {
 
 export function helpCentre(): FrameNode {
   const cats: Array<[string, string, string]> = [
-    ['sparkle', 'Getting started', 'Accounts, verification and your first Libra.'],
+    ['sparkle', 'Getting started', 'Accounts, verification and your first Gutchek.'],
     ['scale', 'Reports and scoring', 'How the scale, confidence and evidence work.'],
     ['shield-check', 'Privacy and safety', 'Who sees what, and how we protect it.'],
     ['card', 'Plans and billing', 'Subscriptions, refunds and local payments.'],
@@ -350,7 +350,7 @@ export function helpCentre(): FrameNode {
     ['life-buoy', 'Safety resources', 'Share my date and local support lines.'],
   ];
   const article = (t: string) => row({ name: t, w: 'fill', gap: 12, pad: [18, 24] }, [icon('file', 20, 'text/tertiary'), text(t, 'body', 'text/primary', { w: 'fill' }), icon('chevron-right', 20, 'text/tertiary')]);
-  const articles = ['How does the Libra Scale work?', "Why can't Libra find someone?", 'Will the person know I looked them up?', 'How do I verify my identity?', 'How do I cancel or change my plan?'];
+  const articles = ['How does the Gut Meter work?', "Why can't Gutchek find someone?", 'Will the person know I looked them up?', 'How do I verify my identity?', 'How do I cancel or change my plan?'];
   return webPage('Help centre', [
     webNav('helpcenter'),
     col({ name: 'Hero', w: 'fill', pad: [96, GUTTER, 80, GUTTER], gap: 32, cross: 'center', fill: 'brand/subtle' }, [
@@ -367,7 +367,7 @@ export function helpCentre(): FrameNode {
         col({ name: 'Contact', w: 400, gap: 16 }, [
           text('Still need help?', 'h2', 'text/primary'),
           featureCard('message', 'Chat with us', 'In the app under Settings, Help. We usually reply within an hour.'),
-          featureCard('mail', 'Email support', 'support@libra.app for account and billing questions.'),
+          featureCard('mail', 'Email support', 'support@gutchek.app for account and billing questions.'),
           row({ name: 'Danger', w: 'fill', gap: 12, pad: 20, radius: 20, fill: 'caution/subtle', cross: 'start' }, [icon('alert-triangle', 22, 'caution/fg'), text('In danger right now? Call 112 or your local emergency number.', 'bodyStrong', 'text/primary', { w: 'fill' })]),
         ]),
       ]),
@@ -382,24 +382,24 @@ export function privacy(): FrameNode {
   return webPage('Privacy policy', [
     webNav(),
     legalLayout('Privacy policy', 'Last updated 22 October 2026', toc, [
-      ['Summary', ['Libra helps you make safer decisions about people you are getting to know, using public information only. We collect as little as we can, keep it for as short a time as we can, and never sell it.']],
+      ['Summary', ['Gutchek helps you make safer decisions about people you are getting to know, using public information only. We collect as little as we can, keep it for as short a time as we can, and never sell it.']],
       ['What we collect', ['About you: your name, phone or email, age confirmation, purpose agreement, optional identity verification result, subscription status and app settings.', 'About the people you search: the name and handle you enter, public accounts you confirm, and short excerpts and links to public posts used in your report.']],
-      ['How we use it', ['To build reports you request, keep Libra safe from misuse, process payments, and improve the accuracy of our models using human-reviewed, de-identified samples.']],
+      ['How we use it', ['To build reports you request, keep Gutchek safe from misuse, process payments, and improve the accuracy of our models using human-reviewed, de-identified samples.']],
       ['Retention', ['Raw collected items are deleted after 30 to 90 days. Saved reports keep only the excerpts and links they need. Search history auto-deletes after 90 days.']],
-      ['Your rights', ['You can access, correct, export or delete your data at any time from Settings, or by emailing privacy@libra.app. We comply with the Nigeria Data Protection Act 2023, GDPR and CCPA where they apply.']],
-      ['People who are searched', ['Anyone can opt out, request correction or dispute a finding at libra.app/optout without an account. We never notify a person that they were searched, and we never reveal who searched them.']],
+      ['Your rights', ['You can access, correct, export or delete your data at any time from Settings, or by emailing privacy@gutchek.app. We comply with the Nigeria Data Protection Act 2023, GDPR and CCPA where they apply.']],
+      ['People who are searched', ['Anyone can opt out, request correction or dispute a finding at gutchek.app/optout without an account. We never notify a person that they were searched, and we never reveal who searched them.']],
     ]),
     webFooter(),
   ]);
 }
 
 export function terms(): FrameNode {
-  const toc = ['Who can use Libra', 'Permitted use', 'Prohibited use', 'Reports are opinions', 'Subscriptions', 'Termination', 'Liability', 'Contact'];
+  const toc = ['Who can use Gutchek', 'Permitted use', 'Prohibited use', 'Reports are opinions', 'Subscriptions', 'Termination', 'Liability', 'Contact'];
   return webPage('Terms of use', [
     webNav(),
     legalLayout('Terms of use', 'Last updated 22 October 2026', toc, [
-      ['Who can use Libra', ['You must be 18 or older and agree to use Libra for dating and personal safety decisions only.']],
-      ['Permitted use', ['Running reports on people you are getting to know, saving and comparing them, sharing summaries with trusted friends, and using the Safety Hub.']],
+      ['Who can use Gutchek', ['You must be 18 or older and agree to use Gutchek for dating and personal safety decisions only.']],
+      ['Permitted use', ['Running reports on people you are getting to know, saving and comparing them, sharing summaries with trusted friends, and using the Stay Safe hub.']],
       ['Prohibited use', ['Employment, housing, credit, insurance or tenancy decisions; stalking, harassment or doxxing; searching for anyone under 18; or attempting to identify anonymous accounts. Misuse leads to a permanent ban.']],
       ['Reports are opinions', ['Reports describe public content and are not statements of fact about a person\'s character or conduct. Always use your own judgement. People are more than their posts.']],
       ['Subscriptions', ['Plans renew automatically until cancelled. Unused reports do not roll over. Credits are not used when no profile is found or a search is blocked.']],
@@ -414,7 +414,7 @@ export function notFound(): FrameNode {
     section('Not found', [
       col({ name: 'Card', w: 640, gap: 24, cross: 'center' }, [
         text('404', display(120, 128), 'brand/fg', { align: 'center' }),
-        use('ScaleDial', { Tilt: 'Pending' }),
+        use('GutMeter', { Tilt: 'Pending' }),
         text('This page tipped the scale', display(40, 48), 'text/primary', { align: 'center', w: 'fill' }),
         text("We couldn't find what you were looking for. It may have moved, or the link may be out of date.", lead, 'text/secondary', { align: 'center', w: 'fill' }),
         row({ name: 'Actions', gap: 12 }, [btn('Go to the homepage', 'Primary', 'Large', 'landing'), btn('Visit the help centre', 'Secondary', 'Large', 'helpcenter')]),

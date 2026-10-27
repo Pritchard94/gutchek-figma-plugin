@@ -8,13 +8,13 @@ import { buildScreens } from './screens';
 import { buildWebsite } from './web';
 import { buildWebApp } from './webapp';
 
-const WORK_PAGE = 'Libra · generating';
-const LOG_PAGE = 'Libra · Generator log';
+const WORK_PAGE = 'Gutchek · generating';
+const LOG_PAGE = 'Gutchek · Generator log';
 let stage = 'Starting';
 
 async function onPage<T>(name: string, label: string, fn: (page: PageNode) => T): Promise<T> {
   stage = label;
-  figma.notify('Libra · ' + label, { timeout: 1500 });
+  figma.notify('Gutchek · ' + label, { timeout: 1500 });
   const page = newPage(name);
   await figma.setCurrentPageAsync(page);
   const out = fn(page);
@@ -25,7 +25,7 @@ async function onPage<T>(name: string, label: string, fn: (page: PageNode) => T)
 async function cleanUp(work: PageNode) {
   for (const p of figma.root.children.slice()) {
     if (p === work) continue;
-    if (p.getPluginData(PLUGIN_KEY) === '1' || p.name === WORK_PAGE || p.name === LOG_PAGE) {
+    if (p.getPluginData(PLUGIN_KEY) === '1' || p.name === WORK_PAGE || p.name === LOG_PAGE || /^Libra · (generating|Generator log)$/.test(p.name)) {
       p.remove();
       continue;
     }
@@ -95,7 +95,7 @@ async function run() {
   }
   const modeNote = ctx.modes ? 'Light and Dark modes in one variable collection.' : 'Dark tokens in a separate collection (plan limit).';
   const notes = ctx.warnings.length ? ' ' + ctx.warnings.length + ' note(s) on the "' + LOG_PAGE + '" page.' : '';
-  figma.closePlugin('Libra design file ready. ' + modeNote + notes);
+  figma.closePlugin('Gutchek design file ready. ' + modeNote + notes);
 }
 
 /** Writes a plain text log into the file so problems can be diagnosed from a share link. */
@@ -121,7 +121,7 @@ async function writeLog(title: string, lines: string[]) {
 
 run().catch(async (e) => {
   const message = e && e.message ? e.message : String(e);
-  console.error('[Libra] generation failed at "' + stage + '"', e);
-  await writeLog('Libra generator failed', ['Error: ' + message, '', String((e && e.stack) || '')].concat(ctx.warnings));
-  figma.closePlugin('Libra generator failed at "' + stage + '": ' + message);
+  console.error('[Gutchek] generation failed at "' + stage + '"', e);
+  await writeLog('Gutchek generator failed', ['Error: ' + message, '', String((e && e.stack) || '')].concat(ctx.warnings));
+  figma.closePlugin('Gutchek generator failed at "' + stage + '": ' + message);
 });

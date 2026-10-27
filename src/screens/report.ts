@@ -11,9 +11,9 @@ function personHeader(p: Person, meta: string): FrameNode {
 }
 
 function dialCard(tilt: string, caution: string, positive: string, level: string, verdict: string, basis: string): FrameNode {
-  return col({ name: 'Libra Scale', w: 'fill', pad: [20, 0, 18, 0], gap: 14, radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
+  return col({ name: 'Gut Meter', w: 'fill', pad: [20, 0, 18, 0], gap: 14, radius: 24, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
     col({ name: 'Verdict', gap: 4, w: 'fill', pad: [0, 20], cross: 'center' }, [text('Verdict', 'overline', 'brand/fg'), center(verdict, 'h2')]),
-    use('ScaleDial', { Tilt: tilt }, { 'caution-score': caution, 'positive-score': positive }),
+    use('GutMeter', { Tilt: tilt }, { 'caution-score': caution, 'positive-score': positive }),
     use('ConfidenceBadge', { Level: level }),
     col({ name: 'Basis', w: 'fill', pad: [0, 20] }, [center(basis, 'caption', 'text/tertiary')]),
   ]);
@@ -45,7 +45,7 @@ export function report(): FrameNode {
       nav: { title: 'Report', action: 'share', backTo: 'home' },
       tall: true,
       gap: 20,
-      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Save', 'Secondary', 'Large', 'bookmark'), link(btn('Share', 'Primary', 'Large', 'share'), 'shareReport')])],
+      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Keep this', 'Secondary', 'Large', 'bookmark'), link(btn('Share', 'Primary', 'Large', 'share'), 'shareReport')])],
       footerDivider: true,
     },
     [
@@ -205,7 +205,7 @@ const positive: Signal[] = [
 function signalCard(s: Signal, target?: string): SceneNode {
   const c = fill(use('SignalCard', { Side: s.side }, { category: s.category, meta: s.meta, severity: s.severity, source: s.source, snippet: s.snippet, code: s.platform }));
   if (target) {
-    const v = (c as FrameNode).findOne((n) => n.name === 'View source');
+    const v = (c as FrameNode).findOne((n) => n.name === 'See the proof');
     if (v) link(v, target);
   }
   return c;
@@ -242,7 +242,7 @@ export function evidence(): FrameNode {
       nav: { title: 'Evidence', action: 'external-link', backTo: 'signalsCaution' },
       tall: true,
       gap: 16,
-      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn('Not relevant', 'Secondary', 'Large', 'eye-off'), btn('Add a note', 'Secondary', 'Large', 'pencil')])],
+      footer: [row({ name: 'Actions', gap: 12, w: 'fill' }, [btn("Doesn't apply", 'Secondary', 'Large', 'eye-off'), btn('Add a note', 'Secondary', 'Large', 'pencil')])],
       footerDivider: true,
     },
     [

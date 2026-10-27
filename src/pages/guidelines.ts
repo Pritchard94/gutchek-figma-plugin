@@ -7,7 +7,7 @@ import { doodleLayer } from '../components/doodles';
 import { board, bullet, layoutHorizontally, section } from './common';
 import { swatchChip, themedPanel } from './foundations';
 
-const EYEBROW = 'Libra · Brand guideline';
+const EYEBROW = 'Gutchek · Brand guideline';
 
 function card(kids: Kid[], w: number | 'fill' = 'fill', fill: Token = 'bg/canvas', pad = 32, gap = 12, name = 'Card'): FrameNode {
   return col({ name, w, pad, gap, radius: 24, fill }, kids);
@@ -44,13 +44,13 @@ function essence(): FrameNode {
     );
   const weAre = (rows: string[], positive: boolean) =>
     col({ name: positive ? 'We are' : 'We are not', gap: 14, w: 'fill', pad: 32, radius: 24, fill: positive ? 'brand/subtle' : 'bg/canvas' }, [
-      text(positive ? 'Libra is' : 'Libra is not', 'h3', positive ? 'brand/on-subtle' : 'text/primary'),
+      text(positive ? 'Gutchek is' : 'Gutchek is not', 'h3', positive ? 'brand/on-subtle' : 'text/primary'),
       ...rows.map((r) => row({ name: r, gap: 10, w: 'fill', cross: 'start' }, [icon(positive ? 'check' : 'x', 20, positive ? 'brand/fg' : 'text/tertiary'), text(r, 'body', 'text/primary', { w: 'fill' })])),
     ]);
   return board(
     EYEBROW + ' · 01',
     'Brand essence',
-    'Libra takes its name from the scale: one pan holds reasons to move forward, the other holds reasons to be careful. Everything in the brand expresses balance and fairness, never accusation.',
+    'Gutchek takes its name from the scale: one pan holds reasons to move forward, the other holds reasons to be careful. Everything in the brand expresses balance and fairness, never accusation.',
     [
       row({ name: 'Statements', gap: 24, w: 'fill', cross: 'start' }, [
         card([text('Purpose', 'overline', 'brand/fg'), text('Help people make safer, better-informed decisions about someone they are getting to know.', 'h2', 'text/primary', { w: 'fill' })]),
@@ -120,7 +120,7 @@ function logo(): FrameNode {
     [
       row({ name: 'Primary', gap: 24, w: 'fill' }, [
         labelled('Primary lockup on light surfaces', stage([lockup(72)], 'bg/canvas', 'Primary stage')),
-        labelled('Reversed on Libra Indigo', stage([lockup(72, 'text/on-solid', 'text/on-solid')], [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)], 'Reversed stage')),
+        labelled('Reversed on Gutchek Indigo', stage([lockup(72, 'text/on-solid', 'text/on-solid')], [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)], 'Reversed stage')),
         labelled('Mono for single-colour print and partner use', stage([lockup(72, 'text/primary', 'text/primary')], 'bg/muted', 'Mono stage')),
       ]),
       row({ name: 'Marks', gap: 24, w: 'fill', cross: 'start' }, [
@@ -177,10 +177,10 @@ function colour(): FrameNode {
   return board(
     EYEBROW + ' · 03',
     'Colour',
-    'Deep indigo is the voice of Libra: trustworthy, calm and distinct from the red-and-black palette of spy apps. Emerald and warm red belong to the scale. They carry meaning, so they never appear as decoration.',
+    'Deep indigo is the voice of Gutchek: trustworthy, calm and distinct from the red-and-black palette of spy apps. Emerald and warm red belong to the scale. They carry meaning, so they never appear as decoration.',
     [
       row({ name: 'Core', gap: 20, w: 'fill' }, [
-        hero('Libra Indigo', primitives.indigo['600'], 'Primary brand, actions, focus, links.', primitives.indigo['400']),
+        hero('Gutchek Indigo', primitives.indigo['600'], 'Primary brand, actions, focus, links.', primitives.indigo['400']),
         hero('Positive Emerald', primitives.emerald['700'], 'Positive side of the scale only.', primitives.emerald['400']),
         hero('Caution Red', primitives.red['700'], 'Caution side of the scale and destructive actions only.', primitives.red['400']),
       ]),
@@ -299,7 +299,7 @@ function layout(): FrameNode {
           bullet('Margins 20pt. Cards pad 16 to 20pt. Sections are separated by 32pt, items inside a section by 12 to 16pt.'),
           bullet('Touch targets are at least 44 by 44pt, including icon buttons and list rows.'),
           bullet('Primary actions sit in the bottom third of the screen, within thumb reach, above the home indicator.'),
-          bullet('The tab bar floats: a translucent glass capsule with five destinations (Home, Saved, Rooms, Safety, Settings), inset 16pt from the edges, with a separate round + action for New Libra or Analyse a chat. Content scrolls underneath it, and it hides on pushed screens.'),
+          bullet('The tab bar floats: a translucent glass capsule with five destinations (Home, Saved, Rooms, Safety, Settings), inset 16pt from the edges, with a separate round + action for Run a Gutchek or Check a Chat. Content scrolls underneath it, and it hides on pushed screens.'),
           bullet('Android: same layout at 360 to 412dp, Material system bars replace iOS chrome.'),
           text('Corners and depth', 'h2', 'text/primary'),
           bullet('Corners grow with surface size: 8 for chips, 12 for buttons and fields, 16 for cards, 24 for sheets and swipe cards.'),
@@ -317,7 +317,7 @@ function iconography(): FrameNode {
   return board(
     EYEBROW + ' · 06',
     'Iconography and imagery',
-    'Icons come from Lucide: open, rounded and quiet. Imagery stays abstract. Libra never shows stock photos of phones, keyholes or silhouettes, and never displays a searched person\'s photo outside the match confirmation step.',
+    'Icons come from Lucide: open, rounded and quiet. Imagery stays abstract. Gutchek never shows stock photos of phones, keyholes or silhouettes, and never displays a searched person\'s photo outside the match confirmation step.',
     [
       row({ name: 'Icon grid', gap: 16, w: 'fill', wrap: true, wrapGap: 16 }, names.map((n) => col({ name: n, w: 140, pad: 20, gap: 12, cross: 'center', radius: 16, fill: 'bg/canvas' }, [icon(n, 32, 'text/primary'), text(n, 'caption', 'text/secondary')]))),
       row({ name: 'Wallpaper', gap: 32, w: 'fill', cross: 'center' }, [
@@ -331,7 +331,7 @@ function iconography(): FrameNode {
           text('Rooms use a tiled doodle wallpaper, inspired by WhatsApp: line icons from the Lucide set for dating, care and the scale, in Indigo at 9% opacity, rotated up to 25 degrees on a 54pt grid.', 'body', 'text/secondary', { w: 'fill' }),
           text('Never include eyes, cameras, locks or anything that suggests surveillance. The pattern sits behind messages only, never behind headers or the composer.', 'body', 'text/secondary', { w: 'fill' }),
           text('Member colours', 'h3', 'text/primary'),
-          text('Each nickname gets a stable colour from eight hues, matched on its avatar. Red and green are never used, because they belong to Caution and Positive. Moderators and Libra Bot are always Indigo. Your own messages get an Indigo tint and accent bar; mentions of you get Amber.', 'body', 'text/secondary', { w: 'fill' }),
+          text('Each nickname gets a stable colour from eight hues, matched on its avatar. Red and green are never used, because they belong to Caution and Positive. Moderators and Gist Bot are always Indigo. Your own messages get an Indigo tint and accent bar; mentions of you get Amber.', 'body', 'text/secondary', { w: 'fill' }),
           row({ name: 'Member colours', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, NAME_HUES.map((h) =>
             box({ name: h, dir: 'h', pad: [4, 10], radius: 999, fill: 'name/' + h + '-tint' }, [text(h.charAt(0).toUpperCase() + h.slice(1), 'smallStrong', 'name/' + h)]),
           )),
@@ -358,11 +358,11 @@ function signature(): FrameNode {
   ];
   return board(
     EYEBROW + ' · 07',
-    'The Libra Scale',
+    'The Gut Meter',
     'The signature element of the product. Two independent scores, one per pan, and a beam that leans toward the heavier side. It turns a complicated analysis into one honest picture, and it always sits next to its confidence level.',
     [
       row({ name: 'Anatomy', gap: 48, w: 'fill', cross: 'center' }, [
-        card([use('ScaleDial', { Tilt: 'Positive' }), use('ConfidenceBadge', { Level: 'High' })], 449, 'bg/canvas', 48, 20, 'Hero dial'),
+        card([use('GutMeter', { Tilt: 'Positive' }), use('ConfidenceBadge', { Level: 'High' })], 449, 'bg/canvas', 48, 20, 'Hero dial'),
         col({ name: 'Anatomy notes', gap: 16, w: 'fill' }, [
           text('Anatomy', 'h2', 'text/primary'),
           bullet('Left pan: Caution score, 1 to 10. Red, triangle icon, labelled.'),
@@ -372,7 +372,7 @@ function signature(): FrameNode {
           bullet('Low confidence caps the scores and turns the whole dial neutral, with the message "Not enough public information".'),
         ]),
       ]),
-      section('States', null, [row({ name: 'States', gap: 16, w: 'fill', wrap: true, wrapGap: 16 }, states.map((s) => card([use('ScaleDial', { Tilt: s }), text(s, 'smallStrong', 'text/secondary')], 401, 'bg/canvas', 24, 12, s)))]),
+      section('States', null, [row({ name: 'States', gap: 16, w: 'fill', wrap: true, wrapGap: 16 }, states.map((s) => card([use('GutMeter', { Tilt: s }), text(s, 'smallStrong', 'text/secondary')], 401, 'bg/canvas', 24, 12, s)))]),
       section('Motion', 'Motion explains the result; it never performs for its own sake.', [
         col(
           { name: 'Motion table', gap: 0, w: 'fill', radius: 20, clip: true, stroke: 'border/default' },
@@ -400,7 +400,7 @@ function voice(): FrameNode {
   return board(
     EYEBROW + ' · 08',
     'Voice and tone',
-    'Libra sounds like a level-headed friend who has done the reading: factual, warm and brief. We describe content, not character, and we are honest about what we do not know.',
+    'Gutchek sounds like a level-headed friend who has done the reading: factual, warm and brief. We describe content, not character, and we are honest about what we do not know.',
     [
       row({ name: 'Principles', gap: 24, w: 'fill', cross: 'start' }, [
         card([text('Factual', 'h3', 'text/primary'), text('Report what the content says, link to it, and stop. No labels for people.', 'body', 'text/secondary', { w: 'fill' })]),
@@ -436,7 +436,7 @@ function accessibility(): FrameNode {
   return board(
     EYEBROW + ' · 09',
     'Accessibility',
-    'Libra is a safety product, so it has to work for everyone: in bright sun, at large text sizes, with a screen reader, or for someone who is anxious and reading quickly.',
+    'Gutchek is a safety product, so it has to work for everyone: in bright sun, at large text sizes, with a screen reader, or for someone who is anxious and reading quickly.',
     [
       row({ name: 'Columns', gap: 24, w: 'fill', cross: 'start' }, [
         col({ name: 'Left', gap: 16, w: 'fill' }, [

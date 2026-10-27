@@ -15,8 +15,8 @@ const TABS: Array<[string, string, string]> = [
   ['home', 'Home', 'mwHome'],
   ['bookmark', 'Saved', 'mwHome'],
   ['message', 'Chat', 'mwAnalyse'],
-  ['messages', 'Rooms', 'mwRooms'],
-  ['shield', 'Safety', 'mwHome'],
+  ['messages', 'Gists', 'mwRooms'],
+  ['shield', 'Stay Safe', 'mwHome'],
 ];
 
 function browserTop(url: string): FrameNode {
@@ -98,20 +98,20 @@ function reportRow(p: (typeof people)[number]): FrameNode {
 // ---------------------------------------------------------------- pages
 
 export function mwHome(): FrameNode {
-  return mwFrame({ name: 'Mobile web · Home', url: 'libra.app/home', tab: 'Home' }, [
+  return mwFrame({ name: 'Mobile web · Home', url: 'gutchek.app/home', tab: 'Home' }, [
     text('Good evening, ' + user.first, { family: 'display', weight: 800, size: 26, line: 32, tracking: -1.5 }, 'text/primary'),
     alink(
-      col({ name: 'New Libra', w: 'fill', gap: 10, pad: 20, radius: 20, fill: [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)] }, [
+      col({ name: 'Run a Gutchek', w: 'fill', gap: 10, pad: 20, radius: 20, fill: [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)] }, [
         row({ name: 'Top', w: 'fill' }, [glyph(28, 'text/on-solid'), box({ name: 'Spacer', w: 'fill', h: 1 }), text('3 of 5 left', 'caption', 'text/on-solid', { opacity: 0.85 })]),
-        text('Start a new Libra', 'h3', 'text/on-solid'),
+        text('Run a Gutchek', 'h3', 'text/on-solid'),
         text('A name and one handle. A balanced report in under a minute.', 'small', 'text/on-solid', { w: 'fill', opacity: 0.88 }),
       ]),
       'mwHome',
     ),
     alink(
-      row({ name: 'Analyse a chat', w: 'fill', gap: 12, pad: 14, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
+      row({ name: 'Check a Chat', w: 'fill', gap: 12, pad: 14, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
         box({ name: 'Tile', dir: 'h', w: 40, h: 40, radius: 12, fill: 'brand/subtle', main: 'center', cross: 'center' }, [icon('message', 20, 'brand/fg')]),
-        col({ name: 'Text', gap: 0, w: 'fill' }, [text('Analyse a chat', 'bodyStrong', 'text/primary'), text('Upload screenshots or an export', 'caption', 'text/secondary')]),
+        col({ name: 'Text', gap: 0, w: 'fill' }, [text('Check a Chat', 'bodyStrong', 'text/primary'), text('Upload screenshots or an export', 'caption', 'text/secondary')]),
         icon('chevron-right', 18, 'text/tertiary'),
       ]),
       'mwAnalyse',
@@ -135,18 +135,18 @@ export function mwMenu(): FrameNode {
     );
   const drawer = col({ name: 'Drawer', w: 300, h: H, pad: [64, 16, 24, 16], gap: 16, fill: 'bg/surface', shadow: 'e3' }, [
     row({ name: 'Head', w: 'fill', gap: 8 }, [lockup(26), box({ name: 'Spacer', w: 'fill', h: 1 }), alink(box({ name: 'Close', dir: 'h', w: 36, h: 36, radius: 18, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('x', 18, 'text/secondary')]), 'mwHome')]),
-    fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'New Libra' }, { show: ['icon'], icons: { icon: 'plus' } })),
+    fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Run a Gutchek' }, { show: ['icon'], icons: { icon: 'plus' } })),
     col({ name: 'Nav', w: 'fill', gap: 2 }, [
       item('home', 'Home', 'mwHome', true),
       item('bookmark', 'Saved', 'mwHome'),
-      item('message', 'Analyse a chat', 'mwAnalyse'),
+      item('message', 'Check a Chat', 'mwAnalyse'),
       item('messages', 'Rooms', 'mwRooms', false, '15'),
-      item('shield', 'Safety', 'mwHome'),
+      item('shield', 'Stay Safe', 'mwHome'),
       item('settings', 'Settings', 'mwHome'),
     ]),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
     col({ name: 'Appearance', w: 'fill', gap: 6 }, [text('Appearance', 'overline', 'text/tertiary'), modeSwitch('system')]),
-    row({ name: 'Me', w: 'fill', gap: 10 }, [avatar(user.initials, 36, 'brand'), col({ name: 'Text', gap: 0, w: 'fill' }, [text(user.name, 'smallStrong', 'text/primary'), text('Libra Plus · 3 reports left', 'caption', 'text/tertiary')])]),
+    row({ name: 'Me', w: 'fill', gap: 10 }, [avatar(user.initials, 36, 'brand'), col({ name: 'Text', gap: 0, w: 'fill' }, [text(user.name, 'smallStrong', 'text/primary'), text('Gutchek Plus · 3 reports left', 'caption', 'text/tertiary')])]),
   ]);
   const scrim = rect(W, H, 'bg/scrim', 0, 'Scrim');
   add(base, abs(scrim, 0, 0));
@@ -155,7 +155,7 @@ export function mwMenu(): FrameNode {
 }
 
 export function mwReport(): FrameNode {
-  const dial = use('ScaleDial', { Tilt: 'Positive' }) as InstanceNode;
+  const dial = use('GutMeter', { Tilt: 'Positive' }) as InstanceNode;
   dial.rescale(0.94);
   const tab = (t: string, on = false) => col({ name: t, gap: 8 }, [text(t, on ? 'smallStrong' : 'small', on ? 'text/primary' : 'text/secondary'), rect('fill', 2, on ? 'brand/solid' : 'bg/canvas', 1, 'Underline')]);
   const sig = (tone: 'caution' | 'positive', l: string, m: string) =>
@@ -163,7 +163,7 @@ export function mwReport(): FrameNode {
       box({ name: 'Tile', dir: 'h', w: 32, h: 32, radius: 9, fill: tone === 'caution' ? 'caution/subtle' : 'positive/subtle', main: 'center', cross: 'center' }, [icon(tone === 'caution' ? 'alert-triangle' : 'check-circle', 16, tone === 'caution' ? 'caution/fg' : 'positive/fg')]),
       col({ name: 'Text', gap: 0, w: 'fill' }, [text(l, 'smallStrong', 'text/primary', { w: 'fill' }), text(m, 'caption', 'text/secondary')]),
     ]);
-  return mwFrame({ name: 'Mobile web · Report', url: 'libra.app/r/tobi-adeyemi', title: 'Report', tab: 'Saved', gap: 14 }, [
+  return mwFrame({ name: 'Mobile web · Report', url: 'gutchek.app/r/tobi-adeyemi', title: 'Report', tab: 'Saved', gap: 14 }, [
     row({ name: 'Person', w: 'fill', gap: 12 }, [avatar(tobi.initials, 48, tobi.tone), col({ name: 'Text', gap: 0, w: 'fill' }, [text(tobi.name, 'h3', 'text/primary'), text(tobi.handle + ' · 3 platforms', 'caption', 'text/secondary')]), use('IconButton', { Style: 'Tonal' }, {}, { icons: { icon: 'share' } })]),
     col({ name: 'Tabs', w: 'fill', gap: 0 }, [row({ name: 'Items', gap: 20 }, [tab('Overview', true), tab('Signals 9'), tab('Personality'), tab('Evidence')]), divider()]),
     col({ name: 'Dial', w: 'fill', gap: 8, pad: [16, 0], radius: 20, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [text(tobi.verdict, 'title', 'text/primary'), dial, use('ConfidenceBadge', { Level: 'High' })]),
@@ -179,7 +179,7 @@ export function mwAnalyse(): FrameNode {
       icon(i, 20, 'brand/fg'),
       col({ name: 'Text', gap: 0, w: 'fill' }, [text(t, 'smallStrong', 'text/primary'), text(b, 'caption', 'text/secondary', { w: 'fill' })]),
     ]);
-  return mwFrame({ name: 'Mobile web · Analyse a chat', url: 'libra.app/chat', title: 'Analyse a chat', tab: 'Chat', gap: 14 }, [
+  return mwFrame({ name: 'Mobile web · Check a Chat', url: 'gutchek.app/chat', title: 'Check a Chat', tab: 'Chat', gap: 14 }, [
     col({ name: 'Upload', w: 'fill', gap: 8, pad: [28, 16], radius: 20, cross: 'center', stroke: 'border/focus', strokeW: 2, dash: [8, 8], fill: 'brand/subtle' }, [
       box({ name: 'Icon', dir: 'h', w: 52, h: 52, radius: 26, fill: 'bg/surface', main: 'center', cross: 'center' }, [icon('download', 24, 'brand/fg')]),
       text('Tap to upload screenshots', 'bodyStrong', 'text/primary'),
@@ -207,7 +207,7 @@ export function mwRooms(): FrameNode {
       ]),
       'mwRoom',
     );
-  return mwFrame({ name: 'Mobile web · Rooms', url: 'libra.app/rooms', title: 'Rooms', tab: 'Rooms', gap: 10 }, [
+  return mwFrame({ name: 'Mobile web · Rooms', url: 'gutchek.app/rooms', title: 'Gists', tab: 'Gists', gap: 10 }, [
     text('Your rooms', 'overline', 'text/tertiary'),
     col({ name: 'List', w: 'fill', radius: 16, fill: 'bg/surface', stroke: 'border/default', clip: true }, [
       roomRow(ROOM, 'NaijaBelle: Is that normal or a red flag…', '2m', { unread: '12' }),
@@ -249,7 +249,7 @@ export function mwRoom(): FrameNode {
   const f = mwFrame(
     {
       name: 'Mobile web · Room',
-      url: 'libra.app/rooms/talking-stage-diaries',
+      url: 'gutchek.app/rooms/talking-stage-diaries',
       top,
       pad: 12,
       gap: 12,
@@ -295,7 +295,7 @@ export const MOBILE_WEB: Array<[string, string, () => FrameNode]> = [
   ['mwHome', 'Mobile web · Home', mwHome],
   ['mwMenu', 'Mobile web · Menu', mwMenu],
   ['mwReport', 'Mobile web · Report', mwReport],
-  ['mwAnalyse', 'Mobile web · Analyse a chat', mwAnalyse],
+  ['mwAnalyse', 'Mobile web · Check a Chat', mwAnalyse],
   ['mwRooms', 'Mobile web · Rooms', mwRooms],
   ['mwRoom', 'Mobile web · Room', mwRoom],
   ['mwRoomAbout', 'Mobile web · Room info', mwRoomAbout],

@@ -11,7 +11,7 @@ function brandPanel(): FrameNode {
     row({ name: t, gap: 12, w: 'fill' }, [box({ name: 'Icon', dir: 'h', w: 36, h: 36, radius: 10, fill: [hexPaint('#FFFFFF', 0.12)], main: 'center', cross: 'center' }, [icon(iconName, 18, 'text/on-solid')]), text(t, 'body', 'text/on-solid', { w: 'fill' })]);
   const dialCard = col({ name: 'Dial card', w: 'fill', pad: [28, 0], gap: 12, radius: 28, fill: 'bg/surface', cross: 'center', shadow: 'e3' }, [
     text('Mostly positive, minor concerns', 'h3', 'text/primary'),
-    use('ScaleDial', { Tilt: 'Positive' }),
+    use('GutMeter', { Tilt: 'Positive' }),
     use('ConfidenceBadge', { Level: 'High' }),
   ]);
   return col({ name: 'Brand panel', w: 640, h: APP_H, pad: [56, 64], gap: 40, fill: [gradient([['#7556E3', 0], ['#2C1E66', 1]], 135)] }, [
@@ -33,7 +33,7 @@ export function wSignIn(): FrameNode {
   return plainFrame('Sign in', [
     brandPanel(),
     formSide([
-      text('Welcome to Libra', { family: 'display', weight: 800, size: 36, line: 44, tracking: -2 }, 'text/primary'),
+      text('Welcome to Gutchek', { family: 'display', weight: 800, size: 36, line: 44, tracking: -2 }, 'text/primary'),
       text('Sign in or create an account. You must be 18 or older.', 'body', 'text/secondary', { w: 'fill' }),
       fill(use('Segmented', { Active: 'First' }, { first: 'Phone', second: 'Email' })),
       field('Phone number', '803 555 0142', 'Focused', { prefix: '+234' }),
@@ -73,11 +73,11 @@ export function wPurpose(): FrameNode {
     col({ name: 'Center', w: 'fill', h: APP_H, main: 'center', cross: 'center' }, [
       col({ name: 'Card', w: 600, gap: 16, pad: 40, radius: 28, fill: 'bg/surface', stroke: 'border/default', shadow: 'e2' }, [
         lockup(28),
-        text('Before your first Libra', 'h1', 'text/primary', { w: 'fill' }),
-        text('Libra is built for personal safety. These promises keep it that way for everyone.', 'body', 'text/secondary', { w: 'fill' }),
-        check("I'm 18 or older", 'Libra is for adults and never profiles anyone under 18.'),
-        check("I'm using Libra for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
-        check("I won't use Libra to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
+        text('Before your first Gutchek', 'h1', 'text/primary', { w: 'fill' }),
+        text('Gutchek is built for personal safety. These promises keep it that way for everyone.', 'body', 'text/secondary', { w: 'fill' }),
+        check("I'm 18 or older", 'Gutchek is for adults and never profiles anyone under 18.'),
+        check("I'm using Gutchek for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
+        check("I won't use Gutchek to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
         row({ name: 'Actions', gap: 12, w: 'fill' }, [alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Agree and continue' })), 'wHome'), use('Button', { Variant: 'Tertiary', Size: 'Large' }, { label: 'Verify my ID' })]),
       ]),
     ]),
@@ -145,16 +145,16 @@ function notificationsList(): FrameNode[] {
 }
 
 function homeContent(firstTime: boolean): SceneNode[] {
-  const newLibra = col({ name: 'New Libra', w: 'fill', gap: 14, pad: 28, radius: 24, fill: [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)] }, [
+  const newLibra = col({ name: 'Run a Gutchek', w: 'fill', gap: 14, pad: 28, radius: 24, fill: [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)] }, [
     row({ name: 'Top', gap: 10, w: 'fill' }, [glyph(36, 'text/on-solid'), box({ name: 'Spacer', w: 'fill', h: 1 }), text(firstTime ? '1 free report' : '3 of 5 reports left', 'caption', 'text/on-solid', { opacity: 0.85 })]),
-    text('Start a new Libra', { family: 'display', weight: 800, size: 28, line: 34, tracking: -1.5 }, 'text/on-solid'),
+    text('Run a Gutchek', { family: 'display', weight: 800, size: 28, line: 34, tracking: -1.5 }, 'text/on-solid'),
     text('A name and one social handle. A balanced, evidence-linked report in under a minute.', 'body', 'text/on-solid', { w: 'fill', opacity: 0.88 }),
-    alink(row({ name: 'CTA', h: 44, pad: [0, 18], gap: 8, radius: 12, fill: [hexPaint('#FFFFFF')], cross: 'center' }, [icon('plus', 20, 'brand/solid'), text('New Libra', 'bodyStrong', 'brand/solid')]), 'wSearch'),
+    alink(row({ name: 'CTA', h: 44, pad: [0, 18], gap: 8, radius: 12, fill: [hexPaint('#FFFFFF')], cross: 'center' }, [icon('plus', 20, 'brand/solid'), text('Run a Gutchek', 'bodyStrong', 'brand/solid')]), 'wSearch'),
   ]);
   const chat = alink(
-    col({ name: 'Analyse a chat', w: 'fill', gap: 14, pad: 28, radius: 24, fill: 'bg/surface', stroke: 'border/default' }, [
+    col({ name: 'Check a Chat', w: 'fill', gap: 14, pad: 28, radius: 24, fill: 'bg/surface', stroke: 'border/default' }, [
       iconTileW('message', 'brand', 48),
-      text('Analyse a chat', { family: 'display', weight: 800, size: 28, line: 34, tracking: -1.5 }, 'text/primary'),
+      text('Check a Chat', { family: 'display', weight: 800, size: 28, line: 34, tracking: -1.5 }, 'text/primary'),
       text('Drop in screenshots or a chat export to see how they communicate, with the exact messages.', 'body', 'text/secondary', { w: 'fill' }),
       row({ name: 'Free', gap: 8 }, [pill('1 free this month', 'positive', 'sparkle'), text('Open', 'smallStrong', 'brand/fg'), icon('arrow-right', 16, 'brand/fg')]),
     ]),
@@ -166,7 +166,7 @@ function homeContent(firstTime: boolean): SceneNode[] {
           box({ name: 'Art', dir: 'h', w: 88, h: 88, radius: 44, fill: 'brand/subtle', main: 'center', cross: 'center' }, [glyph(48, 'brand/fg')]),
           text('No reports yet', 'h3', 'text/primary'),
           text('Reports you run appear here. Saved people stay private to you.', 'body', 'text/secondary'),
-          btn('Start your first Libra', 'Primary', 'Medium', 'plus', 'wSearch'),
+          btn('Run your first Gutchek', 'Primary', 'Medium', 'plus', 'wSearch'),
         ]),
       ])
     : col({ name: 'Recent', w: 'fill', gap: 12 }, [row({ name: 'Head', gap: 8, w: 'fill' }, [text('Recent reports', 'h3', 'text/primary', { w: 'fill' }), alink(text('View all', 'smallStrong', 'brand/fg'), 'wSaved')]), reportsTable(people)]);
@@ -190,7 +190,7 @@ function homeRail(firstTime: boolean): SceneNode[] {
   return [
     card('Notifications', notificationsList(), { action: 'See all', actionTo: 'wNotifications', gap: 14 }),
     firstTime
-      ? card('How Libra works', [kv('1', 'Add a name and one handle'), kv('2', 'Confirm the right accounts'), kv('3', 'Read a balanced report')])
+      ? card('How Gutchek works', [kv('1', 'Add a name and one handle'), kv('2', 'Confirm the right accounts'), kv('3', 'Read a balanced report')])
       : card('Your rooms', [roomRow('Talking Stage Diaries', 'NaijaBelle: Is that normal or a red flag…', '12'), roomRow('Safety First', 'Mod_Tunde: New scam pattern…', '3'), roomRow('First Date Stories', 'Tayo_Writes: Update on the cinema…', undefined, true)], { action: 'Open', actionTo: 'wRooms', gap: 14 }),
     col({ name: 'Safety tip', w: 'fill', gap: 8, pad: 20, radius: 20, fill: 'positive/subtle' }, [
       row({ name: 'Head', gap: 8 }, [icon('life-buoy', 18, 'positive/fg'), text('Safety tip of the day', 'overline', 'positive/fg')]),
@@ -235,10 +235,10 @@ export function wSearch(): FrameNode {
     {
       name: 'New search',
       active: 'wSearch',
-      title: 'New Libra',
-      crumb: 'Home / New Libra',
+      title: 'Run a Gutchek',
+      crumb: 'Home / Run a Gutchek',
       rail: [
-        card('How Libra finds accounts', [step('1', 'We read the handle you give us', 'Its public profile, bio and links.'), step('2', 'We follow public links', 'Link in bio and cross-posted handles.'), step('3', 'You confirm every account', 'Nothing is analysed until you say yes.')]),
+        card('How Gutchek finds accounts', [step('1', 'We read the handle you give us', 'Its public profile, bio and links.'), step('2', 'We follow public links', 'Link in bio and cross-posted handles.'), step('3', 'You confirm every account', 'Nothing is analysed until you say yes.')]),
         card('What we never do', [
           row({ name: 'a', gap: 8, w: 'fill' }, [icon('x', 16, 'caution/fg'), text('Access private accounts', 'small', 'text/primary', { w: 'fill' })]),
           row({ name: 'b', gap: 8, w: 'fill' }, [icon('x', 16, 'caution/fg'), text('Use face recognition', 'small', 'text/primary', { w: 'fill' })]),
@@ -249,7 +249,7 @@ export function wSearch(): FrameNode {
     [
       card(null, [
         text('Who are you getting to know?', 'h2', 'text/primary'),
-        text('Libra only reads public content. They are never notified.', 'body', 'text/secondary'),
+        text('Gutchek only reads public content. They are never notified.', 'body', 'text/secondary'),
         row({ name: 'Name', gap: 16, w: 'fill' }, [field('First name', 'Tobi'), field('Last name', 'Adeyemi')]),
         col({ name: 'Platform', gap: 10, w: 'fill' }, [text('Where do you know them from?', 'label', 'text/secondary'), chips]),
         field('Instagram handle', 'tobi.adeyemi', 'Focused', { prefix: '@', helper: 'One handle is enough. We find linked accounts through public links only.' }),
@@ -258,7 +258,7 @@ export function wSearch(): FrameNode {
         divider(),
         row({ name: 'Footer', gap: 12, w: 'fill' }, [
           row({ name: 'Purpose', gap: 8, w: 'fill' }, [icon('shield-check', 16, 'brand/fg'), text('For dating and personal safety only · uses 1 of 3 reports left', 'caption', 'text/tertiary', { w: 'fill' })]),
-          btn('Find public profiles', 'Primary', 'Large', 'search', 'wMatch'),
+          btn('Find them', 'Primary', 'Large', 'search', 'wMatch'),
         ]),
       ], { pad: 32, gap: 20 }),
     ],
@@ -277,7 +277,7 @@ export function wPaywall(): FrameNode {
     text("You're out of reports this month", 'h2', 'text/primary', { w: 'fill' }),
     text('Your reports reset on 1 Nov. Need one sooner?', 'body', 'text/secondary', { w: 'fill' }),
     opt('One report', 'Full report, evidence and personality', '$2.99', true),
-    opt('Upgrade to Libra Pro', '15 reports, monitoring and compare', '$14.99/mo', false),
+    opt('Upgrade to Gutchek Pro', '15 reports, monitoring and compare', '$14.99/mo', false),
     row({ name: 'Actions', gap: 12, w: 'fill' }, [alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Get 1 report · $2.99' })), 'wMatch'), alink(use('Button', { Variant: 'Secondary', Size: 'Large' }, { label: 'See plans' }), 'wBilling')]),
   ]);
   return modal(wSearch(), dialog, 'New search · Out of reports');
@@ -297,7 +297,7 @@ export function wMatch(): FrameNode {
       name: 'Match confirmation',
       active: 'wSearch',
       title: 'Confirm accounts',
-      crumb: 'New Libra / Tobi Adeyemi',
+      crumb: 'Run a Gutchek / Tobi Adeyemi',
     },
     [
       col({ name: 'Heading', gap: 6, w: 'fill' }, [text('Is this Tobi?', 'h1', 'text/primary'), text('We found 3 public accounts. Confirm the ones that belong to the person you are getting to know.', 'body', 'text/secondary', { w: 'fill' })]),
@@ -329,7 +329,7 @@ export function wLinked(): FrameNode {
     ['X', '@tobiadeyemi', 'Same username and display name', 'Likely', true],
     ['FB', 'Tobi Adeyemi', 'Name and city match only', 'Possible', false],
   ];
-  return appFrame({ name: 'Linked accounts', active: 'wSearch', title: 'Linked accounts', crumb: 'New Libra / Tobi Adeyemi', actions: [btn('Start analysis', 'Primary', 'Medium', 'arrow-right', 'wProcessing')] }, [
+  return appFrame({ name: 'Linked accounts', active: 'wSearch', title: 'Linked accounts', crumb: 'Run a Gutchek / Tobi Adeyemi', actions: [btn('Check it', 'Primary', 'Medium', 'arrow-right', 'wProcessing')] }, [
     col({ name: 'Heading', gap: 6, w: 'fill' }, [text('3 accounts included', 'h1', 'text/primary'), text('Confirmed and Likely accounts are analysed. Possible matches stay out unless you switch them on.', 'body', 'text/secondary', { w: 'fill' })]),
     table(
       [
@@ -351,13 +351,13 @@ export function wLinked(): FrameNode {
 
 export function wProcessing(): FrameNode {
   const step = (state: string, label: string, detail: string) => fill(use('ProgressStep', { State: state }, { label, detail }));
-  const dial = use('ScaleDial', { Tilt: 'Pending' }) as InstanceNode;
+  const dial = use('GutMeter', { Tilt: 'Pending' }) as InstanceNode;
   dial.rescale(1.2);
-  return appFrame({ name: 'Processing', active: 'wSearch', title: 'Weighing the evidence', crumb: 'New Libra / Tobi Adeyemi' }, [
+  return appFrame({ name: 'Processing', active: 'wSearch', title: 'Weighing the evidence', crumb: 'Run a Gutchek / Tobi Adeyemi' }, [
     row({ name: 'Center', w: 'fill', main: 'center', pad: [24, 0] }, [
       col({ name: 'Card', w: 640, gap: 24, pad: 40, radius: 28, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
         dial,
-        col({ name: 'Heading', gap: 6, w: 'fill', cross: 'center' }, [text('Weighing the evidence', 'h2', 'text/primary'), text('Usually under a minute. You can keep using Libra; we will notify you.', 'body', 'text/secondary')]),
+        col({ name: 'Heading', gap: 6, w: 'fill', cross: 'center' }, [text('Weighing the evidence', 'h2', 'text/primary'), text('Usually under a minute. You can keep using Gutchek; we will notify you.', 'body', 'text/secondary')]),
         col({ name: 'Steps', gap: 16, w: 'fill' }, [
           step('Done', 'Finding public profiles', '3 accounts confirmed'),
           step('Done', 'Reading public posts', '214 posts, captions and comments'),

@@ -128,11 +128,11 @@ export function safety(): FrameNode {
     row({ name: 'Bottom', gap: 12, w: 'fill' }, [
       row({ name: 'Contacts', gap: -8 }, [ringed(avatar('NK', 32, 'positive')), ringed(avatar('IB', 32, 'warning'))]),
       link(text('2 trusted contacts', 'small', 'text/secondary', { w: 'fill' }), 'trustedContacts'),
-      link(btn('Start sharing', 'Primary', 'Small', undefined, false), 'shareSetup'),
+      link(btn('Tell a friend', 'Primary', 'Small', undefined, false), 'shareSetup'),
     ]),
   ]);
   return screen(
-    { name: 'Safety Hub', tab: 'Safety', nav: { type: 'Large', title: 'Safety', action: 'life-buoy', actionTo: 'resources' }, gap: 20 },
+    { name: 'Stay Safe', tab: 'Stay Safe', nav: { type: 'Large', title: 'Stay Safe', action: 'life-buoy', actionTo: 'resources' }, gap: 20 },
     [
       share,
       col({ name: 'Checklist', gap: 10, w: 'fill' }, [
@@ -167,14 +167,14 @@ export function safety(): FrameNode {
 export function settings(): FrameNode {
   const plan = row({ name: 'Plan', w: 'fill', pad: 16, gap: 12, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
     iconTile('star', 'brand', 40),
-    col({ name: 'Text', gap: 2, w: 'fill' }, [text('Libra Plus', 'bodyStrong', 'text/primary'), text('3 of 5 reports left · renews 1 Nov', 'small', 'text/secondary', { w: 'fill' })]),
+    col({ name: 'Text', gap: 2, w: 'fill' }, [text('Gutchek Plus', 'bodyStrong', 'text/primary'), text('3 of 5 reports left · renews 1 Nov', 'small', 'text/secondary', { w: 'fill' })]),
     btn('Manage', 'Secondary', 'Small', undefined, false),
   ]);
   link(plan, 'plans');
   const del = listRow('Delete my data', 'Account, reports and history', 'trash');
   link(del, 'deleteData');
   return screen(
-    { name: 'Settings', tab: 'Settings', nav: { type: 'Large', title: 'Settings', action: null }, gap: 16 },
+    { name: 'Me', tab: 'Me', nav: { type: 'Large', title: 'Me', action: null }, gap: 16 },
     [
       link(
         row({ name: 'Profile', w: 'fill', gap: 14 }, [
@@ -187,7 +187,7 @@ export function settings(): FrameNode {
       plan,
       groupTitle('Privacy'),
       group([
-        link(listRow('App lock', 'Face ID to open Libra', 'face-id', 'SwitchOn'), 'appLocked'),
+        link(listRow('App lock', 'Face ID to open Gutchek', 'face-id', 'SwitchOn'), 'appLocked'),
         link(listRow('Search history', null, 'clock', 'Value', '12'), 'history'),
         del,
       ]),
@@ -205,7 +205,7 @@ export function appearance(): FrameNode {
   return screen(
     { name: 'Appearance', nav: { title: 'Appearance', action: null, backTo: 'settings' }, gap: 16 },
     [
-      text('Choose how Libra looks', 'h2', 'text/primary', { w: 'fill' }),
+      text('Choose how Gutchek looks', 'h2', 'text/primary', { w: 'fill' }),
       text('System matches your phone, including automatic switching at sunset.', 'small', 'text/secondary', { w: 'fill' }),
       row({ name: 'Options', gap: 10, w: 'fill', cross: 'start' }, [modeOption('system', true, 111, 150), modeOption('light', false, 111, 150), modeOption('dark', false, 111, 150)]),
       group([
@@ -232,14 +232,14 @@ export function plans(): FrameNode {
       name: 'Plans',
       nav: { title: 'Plans', action: 'x', back: false },
       gap: 12,
-      footer: [link(btn('Continue with Plus'), 'paymentSuccess'), center('Billed monthly through the App Store. Cancel anytime.', 'caption', 'text/tertiary')],
+      footer: [link(btn('Go Plus'), 'paymentSuccess'), center('Billed monthly through the App Store. Cancel anytime.', 'caption', 'text/tertiary')],
     },
     [
       text('Choose your plan', 'h2', 'text/primary', { w: 'fill' }),
-      text('Every plan includes evidence links, confidence levels and the Safety Hub.', 'small', 'text/secondary', { w: 'fill' }),
+      text('Every plan includes evidence links, confidence levels and the Stay Safe hub.', 'small', 'text/secondary', { w: 'fill' }),
       planCard('Free', '$0', 'month', '1 lite report a month: scores and summary.'),
-      planCard('Libra Plus', '$7.99', 'month', '5 full reports, evidence viewer, personality and notes.', true, 'Most popular'),
-      planCard('Libra Pro', '$14.99', 'month', '15 reports, monitoring alerts, compare and PDF export.'),
+      planCard('Gutchek Plus', '$7.99', 'month', '5 full reports, evidence viewer, personality and notes.', true, 'Most popular'),
+      planCard('Gutchek Pro', '$14.99', 'month', '15 reports, monitoring alerts, compare and PDF export.'),
       planCard('Pay per report', '$2.99', 'report', 'For occasional checks. Card, Paystack or Flutterwave.'),
     ],
   );

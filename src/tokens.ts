@@ -41,18 +41,27 @@ export const primitives: Record<string, Record<string, string>> = {
     '950': '#2E1411',
   },
   amber: {
-    '50': '#FFFAEB',
-    '100': '#FEF0C7',
-    '200': '#FEDF89',
-    '300': '#FEC84B',
-    '400': '#FDB022',
-    '500': '#F79009',
-    '600': '#DC6803',
-    '700': '#B54708',
-    '800': '#93370D',
-    '900': '#7A2E0E',
+    '50': '#FFF9EB',
+    '100': '#FEF0CC',
+    '200': '#FCDF99',
+    '300': '#F9CC66',
+    '400': '#F5B83D',
+    '500': '#E9A21F',
+    '600': '#C98414',
+    '700': '#A16610',
+    '800': '#7C4E10',
+    '900': '#5E3B0F',
     '950': '#2B1D0A',
   },
+  orange: {
+    '50': '#FFF4ED',
+    '200': '#FDD3B4',
+    '400': '#FB8A4C',
+    '700': '#C2410C',
+    '800': '#9A3412',
+    '950': '#2C1407',
+  },
+  ink: { '900': '#1F2937' },
   neutral: {
     '0': '#FFFFFF',
     '25': '#FCFCFD',
@@ -101,7 +110,7 @@ export const semantic: Record<string, { light: Ref; dark: Ref; group: 'bg' | 'te
   'bg/inverse': { light: 'neutral/900', dark: 'night/50', group: 'bg' },
   'bg/scrim': { light: '#101828@0.48', dark: '#000000@0.64', group: 'bg' },
 
-  'text/primary': { light: 'neutral/900', dark: 'night/50', group: 'text' },
+  'text/primary': { light: 'ink/900', dark: 'night/50', group: 'text' },
   'text/secondary': { light: 'neutral/600', dark: 'night/400', group: 'text' },
   'text/tertiary': { light: 'neutral/500', dark: 'night/500', group: 'text' },
   'text/inverse': { light: 'neutral/0', dark: 'night/950', group: 'text' },
@@ -128,9 +137,16 @@ export const semantic: Record<string, { light: Ref; dark: Ref; group: 'bg' | 'te
   'caution/subtle': { light: 'red/50', dark: 'red/950', group: 'bg' },
   'caution/border': { light: 'red/200', dark: 'red/800', group: 'border' },
 
-  'warning/fg': { light: 'amber/700', dark: 'amber/400', group: 'any' },
-  'warning/subtle': { light: 'amber/50', dark: 'amber/950', group: 'bg' },
-  'warning/border': { light: 'amber/200', dark: 'amber/800', group: 'border' },
+  /** Action Amber is reserved for the one main button on each screen. Never a flag or severity colour. */
+  'action/solid': { light: 'amber/400', dark: 'amber/400', group: 'any' },
+  'action/pressed': { light: 'amber/500', dark: 'amber/300', group: 'any' },
+  'action/on': { light: 'ink/900', dark: 'ink/900', group: 'any' },
+  'action/subtle': { light: 'amber/50', dark: 'amber/950', group: 'bg' },
+
+  /** Operational warnings (SLAs, medium confidence) use orange so they never read as the action colour. */
+  'warning/fg': { light: 'orange/700', dark: 'orange/400', group: 'any' },
+  'warning/subtle': { light: 'orange/50', dark: 'orange/950', group: 'bg' },
+  'warning/border': { light: 'orange/200', dark: 'orange/800', group: 'border' },
 };
 
 /** Member identity colours for Rooms: stable per nickname, never red or green (reserved for signals). */

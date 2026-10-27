@@ -23,7 +23,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
   },
   {
     title: 'Web app · 2 · Home and search',
-    note: 'Dashboard, notifications, and the New Libra flow from name and handle to a finished report.',
+    note: 'Dashboard, notifications, and the Run a Gutchek flow from name and handle to a finished report.',
     pages: [
       ['wHome', 'Home', wHome],
       ['wHomeEmpty', 'Home · first time', wHomeEmpty],
@@ -49,10 +49,10 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     ],
   },
   {
-    title: 'Web app · 4 · Chat analysis',
+    title: 'Web app · 4 · Check a Chat',
     note: 'Drag and drop uploads, speaker confirmation side by side, and a two-column conversation report.',
     pages: [
-      ['wAnalyse', 'Analyse a chat', wAnalyse],
+      ['wAnalyse', 'Check a Chat', wAnalyse],
       ['wSpeakers', 'Confirm speakers', wSpeakers],
       ['wChatReport', 'Conversation report', wChatReport],
     ],
@@ -73,7 +73,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     title: 'Web app · 6 · Safety and settings',
     note: 'Share my date, contacts and support lines; account, privacy, plans and invoices.',
     pages: [
-      ['wSafety', 'Safety', wSafety],
+      ['wSafety', 'Stay Safe', wSafety],
       ['wSettings', 'Settings', wSettings],
       ['wDelete', 'Settings · delete account', wDelete],
       ['wBilling', 'Plan and billing', wBilling],

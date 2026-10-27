@@ -107,7 +107,7 @@ function feed(o: { blocked?: boolean; name?: string } = {}): FrameNode {
   if (o.blocked) {
     kids.push(
       roomMessage({
-        nick: 'Libra Bot',
+        nick: 'Gist Bot',
         tone: 'brand',
         role: 'bot',
         time: 'Now',
@@ -141,7 +141,7 @@ function feed(o: { blocked?: boolean; name?: string } = {}): FrameNode {
 }
 
 export const roomFeed = () => feed();
-export const roomFeedBlocked = () => feed({ blocked: true, name: 'Room feed · Blocked by Libra Bot' });
+export const roomFeedBlocked = () => feed({ blocked: true, name: 'Room feed · Blocked by Gist Bot' });
 
 function threadView(saved: boolean, toast: boolean): FrameNode {
   const header = chrome(roomHeader({ title: 'Thread', sub: 'in ' + ROOM + ' · 14 replies', backTo: 'roomFeed', moreTo: 'reportPost', tile: false, save: { saved, to: saved ? 'savedThreads' : 'threadSaved' } }));
@@ -191,12 +191,12 @@ export const threadSaved = () => threadView(true, true);
 
 function shareCard(): FrameNode {
   return col({ name: 'Share card', w: 'fill', pad: 24, gap: 16, radius: 24, fill: [gradient([['#7556E3', 0], ['#2C1E66', 1]], 135)], clip: true }, [
-    row({ name: 'Brand', gap: 8, w: 'fill' }, [glyph(22, 'text/on-solid'), text('Libra Rooms', 'smallStrong', 'text/on-solid', { w: 'fill' }), box({ name: 'Tag', dir: 'h', pad: [2, 8], radius: 6, fill: [hexPaint('#FFFFFF', 0.16)] }, [text('Win', 'label', 'text/on-solid')])]),
+    row({ name: 'Brand', gap: 8, w: 'fill' }, [glyph(22, 'text/on-solid'), text('Gist Rooms', 'smallStrong', 'text/on-solid', { w: 'fill' }), box({ name: 'Tag', dir: 'h', pad: [2, 8], radius: 6, fill: [hexPaint('#FFFFFF', 0.16)] }, [text('Win', 'label', 'text/on-solid')])]),
     icon('quote', 28, 'text/on-solid'),
     text(WIN_TEXT, { family: 'display', weight: 700, size: 20, line: 28, tracking: -0.5 }, 'text/on-solid', { w: 'fill' }),
     row({ name: 'Footer', gap: 8, w: 'fill' }, [
       text('A member of ' + ROOM, 'caption', 'text/on-solid', { w: 'fill', opacity: 0.8 }),
-      text('libra.app/r/tsd-8821', 'caption', 'text/on-solid', { opacity: 0.8 }),
+      text('gutchek.app/r/tsd-8821', 'caption', 'text/on-solid', { opacity: 0.8 }),
     ]),
   ]);
 }
@@ -221,7 +221,7 @@ export function shareSheet(): FrameNode {
     [
       shareCard(),
       row({ name: 'Targets', w: 'fill', gap: 4 }, [target('link', 'Copy link', 'brand'), target('message', 'WhatsApp'), target('image', 'Story'), target('at-sign', 'X'), target('messages', 'Messages'), target('more', 'More')]),
-      group([inside('quote', 'Quote in a room', 'Add your take, like a restack', 'quoteComposer'), inside('users', 'Send to a trusted contact', 'Only they can open it')], 'Inside Libra', 52),
+      group([inside('quote', 'Quote in a room', 'Add your take, like a restack', 'quoteComposer'), inside('users', 'Send to a trusted contact', 'Only they can open it')], 'Inside Gutchek', 52),
       row({ name: 'Privacy', gap: 8, w: 'fill' }, [icon('eye-off', 14, 'text/tertiary'), text('Shared as an anonymous card: no nickname, no replies. Only room members can open the full thread.', 'caption', 'text/tertiary', { w: 'fill' })]),
     ],
     'Room feed · Share post',
@@ -252,8 +252,8 @@ export function quoteComposer(): FrameNode {
       row({ name: 'Author', gap: 10, w: 'fill' }, [nickAvatar('QuietStorm', 'brand', 36), text('QuietStorm_24', 'bodyStrong', 'text/primary')]),
       text('Coming back to this one. Patience is a green flag and I will not settle for less again.', { family: 'ui', weight: 400, size: 18, line: 28, tracking: -0.5 }, 'text/primary', { w: 'fill' }),
       quoteEmbed({ nick: 'NaijaBelle', tone: 'warning', type: 'Question', text: 'Someone I met last week keeps asking to move to WhatsApp on day one. Is that normal or a red flag for you all?', room: ROOM }),
-      fill(use('ListRow', { Trailing: 'SwitchOn' }, { title: 'Allow sharing outside Libra', subtitle: 'As an anonymous card, without your nickname' }, { icons: { icon: 'share' } })),
-      row({ name: 'Rule', gap: 8, w: 'fill' }, [icon('shield-check', 14, 'text/tertiary'), text('Libra Bot checks quotes like any post. Quoting never reveals the original author outside the room.', 'caption', 'text/tertiary', { w: 'fill' })]),
+      fill(use('ListRow', { Trailing: 'SwitchOn' }, { title: 'Allow sharing outside Gutchek', subtitle: 'As an anonymous card, without your nickname' }, { icons: { icon: 'share' } })),
+      row({ name: 'Rule', gap: 8, w: 'fill' }, [icon('shield-check', 14, 'text/tertiary'), text('Gist Bot checks quotes like any post. Quoting never reveals the original author outside the room.', 'caption', 'text/tertiary', { w: 'fill' })]),
     ],
   );
 }

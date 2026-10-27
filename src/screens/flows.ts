@@ -26,7 +26,7 @@ export function notificationsList(): FrameNode {
       group(
         [
           item('trending-up', 'warning', 'Report changed', "New public posts moved Seun's caution score from 3 to 4.", 'Mon'),
-          item('star', 'brand', '1 report left this month', 'Your Libra Plus reports reset on 1 Nov.', 'Sun'),
+          item('star', 'brand', '1 report left this month', 'Your Gutchek Plus reports reset on 1 Nov.', 'Sun'),
           item('flag', 'neutral', 'Issue resolved', 'We corrected a mismatched account in Kemi\'s report.', '12 Oct'),
         ],
         'Earlier',
@@ -74,7 +74,7 @@ export function linkedAccounts(): FrameNode {
       name: 'Linked accounts',
       nav: { title: 'Linked accounts', action: 'help', backTo: 'match' },
       gap: 14,
-      footer: [link(btn('Start analysis'), 'processing'), center('Uses public posts from the last 5 years on included accounts', 'caption', 'text/tertiary')],
+      footer: [link(btn('Check it'), 'processing'), center('Uses public posts from the last 5 years on included accounts', 'caption', 'text/tertiary')],
     },
     [
       text('3 accounts included', 'h2', 'text/primary', { w: 'fill' }),
@@ -89,7 +89,7 @@ export function noMatch(): FrameNode {
   return screen(
     {
       name: 'No match found',
-      nav: { title: 'New Libra', action: 'x', back: false },
+      nav: { title: 'Run a Gutchek', action: 'x', back: false },
       cross: 'center',
       gap: 18,
       pad: [40, 20, 24, 20],
@@ -116,7 +116,7 @@ export function blocked(): FrameNode {
   return screen(
     {
       name: 'Search not available',
-      nav: { title: 'New Libra', action: 'x', back: false },
+      nav: { title: 'Run a Gutchek', action: 'x', back: false },
       cross: 'center',
       gap: 18,
       pad: [40, 20, 24, 20],
@@ -126,9 +126,9 @@ export function blocked(): FrameNode {
       heroIcon('ban', 'neutral', 96),
       col({ name: 'Copy', gap: 8, w: 'fill' }, [
         center("This search isn't available", 'h2'),
-        center("We can't run a Libra for this person. This happens when someone has opted out, may be under 18, or has been looked up too often.", 'body', 'text/secondary'),
+        center("We can't run a Gutchek for this person. This happens when someone has opted out, may be under 18, or has been looked up too often.", 'body', 'text/secondary'),
       ]),
-      note('shield-check', 'Limits like this protect everyone from Libra being used to stalk or harass. Your report credit has not been used.', 'brand'),
+      note('shield-check', 'Limits like this protect everyone from Gutchek being used to stalk or harass. Your report credit has not been used.', 'brand'),
     ],
   );
 }
@@ -147,7 +147,7 @@ export function paywall(): FrameNode {
     [
       text('Your free report resets on 1 Nov. Need one sooner?', 'body', 'text/secondary', { w: 'fill' }),
       opt('One report', 'Full report, evidence and personality', '$2.99', true),
-      opt('Libra Plus', '5 reports a month, notes and compare', '$7.99/mo', false),
+      opt('Gutchek Plus', '5 reports a month, notes and compare', '$7.99/mo', false),
       link(btn('Get 1 report · $2.99'), 'paymentSuccess'),
       link(btn('See all plans', 'Tertiary'), 'plans'),
     ],
@@ -221,7 +221,7 @@ export function reportIssue(): FrameNode {
         { label: 'Something else' },
       ]),
       textArea('Tell us more (optional)', 'The X account @tobiadeyemi belongs to a different Tobi in Abuja.', false, 100),
-      note('info', 'If you are the person in a report, use the public opt-out page at libra.app/optout instead.', 'neutral'),
+      note('info', 'If you are the person in a report, use the public opt-out page at gutchek.app/optout instead.', 'neutral'),
     ],
   );
 }
@@ -238,7 +238,7 @@ export function comparePicker(): FrameNode {
       name: 'Compare · Choose people',
       nav: { title: 'Compare', action: 'x', back: false },
       gap: 14,
-      footer: [link(btn('Compare 2 people', 'Primary', 'Large', 'columns'), 'compare')],
+      footer: [link(btn('Side by side', 'Primary', 'Large', 'columns'), 'compare')],
     },
     [
       text('Choose two people', 'h2', 'text/primary', { w: 'fill' }),
@@ -256,7 +256,7 @@ export function shareSetup(): FrameNode {
       name: 'Share my date · Set up',
       nav: { title: 'Share my date', action: null, backTo: 'safety' },
       gap: 14,
-      footer: [link(btn('Start sharing', 'Primary', 'Large', 'navigation'), 'shareLive')],
+      footer: [link(btn('Tell a friend', 'Primary', 'Large', 'navigation'), 'shareLive')],
     },
     [
       text('Plan your date', 'h2', 'text/primary', { w: 'fill' }),
@@ -339,7 +339,7 @@ export function trustedContacts(): FrameNode {
     [
       text('People who can see your live location during Share my date and get alerts if you miss a check-in.', 'small', 'text/secondary', { w: 'fill' }),
       group([person('NK', 'Ngozi Kalu', '+234 802 555 0187', 'positive', true), person('IB', 'Ibrahim Bello', '+234 809 555 0133', 'warning'), person('TO', 'Tolu Ogun', '+234 701 555 0164', 'brand')], 'Contacts', 72),
-      note('lock', "Contacts only hear from Libra when you share with them. They never see your reports.", 'neutral'),
+      note('lock', "Contacts only hear from Gutchek when you share with them. They never see your reports.", 'neutral'),
     ],
   );
 }
@@ -436,15 +436,15 @@ export function help(): FrameNode {
     [
       fill(use('TextField', { State: 'Default' }, { value: 'Search help articles' }, { hide: ['label'], show: ['leading'], icons: { leading: 'search' } })),
       groupTitle('Popular questions'),
-      group([q('How does the Libra Scale work?'), q("Why can't I find someone?"), q('Who can see my searches?'), q('How do I cancel my plan?')]),
+      group([q('How does the Gut Meter work?'), q("Why can't I find someone?"), q('Who can see my searches?'), q('How do I cancel my plan?')]),
       groupTitle('Get in touch'),
       group([
         fill(use('ListRow', { Trailing: 'Chevron' }, { title: 'Chat with support', subtitle: 'Typically replies in under an hour' }, { icons: { icon: 'message' } })),
-        fill(use('ListRow', { Trailing: 'Value' }, { title: 'Email us', value: 'support@libra.app' }, { hide: ['subtitle'], icons: { icon: 'mail' } })),
+        fill(use('ListRow', { Trailing: 'Value' }, { title: 'Email us', value: 'support@gutchek.app' }, { hide: ['subtitle'], icons: { icon: 'mail' } })),
       ]),
       row({ name: 'Safety concern', w: 'fill', gap: 12, pad: 16, radius: 16, fill: 'caution/subtle', cross: 'start' }, [
         icon('alert-triangle', 20, 'caution/fg'),
-        col({ name: 'Text', gap: 2, w: 'fill' }, [text('In danger right now?', 'bodyStrong', 'text/primary'), text('Call 112, or open the Safety Hub for local support lines.', 'small', 'text/secondary', { w: 'fill' })]),
+        col({ name: 'Text', gap: 2, w: 'fill' }, [text('In danger right now?', 'bodyStrong', 'text/primary'), text('Call 112, or open the Stay Safe hub for local support lines.', 'small', 'text/secondary', { w: 'fill' })]),
       ]),
     ],
   );
@@ -458,13 +458,13 @@ export function paymentSuccess(): FrameNode {
       cross: 'center',
       gap: 20,
       pad: [56, 20, 24, 20],
-      footer: [link(btn('Start a new Libra', 'Primary', 'Large', 'plus'), 'search'), link(btn('Done', 'Tertiary'), 'home')],
+      footer: [link(btn('Run a Gutchek', 'Primary', 'Large', 'plus'), 'search'), link(btn('Done', 'Tertiary'), 'home')],
     },
     [
       heroIcon('check-circle', 'positive', 104),
-      col({ name: 'Copy', gap: 8, w: 'fill' }, [center("You're on Libra Plus", 'h1'), center('5 full reports a month, the evidence viewer, personality snapshots and private notes.', 'body', 'text/secondary')]),
+      col({ name: 'Copy', gap: 8, w: 'fill' }, [center("You're on Gutchek Plus", 'h1'), center('5 full reports a month, the evidence viewer, personality snapshots and private notes.', 'body', 'text/secondary')]),
       col({ name: 'Receipt', w: 'fill', pad: [8, 16], radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
-        line('Plan', 'Libra Plus, monthly'),
+        line('Plan', 'Gutchek Plus, monthly'),
         divider(),
         line('Charged today', '$7.99'),
         divider(),

@@ -12,7 +12,7 @@ export function intro(): FrameNode {
   add(art, abs(chip('file', 'Evidence for every flag'), 128, 238));
   return screen(
     {
-      name: 'How Libra works',
+      name: 'How Gutchek works',
       nav: { title: '', action: null, backTo: 'welcome' },
       cross: 'center',
       gap: 24,
@@ -23,7 +23,7 @@ export function intro(): FrameNode {
       progressDots(3, 1),
       col({ name: 'Copy', gap: 10, w: 'fill' }, [
         center('A fair second opinion, with the receipts', 'h2'),
-        center('Libra reads public posts only and weighs the kind as seriously as the concerning. Every flag links back to its source, so you decide.', 'body', 'text/secondary'),
+        center('Gutchek reads public posts only and weighs the kind as seriously as the concerning. Every flag links back to its source, so you decide.', 'body', 'text/secondary'),
       ]),
     ],
   );
@@ -45,7 +45,7 @@ export function idIntro(): FrameNode {
     [
       heroIcon('shield-check', 'positive', 72),
       text('Verify your identity', 'h1', 'text/primary', { w: 'fill' }),
-      text('Optional, about 2 minutes. Verified members get a trusted badge and help keep Libra free of fake accounts.', 'body', 'text/secondary', { w: 'fill' }),
+      text('Optional, about 2 minutes. Verified members get a trusted badge and help keep Gutchek free of fake accounts.', 'body', 'text/secondary', { w: 'fill' }),
       surface(
         [
           step('1', 'id-card', 'Photo of your ID', "Passport, driver's licence, NIN slip or voter's card."),
@@ -56,7 +56,7 @@ export function idIntro(): FrameNode {
         20,
         18,
       ),
-      note('lock', 'Verification is handled by our ID partner. Libra never stores images of your ID.', 'neutral'),
+      note('lock', 'Verification is handled by our ID partner. Gutchek never stores images of your ID.', 'neutral'),
     ],
   );
 }
@@ -97,7 +97,7 @@ export function notifPrompt(): FrameNode {
   const preview = row({ name: 'Notification preview', w: 'fill', pad: 14, gap: 12, radius: 20, fill: 'bg/raised', stroke: 'border/default', shadow: 'e2' }, [
     box({ name: 'App icon', dir: 'h', w: 38, h: 38, radius: 9, fill: 'brand/solid', main: 'center', cross: 'center' }, [glyph(24, 'text/on-solid')]),
     col({ name: 'Text', gap: 2, w: 'fill' }, [
-      row({ name: 'Head', gap: 8, w: 'fill' }, [text('Libra', 'smallStrong', 'text/primary', { w: 'fill' }), text('now', 'caption', 'text/tertiary')]),
+      row({ name: 'Head', gap: 8, w: 'fill' }, [text('Gutchek', 'smallStrong', 'text/primary', { w: 'fill' }), text('now', 'caption', 'text/tertiary')]),
       text('Your report for Tobi is ready. Mostly positive, minor concerns.', 'small', 'text/secondary', { w: 'fill' }),
     ]),
   ]);
@@ -131,7 +131,7 @@ export function appLocked(): FrameNode {
     },
     [
       box({ name: 'Glyph', dir: 'h', w: 96, h: 96, radius: 28, fill: 'brand/solid', main: 'center', cross: 'center' }, [glyph(56, 'text/on-solid')]),
-      col({ name: 'Copy', gap: 8, w: 'fill' }, [center('Libra is locked', 'h2'), center('Your reports and notes stay private. Unlock to continue.', 'body', 'text/secondary')]),
+      col({ name: 'Copy', gap: 8, w: 'fill' }, [center('Gutchek is locked', 'h2'), center('Your reports and notes stay private. Unlock to continue.', 'body', 'text/secondary')]),
     ],
   );
 }

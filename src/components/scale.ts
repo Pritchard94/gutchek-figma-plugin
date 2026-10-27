@@ -1,68 +1,81 @@
 import { Token } from '../tokens';
-import { abs, add, box, circle, col, icon, lineBetween, placeRotated, rect, row, text, toneTokens, Tone } from '../core/ui';
+import { abs, add, box, circle, col, icon, lineBetween, paint, rect, row, text } from '../core/ui';
 
 export type Tilt = 'Caution' | 'Balanced' | 'Positive' | 'Pending' | 'Low';
 
 const W = 353;
 const CX = W / 2;
-const PIVOT_Y = 14;
-const BEAM = 216;
-const CARD_W = 96;
-const HANG = 12;
-const BASE_Y = 128;
-const H = BASE_Y + 6;
-const TILT = 7;
+const R = 116;
+const BAND = 16;
+const CY = R + 14;
+const H = CY + 62;
 
-function pan(side: 'caution' | 'positive', score: string, tilt: Tilt): FrameNode {
-  const neutral = tilt === 'Pending' || tilt === 'Low';
-  const tone: Tone = neutral ? 'neutral' : side;
-  const t = toneTokens[tone];
-  const numColor: Token = tilt === 'Pending' ? 'text/tertiary' : neutral ? 'text/secondary' : side === 'caution' ? 'caution/fg' : 'positive/fg';
-  return col({ name: side === 'caution' ? 'Caution pan' : 'Positive pan', w: CARD_W, pad: [8, 10, 10, 10], gap: 0, radius: 14, fill: t.bg, stroke: t.border, cross: 'center' }, [
-    row({ name: 'Label', gap: 4 }, [
-      icon(side === 'caution' ? 'alert-triangle' : 'check-circle', 13, neutral ? 'text/tertiary' : t.fg),
-      text(side === 'caution' ? 'Caution' : 'Positive', { family: 'ui', weight: 600, size: 12, line: 16 }, neutral ? 'text/secondary' : t.fg),
+/** Angles in Figma arcs run clockwise from 3 o'clock, so the top of the dial is 1.5π. */
+const TOP = Math.PI * 1.5;
+
+function arc(name: string, from: number, to: number, fill: Token, radius = R, band = BAND): EllipseNode {
+  const e = figma.createEllipse();
+  e.name = name;
+  e.resize(radius * 2, radius * 2);
+  e.arcData = { startingAngle: from, endingAngle: to, innerRadius: (radius - band) / radius };
+  e.fills = [paint(fill)];
+  return e;
+}
+
+function scoreBlock(side: 'caution' | 'positive', score: string, tilt: Tilt): FrameNode {
+  const quiet = tilt === 'Pending' || tilt === 'Low';
+  const fg: Token = tilt === 'Pending' ? 'text/tertiary' : quiet ? 'text/secondary' : side === 'caution' ? 'caution/fg' : 'positive/fg';
+  return col({ name: side === 'caution' ? 'Red Flag' : 'Green Flag', w: 112, gap: 0, cross: side === 'caution' ? 'start' : 'end' }, [
+    row({ name: 'Label', gap: 5 }, [
+      icon(side === 'caution' ? 'flag' : 'check-circle', 14, quiet ? 'text/tertiary' : fg),
+      text(side === 'caution' ? 'Red Flag' : 'Green Flag', { family: 'ui', weight: 600, size: 12, line: 16 }, quiet ? 'text/secondary' : fg),
     ]),
     row({ name: 'Score', gap: 1, cross: 'baseline' }, [
-      text(score, { family: 'display', weight: 800, size: 34, line: 38, tracking: -2 }, numColor, { name: side === 'caution' ? 'caution-score' : 'positive-score' }),
+      text(score, { family: 'display', weight: 800, size: 36, line: 40, tracking: -2 }, fg, { name: side === 'caution' ? 'caution-score' : 'positive-score' }),
       text('/10', 'caption', 'text/tertiary', { name: 'out-of' }),
     ]),
   ]);
 }
 
-/** Compact Libra Scale: beam tilts toward the heavier pan; pans hang close under the beam. */
+/**
+ * The Gut Meter: a semi-circle dial, red half for caution and green half for positive.
+ * Each half fills from the top outward with its own score; the needle settles toward the heavier side.
+ */
 export function scaleDial(tilt: Tilt, caution = '2', positive = '8'): FrameNode {
-  const f = box({ name: 'ScaleDial', dir: 'none', w: W, h: H });
-  const deg = tilt === 'Caution' ? -TILT : tilt === 'Positive' ? TILT : 0;
-  const a = (deg * Math.PI) / 180;
-  const half = BEAM / 2 - 2;
-  const left = { x: CX - Math.cos(a) * half, y: PIVOT_Y - Math.sin(a) * half };
-  const right = { x: CX + Math.cos(a) * half, y: PIVOT_Y + Math.sin(a) * half };
-  const beamToken: Token = tilt === 'Pending' || tilt === 'Low' ? 'text/tertiary' : 'brand/fg';
+  const f = box({ name: 'GutMeter', dir: 'none', w: W, h: H });
+  const quiet = tilt === 'Pending' || tilt === 'Low';
+  const c = parseFloat(caution) || 0;
+  const p = parseFloat(positive) || 0;
+  const gap = 0.035;
+  const quarter = Math.PI / 2;
 
-  add(f, abs(rect(3, BASE_Y - PIVOT_Y, beamToken, 1.5, 'Post'), CX - 1.5, PIVOT_Y));
-  add(f, abs(rect(72, 6, beamToken, 3, 'Base'), CX - 36, BASE_Y));
-
-  const cards: Array<[FrameNode, { x: number; y: number }]> = [
-    [pan('caution', caution, tilt), left],
-    [pan('positive', positive, tilt), right],
-  ];
-  const placed: Array<[FrameNode, number, number]> = [];
-  for (const [card, end] of cards) {
-    const x = Math.round(end.x - CARD_W / 2);
-    const y = Math.round(end.y + HANG);
-    add(f, lineBetween(end.x, end.y, x + 18, y + 1, 'border/strong', 1, 'String'));
-    add(f, lineBetween(end.x, end.y, x + CARD_W - 18, y + 1, 'border/strong', 1, 'String'));
-    placed.push([card, x, y]);
+  add(f, abs(arc('Red track', Math.PI, TOP - gap, quiet ? 'bg/muted' : 'caution/subtle'), CX - R, CY - R));
+  add(f, abs(arc('Green track', TOP + gap, Math.PI * 2, quiet ? 'bg/muted' : 'positive/subtle'), CX - R, CY - R));
+  if (!quiet || tilt === 'Low') {
+    const cs = Math.max(0.06, c / 10) * (quarter - gap);
+    const ps = Math.max(0.06, p / 10) * (quarter - gap);
+    add(f, abs(arc('Red fill', TOP - gap - cs, TOP - gap, quiet ? 'border/strong' : 'caution/solid'), CX - R, CY - R));
+    add(f, abs(arc('Green fill', TOP + gap, TOP + gap + ps, quiet ? 'border/strong' : 'positive/solid'), CX - R, CY - R));
   }
 
-  const beam = rect(BEAM, 4, beamToken, 2, 'Beam');
-  f.appendChild(beam);
-  placeRotated(beam, CX, PIVOT_Y, deg);
-  for (const end of [left, right]) add(f, abs(circle(6, beamToken, 'Hook'), end.x - 3, end.y - 3));
-  add(f, abs(circle(14, beamToken, 'Pivot'), CX - 7, PIVOT_Y - 7));
-  add(f, abs(circle(6, 'bg/surface', 'Pivot core'), CX - 3, PIVOT_Y - 3));
-  for (const [card, x, y] of placed) add(f, abs(card, x, y));
+  for (let i = 0; i <= 20; i++) {
+    const a = Math.PI + (i / 20) * Math.PI;
+    const major = i % 5 === 0;
+    const r1 = R - BAND - 8;
+    const r2 = r1 - (major ? 8 : 4);
+    add(f, lineBetween(CX + Math.cos(a) * r1, CY + Math.sin(a) * r1, CX + Math.cos(a) * r2, CY + Math.sin(a) * r2, major ? 'border/strong' : 'border/default', major ? 2 : 1.5, 'Tick'));
+  }
+
+  const lean = tilt === 'Pending' ? 0 : Math.max(-1, Math.min(1, (p - c) / 10));
+  const a = TOP + lean * quarter * 0.92;
+  const len = R - BAND - 22;
+  const needle: Token = quiet ? 'text/tertiary' : 'text/primary';
+  add(f, lineBetween(CX, CY, CX + Math.cos(a) * len, CY + Math.sin(a) * len, needle, 5, 'Needle'));
+  add(f, abs(circle(26, 'bg/surface', 'Hub'), CX - 13, CY - 13));
+  add(f, abs(circle(14, needle, 'Hub core'), CX - 7, CY - 7));
+
+  add(f, abs(scoreBlock('caution', caution, tilt), 0, CY + 8));
+  add(f, abs(scoreBlock('positive', positive, tilt), W - 112, CY + 8));
   return f;
 }
 

@@ -8,15 +8,15 @@ function newLibraCard(credits = '4 of 5 reports left this month'): FrameNode {
     const t = text(str, style, 'text/on-solid', { w: 'fill', opacity });
     return t;
   };
-  const cta = row({ name: 'New Libra button', h: 44, pad: [0, 16], gap: 8, radius: 12, fill: [hexPaint('#FFFFFF')], cross: 'center' }, [
+  const cta = row({ name: 'Run a Gutchek button', h: 44, pad: [0, 16], gap: 8, radius: 12, fill: [hexPaint('#FFFFFF')], cross: 'center' }, [
     icon('plus', 20, 'brand/solid'),
-    text('New Libra', 'bodyStrong', 'brand/solid'),
+    text('Run a Gutchek', 'bodyStrong', 'brand/solid'),
   ]);
   for (const n of cta.findAll((c) => c.type === 'TEXT')) (n as TextNode).fills = [hexPaint('#4A30B0')];
   link(cta, 'search');
-  return col({ name: 'New Libra card', w: 'fill', pad: 20, gap: 12, radius: 24, fill: [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)], clip: true }, [
+  return col({ name: 'Run a Gutchek card', w: 'fill', pad: 20, gap: 12, radius: 24, fill: [gradient([['#7556E3', 0], ['#4A30B0', 1]], 135)], clip: true }, [
     row({ name: 'Top', w: 'fill', gap: 12 }, [glyph(36, 'text/on-solid'), box({ name: 'Spacer', w: 'fill', h: 1 }), text(credits, 'caption', 'text/on-solid', { opacity: 0.8 })]),
-    white('Start a new Libra', 'h2'),
+    white('Run a Gutchek', 'h2'),
     white('Add a name and one social handle. A balanced, evidence-linked report in under a minute.', 'small', 0.88),
     cta,
   ]);
@@ -46,9 +46,9 @@ export function home(): FrameNode {
     [
       newLibraCard(),
       link(
-        row({ name: 'Analyse a chat', w: 'fill', gap: 14, pad: 16, radius: 20, fill: 'bg/surface', stroke: 'border/default' }, [
+        row({ name: 'Check a Chat', w: 'fill', gap: 14, pad: 16, radius: 20, fill: 'bg/surface', stroke: 'border/default' }, [
           iconTile('message', 'brand', 44),
-          col({ name: 'Text', gap: 2, w: 'fill' }, [text('Analyse a chat', 'bodyStrong', 'text/primary'), text('Upload screenshots to see how they communicate', 'small', 'text/secondary', { w: 'fill' })]),
+          col({ name: 'Text', gap: 2, w: 'fill' }, [text('Check a Chat', 'bodyStrong', 'text/primary'), text('Upload screenshots to see how they communicate', 'small', 'text/secondary', { w: 'fill' })]),
           icon('chevron-right', 20, 'text/tertiary'),
         ]),
         'analyse',
@@ -59,7 +59,7 @@ export function home(): FrameNode {
         col({ name: 'Text', gap: 4, w: 'fill' }, [
           text('Safety tip of the day', 'overline', 'positive/fg'),
           text('Meet first dates somewhere public, and let a friend know your plans with Share my date.', 'small', 'text/primary', { w: 'fill' }),
-          text('Open Safety Hub', 'smallStrong', 'positive/fg'),
+          text('Open Stay Safe hub', 'smallStrong', 'positive/fg'),
         ]),
       ]),
       col({ name: 'Saved', gap: 12, w: 'fill' }, [sectionHead('Saved people', 'Manage', 'saved'), saved]),
@@ -80,7 +80,7 @@ export function homeEmpty(): FrameNode {
       fill(use('EmptyState', {}, { title: 'No reports yet', body: 'Reports you run appear here. Saved people stay private to you.' })),
       surface(
         [
-          text('How Libra works', 'title', 'text/primary'),
+          text('How Gutchek works', 'title', 'text/primary'),
           step('1', 'Add a name and one social handle'),
           step('2', "Confirm the accounts that are really theirs"),
           step('3', 'Read a balanced, evidence-linked report'),
@@ -114,7 +114,7 @@ export function saved(): FrameNode {
       tab: 'Saved',
       nav: { type: 'Large', title: 'Saved', action: 'columns' },
       gap: 16,
-      footer: [link(btn('Compare two people', 'Secondary', 'Large', 'columns'), 'comparePicker')],
+      footer: [link(btn('Side by side', 'Secondary', 'Large', 'columns'), 'comparePicker')],
     },
     [
       link(fill(use('Segmented', { Active: 'First' }, { first: 'People', second: 'Threads' })), 'savedThreads'),
