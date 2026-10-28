@@ -14,7 +14,7 @@ type Def = [string, string, () => FrameNode];
 const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
   {
     title: 'Web app · 1 · Sign in and onboarding',
-    note: 'Split-screen sign in with the scale, code verification and the age and purpose agreement.',
+    note: 'Full-screen sign in with a centred glass card and product illustrations, code verification and the age and purpose agreement.',
     pages: [
       ['wSignIn', 'Sign in', wSignIn],
       ['wVerify', 'Verify code', wVerify],

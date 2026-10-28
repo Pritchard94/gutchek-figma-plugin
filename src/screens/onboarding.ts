@@ -1,31 +1,66 @@
 import { abs, add, box, col, icon, paint, row, text } from '../core/ui';
 import { glyph } from '../brand';
+import { illoChat, illoMeter, illoRooms } from '../components/illustrations';
 import { btn, center, heroIcon, iconTile, link, note, progressDots, screen, surface } from './kit';
 
-export function intro(): FrameNode {
-  const chip = (iconName: string, label: string) =>
-    row({ name: label, gap: 8, pad: [10, 14], radius: 999, fill: 'bg/raised', stroke: 'border/default', shadow: 'e2' }, [icon(iconName, 16, 'brand/fg'), text(label, 'smallStrong', 'text/primary')]);
-  const art = box({ name: 'Art', dir: 'none', w: 353, h: 300, radius: 32, fill: 'brand/subtle' });
-  add(art, abs(box({ name: 'Glyph disc', dir: 'h', w: 132, h: 132, radius: 66, fill: 'bg/raised', main: 'center', cross: 'center', shadow: 'e2' }, [glyph(72, 'brand/fg')]), 110, 84));
-  add(art, abs(chip('eye-off', 'They are never notified'), 132, 28));
-  add(art, abs(chip('lock', 'Public posts only'), 20, 172));
-  add(art, abs(chip('file', 'Evidence for every flag'), 128, 238));
+function introStep(name: string, step: number, art: FrameNode, eyebrow: string, title: string, body: string, back: string, next: string, cta = 'Next'): FrameNode {
   return screen(
     {
-      name: 'How Gutchek works',
-      nav: { title: '', action: null, backTo: 'welcome' },
+      name,
+      nav: { title: '', action: null, backTo: back },
       cross: 'center',
-      gap: 24,
-      footer: [link(btn('Continue'), 'signin'), link(btn('Skip', 'Tertiary'), 'signin')],
+      gap: 20,
+      footer: [link(btn(cta), next), link(btn('Skip', 'Tertiary'), 'signin')],
     },
     [
       art,
-      progressDots(3, 1),
-      col({ name: 'Copy', gap: 10, w: 'fill' }, [
-        center('A fair second opinion, with the receipts', 'h2'),
-        center('Gutchek reads public posts only and weighs the kind as seriously as the concerning. Every flag links back to its source, so you decide.', 'body', 'text/secondary'),
+      progressDots(3, step),
+      col({ name: 'Copy', gap: 8, w: 'fill' }, [
+        center(eyebrow, 'label', 'brand/fg'),
+        center(title, 'h2'),
+        center(body, 'body', 'text/secondary'),
       ]),
     ],
+  );
+}
+
+export function intro(): FrameNode {
+  return introStep(
+    'Onboarding · Run a Gutchek',
+    0,
+    illoMeter(),
+    'RUN A GUTCHEK',
+    'A fair read, with the receipts',
+    'We weigh public posts across platforms, the kind as seriously as the concerning. Every flag links to its source. They are never notified.',
+    'welcome',
+    'introChat',
+  );
+}
+
+export function introChat(): FrameNode {
+  return introStep(
+    'Onboarding · Check a Chat',
+    1,
+    illoChat(),
+    'CHECK A CHAT',
+    'Something feel off? Check the chat',
+    'Upload screenshots of a conversation. We tag pressure, love-bombing and respect, quoting the exact messages, and mask numbers first.',
+    'intro',
+    'introRooms',
+  );
+}
+
+export function introRooms(): FrameNode {
+  return introStep(
+    'Onboarding · Gist Rooms',
+    2,
+    illoRooms(),
+    'GIST ROOMS',
+    'Talk it through with people who get it',
+    'Nickname-only rooms for dating wins, red flags and advice. Gist Bot checks every post so nobody gets named or shamed.',
+    'introChat',
+    'signin',
+    'Get started',
   );
 }
 

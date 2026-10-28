@@ -533,7 +533,7 @@ define('Toast', 'Content and feedback', 'Brief confirmation. Auto-dismisses afte
   ]),
 );
 
-define('EmptyState', 'Content and feedback', 'Calm empty states lead with the scale and one clear next step.', [{}], () =>
+define('EmptyState', 'Content and feedback', 'Calm empty states lead with the Gut Meter and one clear next step.', [{}], () =>
   col({ name: 'EmptyState', w: 353, pad: [20, 24], gap: 10, cross: 'center' }, [
     box({ name: 'Art', dir: 'h', w: 80, h: 80, radius: 40, fill: 'brand/subtle', main: 'center', cross: 'center' }, [glyph(44, 'brand/fg')]),
     text('Nothing here yet', 'h3', 'text/primary', { name: 'title', align: 'center', w: 'fill' }),

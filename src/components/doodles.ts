@@ -1,8 +1,8 @@
 import { Token } from '../tokens';
 import { box, icon, placeRotated } from '../core/ui';
 
-/** Line-art motifs for chat wallpaper: dating, care and the scale. No surveillance imagery. */
-const MOTIFS = ['scale', 'heart', 'message', 'coffee', 'star', 'sparkle', 'map-pin', 'calendar', 'moon', 'sun', 'music', 'flower', 'gift', 'hand-heart', 'smile', 'mail', 'shield-check', 'quote', 'messages', 'wind'];
+/** Line-art motifs for chat wallpaper: dating, care and the check. No surveillance imagery. */
+const MOTIFS = ['check-circle', 'heart', 'message', 'coffee', 'star', 'sparkle', 'map-pin', 'calendar', 'moon', 'sun', 'music', 'flower', 'gift', 'hand-heart', 'smile', 'mail', 'shield-check', 'quote', 'messages', 'wind'];
 
 /**
  * WhatsApp-style tiled doodle wallpaper. Positions and rotations come from a seeded

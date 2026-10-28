@@ -343,7 +343,7 @@ export function requestStatus(): FrameNode {
 export function helpCentre(): FrameNode {
   const cats: Array<[string, string, string]> = [
     ['sparkle', 'Getting started', 'Accounts, verification and your first Gutchek.'],
-    ['scale', 'Reports and scoring', 'How the scale, confidence and evidence work.'],
+    ['scale', 'Reports and scoring', 'How the Gut Meter, confidence and evidence work.'],
     ['shield-check', 'Privacy and safety', 'Who sees what, and how we protect it.'],
     ['card', 'Plans and billing', 'Subscriptions, refunds and local payments.'],
     ['flag', 'Opt-out and disputes', 'If someone looked you up.'],
@@ -415,7 +415,7 @@ export function notFound(): FrameNode {
       col({ name: 'Card', w: 640, gap: 24, cross: 'center' }, [
         text('404', display(120, 128), 'brand/fg', { align: 'center' }),
         use('GutMeter', { Tilt: 'Pending' }),
-        text('This page tipped the scale', display(40, 48), 'text/primary', { align: 'center', w: 'fill' }),
+        text("This page didn't pass the gut check", display(40, 48), 'text/primary', { align: 'center', w: 'fill' }),
         text("We couldn't find what you were looking for. It may have moved, or the link may be out of date.", lead, 'text/secondary', { align: 'center', w: 'fill' }),
         row({ name: 'Actions', gap: 12 }, [btn('Go to the homepage', 'Primary', 'Large', 'landing'), btn('Visit the help centre', 'Secondary', 'Large', 'helpcenter')]),
       ]),

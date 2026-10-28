@@ -65,12 +65,13 @@ async function run() {
     buildWebsite(page, light.frames);
     return page;
   });
+  let webFrames: Record<string, FrameNode> = {};
   const webapp = await onPage('Web App', 'Designing the web app', (page) => {
-    buildWebApp(page);
+    webFrames = buildWebApp(page);
     return page;
   });
   const cover = await onPage('Cover', 'Making the cover', (page) =>
-    buildCover([light.frames.home, light.frames.report, light.frames.match].filter(Boolean), page),
+    buildCover([light.frames.home, light.frames.report].filter(Boolean), page, webFrames.wReport || webFrames.wHome),
   );
 
   stage = 'Arranging pages';

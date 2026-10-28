@@ -2,86 +2,112 @@ import { PLATFORMS, abs, add, avatar, box, col, divider, fill, gradient, hexPain
 import { glyph, lockup } from '../brand';
 import { use } from '../components/library';
 import { Person, daniel, kemi, people, seun, tobi, user } from '../screens/data';
-import { APP_H, alink, appFrame, btn, card, field, iconTileW, kv, modal, plainFrame, table } from './shell';
+import { ILLO_W, blob, floatChip, illoChat, illoMeter, illoRooms } from '../components/illustrations';
+import { doodleLayer } from '../components/doodles';
+import { APP_H, APP_W, alink, appFrame, btn, card, field, iconTileW, kv, modal, table } from './shell';
 
 // ---------------------------------------------------------------- auth
 
-function brandPanel(): FrameNode {
-  const point = (iconName: string, t: string) =>
-    row({ name: t, gap: 12, w: 'fill' }, [box({ name: 'Icon', dir: 'h', w: 36, h: 36, radius: 10, fill: [hexPaint('#FFFFFF', 0.12)], main: 'center', cross: 'center' }, [icon(iconName, 18, 'text/on-solid')]), text(t, 'body', 'text/on-solid', { w: 'fill' })]);
-  const dialCard = col({ name: 'Dial card', w: 'fill', pad: [28, 0], gap: 12, radius: 28, fill: 'bg/surface', cross: 'center', shadow: 'e3' }, [
-    text('Mostly positive, minor concerns', 'h3', 'text/primary'),
-    use('GutMeter', { Tilt: 'Positive' }),
-    use('ConfidenceBadge', { Level: 'High' }),
-  ]);
-  return col({ name: 'Brand panel', w: 640, h: APP_H, pad: [56, 64], gap: 40, fill: [gradient([['#7556E3', 0], ['#2C1E66', 1]], 135)] }, [
-    lockup(32, 'text/on-solid', 'text/on-solid'),
-    col({ name: 'Copy', gap: 16, w: 'fill' }, [
-      text('Know the person behind the DMs', { family: 'display', weight: 800, size: 48, line: 56, tracking: -2.5 }, 'text/on-solid', { w: 'fill' }),
-      text('A calm, evidence-first second opinion before you invest emotionally or meet in person.', { family: 'ui', weight: 400, size: 18, line: 28 }, 'text/on-solid', { w: 'fill', opacity: 0.85 }),
+const AUTH_STEPS = ['Account', 'Code', 'Promises'];
+
+/**
+ * Full-bleed auth stage: soft brand glows and a faint doodle field, the form in a centred glass
+ * card, and two product illustrations tilted either side so the product sells itself.
+ */
+function authStage(name: string, step: number, kids: SceneNode[], cardW = 460): FrameNode {
+  const f = box({ name, dir: 'none', w: APP_W, h: APP_H, fill: 'bg/canvas', clip: true });
+  add(f, abs(blob(720, 'brand/border', 0.7), -220, -260));
+  add(f, abs(blob(560, 'positive/subtle', 1), 1040, 620));
+  add(f, abs(blob(440, 'caution/subtle', 0.9), 960, -160));
+  add(f, abs(blob(380, 'brand/subtle', 1), 120, 700));
+  add(f, abs(doodleLayer(APP_W, APP_H, 'brand/fg', 0.05, 23), 0, 0));
+
+  const top = row({ name: 'Top bar', w: APP_W - 96, cross: 'center', main: 'between' }, [
+    lockup(28),
+    row({ name: 'Right', gap: 20, cross: 'center' }, [
+      text('Help centre', 'smallStrong', 'text/secondary'),
+      row({ name: 'Safe', gap: 6, pad: [6, 12], radius: 999, fill: 'bg/raised', stroke: 'border/default' }, [icon('lock', 14, 'positive/fg'), text('Private and encrypted', 'label', 'text/secondary')]),
     ]),
-    dialCard,
-    col({ name: 'Points', gap: 14, w: 'fill' }, [point('lock', 'Public posts only, never private accounts'), point('eye-off', 'The person is never notified'), point('file', 'Every flag links to its source')]),
   ]);
+  add(f, abs(top, 48, 32));
+
+  const stepper = row(
+    { name: 'Steps', gap: 6, w: 'fill' },
+    AUTH_STEPS.map((s, i) =>
+      col({ name: 'Step · ' + s, gap: 6, w: 'fill' }, [
+        box({ name: 'Bar', dir: 'h', w: 'fill', h: 4, radius: 2, fill: i <= step ? 'brand/solid' : 'border/default' }),
+        text(s, 'label', i === step ? 'text/primary' : 'text/tertiary'),
+      ]),
+    ),
+  );
+  const card = col({ name: 'Auth card', w: cardW, gap: 20, pad: [32, 36, 36, 36], radius: 32, fill: 'bg/raised', stroke: 'border/default', shadow: 'glass' }, [stepper, ...kids]);
+  add(f, abs(card, Math.round((APP_W - cardW) / 2), Math.max(108, Math.round((APP_H - card.height) / 2) + 20)));
+
+  const left = illoMeter();
+  left.rescale(0.92);
+  left.rotation = 5;
+  add(f, abs(left, 96, 300));
+  const right = step === 0 ? illoRooms() : illoChat();
+  right.rescale(0.92);
+  right.rotation = -5;
+  add(f, abs(right, APP_W - 96 - Math.round(ILLO_W * 0.92), 260));
+
+  add(f, abs(floatChip('eye-off', 'They are never notified', 'neutral'), 150, 220));
+  add(f, abs(floatChip('file', 'Every flag links to its source', 'brand'), 1060, 680));
+
+  f.setPluginData('webapp', '1');
+  return f;
 }
 
-function formSide(kids: SceneNode[]): FrameNode {
-  return col({ name: 'Form side', w: 'fill', h: APP_H, main: 'center', cross: 'center', pad: [0, 80] }, [col({ name: 'Form', w: 420, gap: 20 }, kids)]);
-}
+const authTitle = (t: string) => text(t, { family: 'display', weight: 800, size: 34, line: 40, tracking: -1.5 }, 'text/primary', { w: 'fill' });
 
 export function wSignIn(): FrameNode {
-  return plainFrame('Sign in', [
-    brandPanel(),
-    formSide([
-      text('Welcome to Gutchek', { family: 'display', weight: 800, size: 36, line: 44, tracking: -2 }, 'text/primary'),
-      text('Sign in or create an account. You must be 18 or older.', 'body', 'text/secondary', { w: 'fill' }),
+  return authStage('Sign in', 0, [
+      authTitle('Trust your gut. Then check it.'),
+      text('Sign in or create an account. Gutchek is for adults 18 and over.', 'body', 'text/secondary', { w: 'fill' }),
+      row({ name: 'Social', gap: 12, w: 'fill' }, [fill(use('SocialButton', { Provider: 'Apple' })), fill(use('SocialButton', { Provider: 'Google' }))]),
+      row({ name: 'Or', gap: 12, w: 'fill' }, [fill(divider()), text('or use your phone', 'small', 'text/tertiary'), fill(divider())]),
       fill(use('Segmented', { Active: 'First' }, { first: 'Phone', second: 'Email' })),
       field('Phone number', '803 555 0142', 'Focused', { prefix: '+234' }),
       alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Send code' })), 'wVerify'),
-      row({ name: 'Or', gap: 12, w: 'fill' }, [fill(divider()), text('or', 'small', 'text/tertiary'), fill(divider())]),
-      row({ name: 'Social', gap: 12, w: 'fill' }, [fill(use('SocialButton', { Provider: 'Apple' })), fill(use('SocialButton', { Provider: 'Google' }))]),
       text('By continuing you agree to the Terms of use and Privacy policy.', 'caption', 'text/tertiary', { w: 'fill' }),
-    ]),
   ]);
 }
 
 export function wVerify(): FrameNode {
   const digits = ['4', '8', '1', '9', '', ''];
-  return plainFrame('Verify code', [
-    brandPanel(),
-    formSide([
-      alink(row({ name: 'Back', gap: 6 }, [icon('chevron-left', 18, 'text/secondary'), text('Back', 'smallStrong', 'text/secondary')]), 'wSignIn'),
-      text('Enter the code', { family: 'display', weight: 800, size: 36, line: 44, tracking: -2 }, 'text/primary'),
-      text('Sent to ' + user.phone + '. It expires in 10 minutes.', 'body', 'text/secondary', { w: 'fill' }),
-      row(
-        { name: 'OTP', gap: 10, w: 'fill' },
-        digits.map((d, i) =>
-          box({ name: 'Digit ' + (i + 1), dir: 'h', w: 'fill', h: 64, radius: 12, fill: 'bg/surface', stroke: i === 4 ? 'border/focus' : 'border/strong', strokeW: i === 4 ? 2 : 1, main: 'center', cross: 'center' }, [
-            d ? text(d, { family: 'display', weight: 700, size: 28, line: 34 }, 'text/primary') : null,
-          ]),
-        ),
+  return authStage('Verify code', 1, [
+    alink(row({ name: 'Back', gap: 6 }, [icon('chevron-left', 18, 'text/secondary'), text('Back', 'smallStrong', 'text/secondary')]), 'wSignIn'),
+    authTitle('Enter the code'),
+    row({ name: 'Sent to', gap: 6, w: 'fill' }, [text('Sent to ' + user.phone + '.', 'body', 'text/secondary'), text('Change', 'bodyStrong', 'brand/fg')]),
+    row(
+      { name: 'OTP', gap: 8, w: 'fill' },
+      digits.map((d, i) =>
+        box({ name: 'Digit ' + (i + 1), dir: 'h', w: 'fill', h: 60, radius: 14, fill: 'bg/surface', stroke: i === 4 ? 'border/focus' : 'border/strong', strokeW: i === 4 ? 2 : 1, main: 'center', cross: 'center' }, [
+          d ? text(d, { family: 'display', weight: 700, size: 26, line: 32 }, 'text/primary') : i === 4 ? box({ name: 'Caret', w: 2, h: 26, fill: 'brand/fg', dir: 'h' }) : null,
+        ]),
       ),
-      alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Verify' })), 'wPurpose'),
-      row({ name: 'Resend', gap: 6 }, [icon('clock', 16, 'text/tertiary'), text('Resend code in 0:24', 'small', 'text/tertiary')]),
-    ]),
+    ),
+    alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Verify' })), 'wPurpose'),
+    row({ name: 'Resend', gap: 6 }, [icon('clock', 16, 'text/tertiary'), text('Resend code in 0:24 · Codes expire after 10 minutes', 'small', 'text/tertiary')]),
   ]);
 }
 
 export function wPurpose(): FrameNode {
   const check = (title: string, body: string) => fill(use('CheckRow', { Checked: 'On' }, { title, body }));
-  return plainFrame('Age and purpose', [
-    col({ name: 'Center', w: 'fill', h: APP_H, main: 'center', cross: 'center' }, [
-      col({ name: 'Card', w: 600, gap: 16, pad: 40, radius: 28, fill: 'bg/surface', stroke: 'border/default', shadow: 'e2' }, [
-        lockup(28),
-        text('Before your first Gutchek', 'h1', 'text/primary', { w: 'fill' }),
-        text('Gutchek is built for personal safety. These promises keep it that way for everyone.', 'body', 'text/secondary', { w: 'fill' }),
-        check("I'm 18 or older", 'Gutchek is for adults and never profiles anyone under 18.'),
-        check("I'm using Gutchek for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
-        check("I won't use Gutchek to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
-        row({ name: 'Actions', gap: 12, w: 'fill' }, [alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Agree and continue' })), 'wHome'), use('Button', { Variant: 'Tertiary', Size: 'Large' }, { label: 'Verify my ID' })]),
-      ]),
-    ]),
-  ]);
+  return authStage(
+    'Age and purpose',
+    2,
+    [
+      authTitle('Before your first Gutchek'),
+      text('Gutchek is built for personal safety. These promises keep it that way for everyone.', 'body', 'text/secondary', { w: 'fill' }),
+      check("I'm 18 or older", 'Gutchek is for adults and never profiles anyone under 18.'),
+      check("I'm using Gutchek for dating and personal safety", 'Not for employment, housing, credit or tenancy decisions.'),
+      check("I won't use Gutchek to harass anyone", 'Repeat lookups of one person are limited. Misuse leads to a ban.'),
+      row({ name: 'Actions', gap: 12, w: 'fill' }, [alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Agree and continue' })), 'wHome'), use('Button', { Variant: 'Tertiary', Size: 'Large' }, { label: 'Verify my ID' })]),
+    ],
+    520,
+  );
 }
 
 // ---------------------------------------------------------------- home

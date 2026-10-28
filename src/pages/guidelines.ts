@@ -50,7 +50,7 @@ function essence(): FrameNode {
   return board(
     EYEBROW + ' · 01',
     'Brand essence',
-    'Gutchek takes its name from the scale: one pan holds reasons to move forward, the other holds reasons to be careful. Everything in the brand expresses balance and fairness, never accusation.',
+    'Gutchek takes its name from the moment before you commit: your gut says something, and you check it. One side of the Gut Meter holds reasons to move forward, the other holds reasons to be careful. Everything in the brand expresses fairness and proof, never accusation.',
     [
       row({ name: 'Statements', gap: 24, w: 'fill', cross: 'start' }, [
         card([text('Purpose', 'overline', 'brand/fg'), text('Help people make safer, better-informed decisions about someone they are getting to know.', 'h2', 'text/primary', { w: 'fill' })]),
@@ -59,7 +59,7 @@ function essence(): FrameNode {
       ]),
       section('Personality', 'Four traits guide every design and writing decision.', [
         row({ name: 'Traits', gap: 24, w: 'fill', cross: 'start' }, [
-          trait('Balanced', 'We weigh the good as seriously as the bad. Positive evidence always gets equal space.', 'scale'),
+          trait('Balanced', 'We weigh the good as seriously as the bad. Positive evidence always gets equal space.', 'check-circle'),
           trait('Evidence-first', 'Every score expands into the posts behind it. Users judge for themselves.', 'file'),
           trait('Calm', 'We lower the temperature. Soft surfaces, steady motion, gentle words on hard findings.', 'wind'),
           trait('Protective, not punitive', 'We protect the user without shaming the person they look up.', 'shield-check'),
@@ -102,10 +102,7 @@ function logo(): FrameNode {
 
   const tilted = glyph(88, 'brand/fg');
   tilted.rotation = -14;
-  const twoTone = glyph(88, 'brand/fg');
-  const pans = twoTone.findAll((n) => n.type === 'VECTOR' && 'fills' in n && Array.isArray(n.fills) && (n.fills as Paint[]).length > 0);
-  if (pans[0]) (pans[0] as VectorNode).fills = [paint('caution/fg')];
-  if (pans[1]) (pans[1] as VectorNode).fills = [paint('positive/fg')];
+  const twoTone = glyph(88, 'caution/fg', 'positive/fg');
   const stretched = glyph(88, 'brand/fg');
   for (const c of stretched.children) {
     if ('constraints' in c) (c as ConstraintMixin).constraints = { horizontal: 'SCALE', vertical: 'SCALE' };
@@ -116,7 +113,7 @@ function logo(): FrameNode {
   return board(
     EYEBROW + ' · 02',
     'Logo',
-    'The glyph is a balanced scale drawn with a single weight: a beam, a fulcrum and two equal pans. It always sits level. The lowercase wordmark is set in Plus Jakarta Sans ExtraBold with tight tracking, so it feels friendly rather than official.',
+    'The glyph is a G whose crossbar becomes a check that breaks out of the letter: the gut feeling, then the proof. One stroke weight with round caps. The letter is Gutchek Indigo and the check is Action Amber. The lowercase wordmark is set in Plus Jakarta Sans ExtraBold with tight tracking, so it feels friendly rather than official.',
     [
       row({ name: 'Primary', gap: 24, w: 'fill' }, [
         labelled('Primary lockup on light surfaces', stage([lockup(72)], 'bg/canvas', 'Primary stage')),
@@ -125,13 +122,13 @@ function logo(): FrameNode {
       ]),
       row({ name: 'Marks', gap: 24, w: 'fill', cross: 'start' }, [
         labelled('App icon. Gradient Indigo 500 to 700 at 135 degrees, glyph at 58% of the tile.', stage([row({ name: 'Icons', gap: 24, cross: 'end' }, [appIcon(112), appIcon(80), appIcon(56), appIcon(40)])], 'bg/canvas', 'Icon stage', 300)),
-        labelled('Clear space equals x, the height of one pan plus its strings, on every side.', stage([clear], 'bg/canvas', 'Clear space stage', 300)),
+        labelled('Clear space equals x, the height of the G from its crossbar to the base, on every side.', stage([clear], 'bg/canvas', 'Clear space stage', 300)),
         labelled('Minimum sizes: glyph 20pt, lockup 88pt wide. Below that, use the glyph alone.', stage([row({ name: 'Minimums', gap: 32, cross: 'center' }, [glyph(20, 'brand/fg'), lockup(24)])], 'bg/canvas', 'Minimum stage', 300)),
       ]),
-      section('Misuse', 'Keep the mark level, single-colour and free of surveillance imagery.', [
+      section('Misuse', 'Keep the mark upright, in Indigo and Amber (or one colour), and free of surveillance imagery.', [
         row({ name: 'Misuse grid', gap: 24, w: 'fill', cross: 'start' }, [
-          misuse('Do not tilt the mark. Only the in-product scale tilts, and only toward real evidence.', tilted),
-          misuse('Do not colour the pans red and green. The logo stays neutral; scores carry meaning.', twoTone),
+          misuse('Do not tilt the mark. Only the Gut Meter needle moves, and only toward real evidence.', tilted),
+          misuse('Do not recolour it red and green. Those belong to Caution and Positive; scores carry meaning.', twoTone),
           misuse('Do not stretch, outline or redraw the glyph.', stretched),
           misuse('Do not pair the mark with eyes, magnifiers or crosshairs.', spy),
         ]),
@@ -143,9 +140,8 @@ function logo(): FrameNode {
 // ---------------------------------------------------------------- 03 colour
 
 function colour(): FrameNode {
-  const hero = (name: string, hex: string, role: string, dark?: string) => {
+  const hero = (name: string, hex: string, role: string, dark?: string, ink = '#FFFFFF') => {
     const f = col({ name, w: 'fill', h: 300, pad: 28, gap: 6, radius: 24, main: 'end', fill: [hexPaint(hex)] }, []);
-    const ink = '#FFFFFF';
     const t1 = text(name, 'h2', 'text/primary');
     const t2 = text(hex + (dark ? '   ·   dark ' + dark : ''), 'smallStrong', 'text/primary');
     const t3 = text(role, 'small', 'text/primary', { w: 'fill' });
@@ -156,8 +152,9 @@ function colour(): FrameNode {
     return f;
   };
   const shares: Array<[string, number, Token]> = [
-    ['Neutrals', 0.7, 'bg/muted'],
-    ['Indigo', 0.2, 'brand/solid'],
+    ['Neutrals', 0.65, 'bg/muted'],
+    ['Indigo', 0.15, 'brand/solid'],
+    ['Action Amber', 0.05, 'action/solid'],
     ['Caution', 0.05, 'caution/solid'],
     ['Positive', 0.05, 'positive/solid'],
   ];
@@ -177,15 +174,16 @@ function colour(): FrameNode {
   return board(
     EYEBROW + ' · 03',
     'Colour',
-    'Deep indigo is the voice of Gutchek: trustworthy, calm and distinct from the red-and-black palette of spy apps. Emerald and warm red belong to the scale. They carry meaning, so they never appear as decoration.',
+    'Deep indigo is the voice of Gutchek: trustworthy, calm and distinct from the red-and-black palette of spy apps. Action Amber marks the one thing to do next. Emerald and warm red belong to the Gut Meter. They carry meaning, so they never appear as decoration.',
     [
       row({ name: 'Core', gap: 20, w: 'fill' }, [
-        hero('Gutchek Indigo', primitives.indigo['600'], 'Primary brand, actions, focus, links.', primitives.indigo['400']),
-        hero('Positive Emerald', primitives.emerald['700'], 'Positive side of the scale only.', primitives.emerald['400']),
-        hero('Caution Red', primitives.red['700'], 'Caution side of the scale and destructive actions only.', primitives.red['400']),
+        hero('Gutchek Indigo', primitives.indigo['600'], 'Primary brand, focus, links, selected states.', primitives.indigo['400']),
+        hero('Action Amber', primitives.amber['400'], 'The one main button on each screen, with Ink text. Never a flag or severity colour.', undefined, primitives.ink['900']),
+        hero('Positive Emerald', primitives.emerald['700'], 'Positive side of the Gut Meter only.', primitives.emerald['400']),
+        hero('Caution Red', primitives.red['700'], 'Caution side of the Gut Meter and destructive actions only.', primitives.red['400']),
       ]),
       row({ name: 'Support', gap: 20, w: 'fill' }, [
-        hero('Amber', primitives.amber['700'], 'Minor concerns, medium confidence, Likely matches.', primitives.amber['400']),
+        hero('Warning Orange', primitives.orange['700'], 'Medium confidence, Likely matches, SLAs and operational warnings.', primitives.orange['400']),
         hero('Ink', primitives.neutral['900'], 'Text and high-emphasis UI in light mode.'),
         hero('Night', primitives.night['950'], 'Dark mode canvas. Surfaces step up through 900 and 850.'),
       ]),
@@ -201,7 +199,8 @@ function colour(): FrameNode {
           pair('brand/on-subtle', 'brand/subtle', 'Indigo tint'),
           pair('positive/fg', 'positive/subtle', 'Positive tint'),
           pair('caution/fg', 'caution/subtle', 'Caution tint'),
-          pair('warning/fg', 'warning/subtle', 'Amber tint'),
+          pair('warning/fg', 'warning/subtle', 'Warning tint'),
+          pair('action/on', 'action/solid', 'Ink on Action Amber'),
         ]),
       ]),
       section('Ramps', 'Full ramps live on the Foundations page with the semantic tokens.', [
@@ -240,7 +239,7 @@ function typography(): FrameNode {
         specimen('Plus Jakarta Sans', 'display', 'Display, headings, verdicts and the large score numerals. Weights 600 to 800. Tight tracking at large sizes.', display.family + ' · ' + display.style),
         specimen('Inter', 'ui', 'Body, labels, buttons, evidence excerpts and legal copy. Weights 400 to 600. Tabular figures for dates and counts.', ui.family + ' · ' + ui.style),
       ]),
-      section('Hierarchy in use', 'A report header shows how the scale carries meaning: verdict first, numbers second, context third.', [
+      section('Hierarchy in use', 'A report header shows how the Gut Meter carries meaning: verdict first, numbers second, context third.', [
         card(
           [
             text('Report · Tobi Adeyemi', 'overline', 'brand/fg'),
@@ -290,7 +289,7 @@ function layout(): FrameNode {
   return board(
     EYEBROW + ' · 05',
     'Layout',
-    'Designed at 393 by 852 (iPhone 15 and 16), scaling down to 375 and up to 430. A four-column grid with 20pt margins and 16pt gutters keeps cards, lists and the scale aligned.',
+    'Designed at 393 by 852 (iPhone 15 and 16), scaling down to 375 and up to 430. A four-column grid with 20pt margins and 16pt gutters keeps cards, lists and the Gut Meter aligned.',
     [
       row({ name: 'Layout', gap: 64, w: 'fill', cross: 'start' }, [
         phone,
@@ -299,7 +298,7 @@ function layout(): FrameNode {
           bullet('Margins 20pt. Cards pad 16 to 20pt. Sections are separated by 32pt, items inside a section by 12 to 16pt.'),
           bullet('Touch targets are at least 44 by 44pt, including icon buttons and list rows.'),
           bullet('Primary actions sit in the bottom third of the screen, within thumb reach, above the home indicator.'),
-          bullet('The tab bar floats: a translucent glass capsule with five destinations (Home, Saved, Rooms, Safety, Settings), inset 16pt from the edges, with a separate round + action for Run a Gutchek or Check a Chat. Content scrolls underneath it, and it hides on pushed screens.'),
+          bullet('The tab bar floats: a translucent glass capsule with five destinations (Home, Gists, Saved, Stay Safe, Me), inset 16pt from the edges, with a separate round + action for Run a Gutchek or Check a Chat. Content scrolls underneath it, and it hides on pushed screens.'),
           bullet('Android: same layout at 360 to 412dp, Material system bars replace iOS chrome.'),
           text('Corners and depth', 'h2', 'text/primary'),
           bullet('Corners grow with surface size: 8 for chips, 12 for buttons and fields, 16 for cards, 24 for sheets and swipe cards.'),
@@ -313,7 +312,7 @@ function layout(): FrameNode {
 // ---------------------------------------------------------------- 06 icons and imagery
 
 function iconography(): FrameNode {
-  const names = ['scale', 'shield-check', 'alert-triangle', 'check-circle', 'search', 'eye-off', 'external-link', 'lock', 'users', 'map-pin', 'calendar', 'bell', 'bookmark', 'heart', 'life-buoy', 'navigation'];
+  const names = ['check', 'shield-check', 'alert-triangle', 'check-circle', 'search', 'eye-off', 'external-link', 'lock', 'users', 'map-pin', 'calendar', 'bell', 'bookmark', 'heart', 'life-buoy', 'navigation'];
   return board(
     EYEBROW + ' · 06',
     'Iconography and imagery',
@@ -328,7 +327,7 @@ function iconography(): FrameNode {
         })(),
         col({ name: 'Wallpaper notes', gap: 12, w: 'fill' }, [
           text('Chat wallpaper', 'h3', 'text/primary'),
-          text('Rooms use a tiled doodle wallpaper, inspired by WhatsApp: line icons from the Lucide set for dating, care and the scale, in Indigo at 9% opacity, rotated up to 25 degrees on a 54pt grid.', 'body', 'text/secondary', { w: 'fill' }),
+          text('Rooms use a tiled doodle wallpaper, inspired by WhatsApp: line icons from the Lucide set for dating, care and the check, in Indigo at 9% opacity, rotated up to 25 degrees on a 54pt grid.', 'body', 'text/secondary', { w: 'fill' }),
           text('Never include eyes, cameras, locks or anything that suggests surveillance. The pattern sits behind messages only, never behind headers or the composer.', 'body', 'text/secondary', { w: 'fill' }),
           text('Member colours', 'h3', 'text/primary'),
           text('Each nickname gets a stable colour from eight hues, matched on its avatar. Red and green are never used, because they belong to Caution and Positive. Moderators and Gist Bot are always Indigo. Your own messages get an Indigo tint and accent bar; mentions of you get Amber.', 'body', 'text/secondary', { w: 'fill' }),
@@ -346,28 +345,28 @@ function iconography(): FrameNode {
   );
 }
 
-// ---------------------------------------------------------------- 07 the scale
+// ---------------------------------------------------------------- 07 the gut meter
 
 function signature(): FrameNode {
   const states = ['Positive', 'Balanced', 'Caution', 'Pending', 'Low'];
   const motion: Array<[string, string]> = [
-    ['Tilt', 'Spring, stiffness 120, damping 14, about 600ms. Maximum tilt 7 degrees; the angle maps to the score difference.'],
-    ['Load', 'While processing, the beam rocks plus or minus 3 degrees on a 2.4s ease-in-out loop. Stage copy changes as each step completes.'],
-    ['Reveal', 'Scores count up from 0 over 500ms after the tilt settles. Light haptic (impactLight) on settle.'],
-    ['Reduced motion', 'No rocking or counting. The final state crossfades in over 200ms.'],
+    ['Settle', 'Spring, stiffness 120, damping 14, about 600ms. The needle angle maps to the score difference and never pins to either end.'],
+    ['Load', 'While processing, the needle sweeps gently across the top of the dial on a 2.4s ease-in-out loop. Stage copy changes as each step completes.'],
+    ['Reveal', 'Each half fills and its score counts up from 0 over 500ms after the needle settles. Light haptic (impactLight) on settle.'],
+    ['Reduced motion', 'No sweeping or counting. The final state crossfades in over 200ms.'],
   ];
   return board(
     EYEBROW + ' · 07',
     'The Gut Meter',
-    'The signature element of the product. Two independent scores, one per pan, and a beam that leans toward the heavier side. It turns a complicated analysis into one honest picture, and it always sits next to its confidence level.',
+    'The signature element of the product. A semi-circle dial with two independent scores, one per half, and a needle that settles toward the heavier side. It turns a complicated analysis into one honest picture, and it always sits next to its confidence level.',
     [
       row({ name: 'Anatomy', gap: 48, w: 'fill', cross: 'center' }, [
         card([use('GutMeter', { Tilt: 'Positive' }), use('ConfidenceBadge', { Level: 'High' })], 449, 'bg/canvas', 48, 20, 'Hero dial'),
         col({ name: 'Anatomy notes', gap: 16, w: 'fill' }, [
           text('Anatomy', 'h2', 'text/primary'),
-          bullet('Left pan: Caution score, 1 to 10. Red, triangle icon, labelled.'),
-          bullet('Right pan: Positive score, 1 to 10. Emerald, check icon, labelled.'),
-          bullet('Beam: tilts toward the heavier side. Balanced reports stay level.'),
+          bullet('Left half: Red Flag score, 1 to 10. Red, flag icon, labelled.'),
+          bullet('Right half: Green Flag score, 1 to 10. Emerald, check icon, labelled.'),
+          bullet('Needle: settles toward the heavier side. Balanced reports point straight up.'),
           bullet('Confidence badge: High, Medium or Low, with how much data the score is based on.'),
           bullet('Low confidence caps the scores and turns the whole dial neutral, with the message "Not enough public information".'),
         ]),
@@ -446,9 +445,9 @@ function accessibility(): FrameNode {
           item('Dark mode', 'Every screen ships in light and dark from the same tokens. Users can follow the system or choose.'),
         ]),
         col({ name: 'Right', gap: 16, w: 'fill' }, [
-          item('Screen readers', 'The scale reads as one element: "Caution 2 out of 10, Positive 8 out of 10, mostly positive, high confidence."'),
+          item('Screen readers', 'The Gut Meter reads as one element: "Red Flag 2 out of 10, Green Flag 8 out of 10, mostly positive, high confidence."'),
           item('Touch and focus', '44pt minimum targets, visible focus rings (border/focus, 2pt) and logical focus order.'),
-          item('Motion', 'Respect Reduce Motion: no rocking scale, no count-ups, crossfades only.'),
+          item('Motion', 'Respect Reduce Motion: no sweeping needle, no count-ups, crossfades only.'),
           item('Emotional safety', 'Severe reports open with a pause screen, findings are collapsed by default, and support resources are one tap away.'),
         ]),
       ]),
@@ -466,13 +465,33 @@ export function buildGuidelines(page: PageNode): PageNode {
 
 // ---------------------------------------------------------------- cover
 
-export function buildCover(previews: FrameNode[], page: PageNode): PageNode {
+const COVER_SHADOW: Effect = { type: 'DROP_SHADOW', color: { r: 0.05, g: 0.03, b: 0.2, a: 0.45 }, offset: { x: 0, y: 32 }, radius: 64, spread: 0, visible: true, blendMode: 'NORMAL' };
+
+function browserWindow(shot: FrameNode, w: number): FrameNode {
+  const dot = (hex: string) => box({ name: 'Dot', w: 12, h: 12, radius: 6, fill: [hexPaint(hex)] });
+  const chrome = row({ name: 'Chrome', w: 'fill', h: 40, pad: [0, 16], gap: 8, cross: 'center', fill: 'bg/subtle' }, [
+    dot('#FF5F57'),
+    dot('#FEBC2E'),
+    dot('#28C840'),
+    box({ name: 'Spacer', w: 'fill', h: 1 }),
+    row({ name: 'URL', gap: 6, pad: [5, 14], radius: 999, fill: 'bg/raised', cross: 'center' }, [icon('lock', 12, 'text/tertiary'), text('app.gutchek.com', 'caption', 'text/secondary')]),
+    box({ name: 'Spacer', w: 'fill', h: 1 }),
+    box({ name: 'Balance', w: 52, h: 1 }),
+  ]);
+  const c = shot.clone();
+  c.rescale(w / c.width);
+  const win = col({ name: 'Web app snapshot', w, gap: 0, radius: 20, fill: 'bg/raised', clip: true }, [chrome, c]);
+  win.effects = [COVER_SHADOW];
+  return win;
+}
+
+export function buildCover(previews: FrameNode[], page: PageNode, web?: FrameNode): PageNode {
   ctx.theme = 'light';
   const cover = box({ name: 'Cover', dir: 'none', w: 1920, h: 1080, fill: [gradient([['#2C1E66', 0], ['#5B3FD1', 0.65], ['#7556E3', 1]], 120)], clip: true });
-  const left = col({ name: 'Copy', gap: 28, w: 820 }, [
+  const left = col({ name: 'Copy', gap: 28, w: 760 }, [
     lockup(72, 'text/on-solid', 'text/on-solid'),
-    text('Know the person behind the DMs', { family: 'display', weight: 800, size: 80, line: 88, tracking: -3 }, 'text/on-solid', { w: 'fill' }),
-    text('Brand guideline, design system, mobile app, web app, website and moderation dashboard · v1.3', { family: 'ui', weight: 500, size: 24, line: 34 }, 'text/on-solid', { w: 'fill', opacity: 0.85 }),
+    text('Trust your gut. Then check it.', { family: 'display', weight: 800, size: 80, line: 88, tracking: -3 }, 'text/on-solid', { w: 'fill' }),
+    text('Brand guideline, design system, mobile app, web app, website and admin dashboard · v2.0', { family: 'ui', weight: 500, size: 24, line: 34 }, 'text/on-solid', { w: 'fill', opacity: 0.85 }),
     row({ name: 'Meta', gap: 12, wrap: true, w: 'fill' }, [
       metaPill('October 2026'),
       metaPill('iOS 393 × 852'),
@@ -483,13 +502,20 @@ export function buildCover(previews: FrameNode[], page: PageNode): PageNode {
     text('Prepared for Pritchard Feyisanumi Francis', 'body', 'text/on-solid', { opacity: 0.7 }),
   ]);
   add(cover, abs(left, 120, 220));
-  previews.forEach((p, i) => {
+  const phone = (p: FrameNode, x: number, y: number) => {
     const c = p.clone();
-    c.rescale(0.72);
-    c.cornerRadius = 40;
-    c.effects = [{ type: 'DROP_SHADOW', color: { r: 0.05, g: 0.03, b: 0.2, a: 0.45 }, offset: { x: 0, y: 32 }, radius: 64, spread: 0, visible: true, blendMode: 'NORMAL' }];
-    add(cover, abs(c, 1000 + i * 300, 140 + (i % 2) * 80));
-  });
+    c.rescale(0.62);
+    c.cornerRadius = 36;
+    c.effects = [COVER_SHADOW];
+    add(cover, abs(c, x, y));
+  };
+  if (web) {
+    add(cover, abs(browserWindow(web, 900), 960, 120));
+    if (previews[0]) phone(previews[0], 900, 500);
+    if (previews[1]) phone(previews[1], 1640, 440);
+  } else {
+    previews.forEach((p, i) => phone(p, 1000 + i * 300, 140 + (i % 2) * 80));
+  }
   page.appendChild(cover);
   cover.x = 0;
   cover.y = 0;

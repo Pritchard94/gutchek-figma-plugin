@@ -7,7 +7,7 @@ import { home, homeEmpty, saved } from './home';
 import { matchCompared, matchConfirm, newSearch, newSearchPlatform, processing } from './search';
 import { evidence, report, reportLow, reportSevere, signalsCaution, signalsPositive } from './report';
 import { appearance, compare, deleteData, personality, plans, safety, settings } from './more';
-import { appLocked, idIntro, intro, notifPrompt, selfie } from './onboarding';
+import { appLocked, idIntro, intro, introChat, introRooms, notifPrompt, selfie } from './onboarding';
 import { analyse, chatBlocked, chatConsent, chatLimited, chatProcessing, chatReport, chatUpload, combinedView, createSheet, exportGuide, pasteText, patternDetail, safetyCard, sampleReport, speakers } from './chat';
 import { appeal, banNotice, composer, joinPending, myStanding, postHeld, reportPost, roomAbout, roomWelcome, roomsList } from './rooms';
 import { messageActions, muteSheet, roomInfo, quoteComposer, roomFeed, roomFeedBlocked, savedThreads, shareSheet, thread, threadSaved } from './roomchat';
@@ -46,7 +46,9 @@ const DEFS: Group[] = [
     note: 'Sign up, verify, agree to the purpose and age rules, and optionally verify identity before the first search.',
     screens: [
       ['welcome', 'Welcome', welcome],
-      ['intro', 'How Gutchek works', intro],
+      ['intro', 'Onboarding · Run a Gutchek', intro],
+      ['introChat', 'Onboarding · Check a Chat', introChat],
+      ['introRooms', 'Onboarding · Gist Rooms', introRooms],
       ['signin', 'Sign in', signIn],
       ['verify', 'Verify code', verify],
       ['purpose', 'Age and purpose', purpose],

@@ -178,7 +178,7 @@ export function landing(s: Screens): FrameNode {
     section('The Gut Meter', [
       row({ name: 'Scale', w: 'fill', gap: 80, cross: 'center' }, [
         scaleCard(),
-        col({ name: 'Explainer', gap: 28, w: 'fill' }, [heading('The Gut Meter', 'Two pans, weighed separately', null), ...scaleExplainer()]),
+        col({ name: 'Explainer', gap: 28, w: 'fill' }, [heading('The Gut Meter', 'Two halves, scored separately', null), ...scaleExplainer()]),
       ]),
     ], { fill: 'bg/surface' }),
     section('Features', [
@@ -216,7 +216,7 @@ export function mobileLanding(s: Screens): FrameNode {
       ]),
       stats(true),
       col({ name: 'How it works', w: 'fill', pad: [48, 20], gap: 24 }, [heading('How it works', 'Three steps to a clearer picture', null, { mobile: true }), ...STEPS.map(step)]),
-      col({ name: 'Scale', w: 'fill', pad: [48, 20], gap: 24, fill: 'bg/surface' }, [heading('The Gut Meter', 'Two pans, weighed separately', null, { mobile: true }), scaleCard('fill')]),
+      col({ name: 'Scale', w: 'fill', pad: [48, 20], gap: 24, fill: 'bg/surface' }, [heading('The Gut Meter', 'Two halves, scored separately', null, { mobile: true }), scaleCard('fill')]),
       principlesBand(true),
       col({ name: 'FAQ', w: 'fill', pad: [48, 20], gap: 24 }, [heading('Questions', 'Good questions to ask', null, { mobile: true }), faq(FAQ.slice(0, 3))]),
       col({ name: 'CTA', w: 'fill', pad: [0, 20, 48, 20] }, [ctaBand('Date with clear eyes', 'Run your first report free.', true)]),
