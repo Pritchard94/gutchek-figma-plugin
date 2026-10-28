@@ -505,6 +505,12 @@ export function buildCover(previews: FrameNode[], page: PageNode, web?: FrameNod
   const phone = (p: FrameNode, x: number, y: number) => {
     const c = p.clone();
     c.rescale(0.62);
+    const screenH = Math.round(852 * 0.62);
+    if (c.height > screenH) {
+      c.layoutSizingVertical = 'FIXED';
+      c.resize(c.width, screenH);
+    }
+    c.clipsContent = true;
     c.cornerRadius = 36;
     c.effects = [COVER_SHADOW];
     add(cover, abs(c, x, y));

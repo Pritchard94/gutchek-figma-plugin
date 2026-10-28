@@ -42,7 +42,7 @@ type Group = { title: string; note: string; screens: Array<[string, string, () =
 
 const DEFS: Group[] = [
   {
-    title: '1 · Onboarding',
+    title: 'Onboarding',
     note: 'Sign up, verify, agree to the purpose and age rules, and optionally verify identity before the first search.',
     screens: [
       ['welcome', 'Welcome', welcome],
@@ -58,7 +58,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '2 · Home and saved',
+    title: 'Home and saved',
     note: 'The hub: start a Gutchek, revisit reports, notifications and saved people.',
     screens: [
       ['home', 'Home', home],
@@ -70,7 +70,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '3 · Run a Gutchek',
+    title: 'Run a Gutchek',
     note: 'Name and one handle in, confirmed accounts out. Friction here is deliberate, and every dead end explains itself.',
     screens: [
       ['search', 'New search', newSearch],
@@ -85,7 +85,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '4 · Report',
+    title: 'Report',
     note: 'Explain, do not just score. Every number expands into evidence.',
     screens: [
       ['report', 'Report overview', report],
@@ -102,7 +102,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '5 · Safety',
+    title: 'Safety',
     note: 'Share my date, trusted contacts and local support, one tap from anywhere.',
     screens: [
       ['safety', 'Stay Safe', safety],
@@ -113,7 +113,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '7 · Check a Chat',
+    title: 'Check a Chat',
     note: 'Upload a conversation, confirm who said what, and get a behaviour report with the exact messages as evidence. Safety comes before scores.',
     screens: [
       ['create', 'Start something', createSheet],
@@ -134,7 +134,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '8 · Gist Rooms',
+    title: 'Gist Rooms',
     note: 'Moderated rooms for sharing your own experience under a nickname. Gist Bot screens every post; bans always come with a reason and an appeal.',
     screens: [
       ['roomsList', 'Rooms', roomsList],
@@ -159,7 +159,7 @@ const DEFS: Group[] = [
     ],
   },
   {
-    title: '6 · Settings and account',
+    title: 'Settings and account',
     note: 'Privacy controls, plans, payments and data deletion.',
     screens: [
       ['settings', 'Settings', settings],
