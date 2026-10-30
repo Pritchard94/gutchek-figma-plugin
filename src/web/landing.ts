@@ -253,7 +253,21 @@ export function mobileLanding(s: Screens): FrameNode {
       col({ name: 'How it works', w: 'fill', pad: [48, 20], gap: 24 }, [heading('How it works', 'Three steps to a clearer picture', null, { mobile: true }), ...STEPS.map(step)]),
       col({ name: 'Scale', w: 'fill', pad: [48, 20], gap: 24, fill: 'bg/surface' }, [heading('The Gut Meter', 'Two halves, scored separately', null, { mobile: true }), scaleCard('fill')]),
       notesBand(s, true),
+      col({ name: 'Features', w: 'fill', pad: [48, 20], gap: 20, fill: 'bg/surface' }, [
+        heading('More than a score', 'Everything in one calm place', null, { mobile: true }),
+        ...FEATURES.map(([i, t, b]) =>
+          row({ name: t, w: 'fill', gap: 14, cross: 'start' }, [
+            box({ name: 'Icon', dir: 'h', w: 40, h: 40, radius: 12, fill: 'brand/subtle', main: 'center', cross: 'center' }, [icon(i, 20, 'brand/fg')]),
+            col({ name: 'Text', gap: 2, w: 'fill' }, [text(t, 'bodyStrong', 'text/primary'), text(b, 'small', 'text/secondary', { w: 'fill' })]),
+          ]),
+        ),
+      ]),
       principlesBand(true),
+      col({ name: 'Pricing', w: 'fill', pad: [48, 20], gap: 16 }, [
+        heading('Pricing', 'Start free. Upgrade when you need more.', null, { mobile: true }),
+        planCard('Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer and personality', 'AI reflections on your notes'], true, 'Start with Plus'),
+        wlink(row({ name: 'All plans', gap: 8 }, [text('See all plans, from free', 'bodyStrong', 'brand/fg'), icon('arrow-right', 18, 'brand/fg')]), 'pricing'),
+      ]),
       col({ name: 'FAQ', w: 'fill', pad: [48, 20], gap: 24 }, [heading('Questions', 'Good questions to ask', null, { mobile: true }), faq(FAQ.slice(0, 3))]),
       col({ name: 'CTA', w: 'fill', pad: [0, 20, 48, 20] }, [ctaBand('Date with clear eyes', 'Run your first report free.', true)]),
       webFooter(true),

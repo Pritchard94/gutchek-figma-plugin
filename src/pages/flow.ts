@@ -49,6 +49,7 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
       [frames.signin, 'Sign in'],
       [frames.verify, 'Verify code'],
       [frames.purpose, 'Age and purpose'],
+      [frames.lockSetup, 'App lock'],
       [frames.home, 'Home'],
     ]),
     lane('Run a Gutchek', 'Name and one handle in; the user confirms every account before anything is analysed.', [
@@ -63,6 +64,13 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
       [frames.evidence, 'Evidence'],
       [frames.personality, 'Personality'],
       [frames.compare, 'Compare'],
+    ]),
+    lane('Reopen the app', 'Still signed in: Gutchek asks for Face ID, falls back to the passcode, and never shows content in the app switcher.', [
+      [frames.lockCover, 'App switcher'],
+      [frames.appLocked, 'Face ID'],
+      [frames.lockFailed, 'Not recognised'],
+      [frames.lockPasscode, 'Passcode'],
+      [frames.home, 'Home'],
     ]),
     lane('Write a note', 'Flow D: Notes tab, write, pick a mood, then see it on the person\u2019s timeline beside their reports.', [
       [frames.notesHome, 'Notes'],

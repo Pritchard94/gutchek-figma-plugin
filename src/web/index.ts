@@ -7,6 +7,8 @@ import { chatAnalysisPage, communityGuidelines, sharedPost } from './addendum';
 import { ADMIN_PAGES } from './admin';
 import { ADMIN_EXTRA } from './admin2';
 import { ANALYTICS_PAGES } from './admin3';
+import { mobileChat, mobileDispute, mobileGuidelines, mobileHelp, mobileHow, mobileMenu, mobileNotFound, mobilePricing, mobilePrivacy, mobileStatus, mobileTerms, mobileTrust } from './mobile';
+import { MOBILE } from './kit';
 
 interface WebDef {
   id: string;
@@ -32,7 +34,19 @@ const DESKTOP_PAGES: WebDef[] = [
 
 const MOBILE_PAGES: WebDef[] = [
   { id: 'mLanding', label: 'Home · Mobile', build: mobileLanding },
+  { id: 'mMenu', label: 'Menu · Mobile', build: mobileMenu },
+  { id: 'mHow', label: 'How it works · Mobile', build: mobileHow },
+  { id: 'mChat', label: 'Check a Chat · Mobile', build: mobileChat },
+  { id: 'mTrust', label: 'Trust and safety · Mobile', build: mobileTrust },
+  { id: 'mGuidelines', label: 'Community guidelines · Mobile', build: mobileGuidelines },
+  { id: 'mPricing', label: 'Pricing · Mobile', build: mobilePricing },
   { id: 'mOptout', label: 'Opt out · Mobile', build: mobileOptout },
+  { id: 'mDispute', label: 'Dispute a finding · Mobile', build: mobileDispute },
+  { id: 'mStatus', label: 'Request status · Mobile', build: mobileStatus },
+  { id: 'mHelp', label: 'Help centre · Mobile', build: mobileHelp },
+  { id: 'mPrivacy', label: 'Privacy policy · Mobile', build: mobilePrivacy },
+  { id: 'mTerms', label: 'Terms of use · Mobile', build: mobileTerms },
+  { id: 'mNotFound', label: '404 · Mobile', build: mobileNotFound },
   { id: 'mShared', label: 'Shared post · Mobile', build: () => sharedPost() },
 ];
 
@@ -97,10 +111,24 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
   const adminDefs = [...ANALYTICS_PAGES, ADMIN_PAGES[0], ADMIN_EXTRA[0], ADMIN_EXTRA[1], ...ADMIN_PAGES.slice(1), ...ADMIN_EXTRA.slice(2)];
   const admin = build(adminDefs.map(([id, label, fn]) => ({ id, label, build: () => fn() })));
   let y = sectionFor(page, 'Website · Desktop 1440', 'Marketing site, public opt-out and dispute flow, help centre and legal pages. Click through with Play.', desktop, 0);
-  y = sectionFor(page, 'Website · Mobile 390', 'Responsive versions of the most-visited pages: the homepage and the opt-out form.', mobile, y, 80);
+  y = sectionFor(page, 'Website · Mobile 390', 'Every website page at 390 wide: the same copy stacked into one column, a full-screen menu, and links that stay on mobile pages.', mobile, y, 80);
   sectionFor(page, 'Admin dashboard · Web app', 'Staff-only admin: growth, engagement and revenue analytics with a timeline filter, room creation and moderation, trust and safety queues, users and billing, bot rules, staff roles and an immutable audit log. Role-based access with MFA.', admin, y, 80);
 
-  const mobileTargets: Record<string, string> = { landing: 'mLanding', optout: 'mOptout' };
+  const mobileTargets: Record<string, string> = {
+    landing: 'mLanding',
+    how: 'mHow',
+    chat: 'mChat',
+    trust: 'mTrust',
+    guidelines: 'mGuidelines',
+    pricing: 'mPricing',
+    optout: 'mOptout',
+    dispute: 'mDispute',
+    status: 'mStatus',
+    helpcenter: 'mHelp',
+    privacy: 'mPrivacy',
+    terms: 'mTerms',
+    notfound: 'mNotFound',
+  };
   const topOf = (n: BaseNode): BaseNode | null => {
     let p: BaseNode | null = n;
     while (p && !(p.type === 'FRAME' && (p as FrameNode).getPluginData('webpage') === '1')) p = p.parent;
@@ -108,7 +136,7 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
   };
   for (const [node, target] of webLinks) {
     const top = topOf(node);
-    const isMobile = !!top && (top === frames.mLanding || top === frames.mOptout);
+    const isMobile = !!top && (top as FrameNode).width === MOBILE;
     const dest = frames[isMobile && mobileTargets[target] ? mobileTargets[target] : target] || frames[target];
     if (!dest || node.removed || top === dest) continue;
     later(() => (node as FrameNode).setReactionsAsync([

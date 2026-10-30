@@ -57,6 +57,16 @@ function formCard(title: string, sub: string, kids: SceneNode[], w: number | 'fi
 
 // ---------------------------------------------------------------- how it works
 
+export const HOW_STEPS: Array<[string, string, string, string, string[]]> = [
+  ['1', 'search', 'Tell us who', 'A first name, a last name and one public handle is enough. Add a city or age range to help confirm identity.', ['Instagram, X, TikTok, Facebook, Snapchat, LinkedIn, Reddit, YouTube', 'Purpose check: dating and personal safety only']],
+  ['2', 'match', 'Confirm the right person', 'We show candidate accounts with a match strength and what we compared. You decide which accounts are theirs.', ['Linked through public signals like a link in bio', 'No face recognition, no unmasking anonymous accounts']],
+  ['3', 'processing', 'We weigh the evidence', 'Public posts, captions and comments are classified, checked for context like quotes, lyrics and satire, and weighted.', ['Usually under a minute', 'Keep using the app; we notify you when it is ready']],
+  ['4', 'report', 'Read, save and decide', 'Two independent scores, a confidence level, a plain-language summary and every post behind every finding.', ['Mark anything not relevant to you', 'Share a summary with a trusted friend']],
+];
+
+export const CHECKS = ['Public posts, captions and comments the person wrote', 'Public bios, links and cross-posted handles', 'Public news mentions and anything you choose to upload', 'Positive signals: kindness, accountability, community'];
+export const NEVER = ['Accesses private accounts or bypasses logins', 'Uses leaked databases or fake accounts', 'Uses face recognition to find people', 'Profiles anyone under 18, or tells anyone you searched'];
+
 export function howItWorks(s: Screens): FrameNode {
   const stepRow = (n: string, id: string, title: string, body: string, points: string[], flip: boolean) => {
     const art = box({ name: 'Art', dir: 'h', w: 520, h: 560, radius: 40, fill: 'brand/subtle', main: 'center', cross: 'center' }, [phone(s[id], 0.58)]);
@@ -73,27 +83,18 @@ export function howItWorks(s: Screens): FrameNode {
     webNav('how'),
     hero('How it works', 'From one handle to a fair, evidence-backed picture', 'Gutchek reads what someone has shared publicly, checks the context, and weighs the good and the concerning separately. Here is exactly how.'),
     section('Steps', [
-      stepRow('1', 'search', 'Tell us who', 'A first name, a last name and one public handle is enough. Add a city or age range to help confirm identity.', ['Instagram, X, TikTok, Facebook, Snapchat, LinkedIn, Reddit, YouTube', 'Purpose check: dating and personal safety only'], false),
-      stepRow('2', 'match', 'Confirm the right person', 'We show candidate accounts with a match strength and what we compared. You decide which accounts are theirs.', ['Linked through public signals like a link in bio', 'No face recognition, no unmasking anonymous accounts'], true),
-      stepRow('3', 'processing', 'We weigh the evidence', 'Public posts, captions and comments are classified, checked for context like quotes, lyrics and satire, and weighted.', ['Usually under a minute', 'Keep using the app; we notify you when it is ready'], false),
-      stepRow('4', 'report', 'Read, save and decide', 'Two independent scores, a confidence level, a plain-language summary and every post behind every finding.', ['Mark anything not relevant to you', 'Share a summary with a trusted friend'], true),
+      ...HOW_STEPS.map(([n, id, title, body, points], i) => stepRow(n, id, title, body, points, i % 2 === 1)),
     ], { gap: 120 }),
     section('Checks', [
       heading('Boundaries', 'What Gutchek checks, and what it never does', null, { align: 'center' }),
       row({ name: 'Columns', w: 'fill', gap: 24, cross: 'start' }, [
         col({ name: 'Checks', w: 'fill', gap: 16, pad: 40, radius: 28, fill: 'bg/canvas' }, [
           text('Gutchek checks', 'h3', 'text/primary'),
-          check('Public posts, captions and comments the person wrote'),
-          check('Public bios, links and cross-posted handles'),
-          check('Public news mentions and anything you choose to upload'),
-          check('Positive signals: kindness, accountability, community'),
+          ...CHECKS.map((c) => check(c)),
         ]),
         col({ name: 'Never', w: 'fill', gap: 16, pad: 40, radius: 28, fill: 'bg/canvas' }, [
           text('Gutchek never', 'h3', 'text/primary'),
-          check('Accesses private accounts or bypasses logins', false),
-          check('Uses leaked databases or fake accounts', false),
-          check('Uses face recognition to find people', false),
-          check('Profiles anyone under 18, or tells anyone you searched', false),
+          ...NEVER.map((c) => check(c, false)),
         ]),
       ]),
     ], { fill: 'bg/surface', cross: 'center' }),
@@ -114,7 +115,7 @@ export function howItWorks(s: Screens): FrameNode {
 
 // ---------------------------------------------------------------- trust and safety
 
-const GUARDRAILS: Array<[string, string, string]> = [
+export const GUARDRAILS: Array<[string, string, string]> = [
   ['globe', 'Public data only', 'Only publicly visible content. Never private accounts, bypassed logins or leaked databases.'],
   ['link', 'Careful account linking', 'Only verifiable public signals, every match confirmed by the user. No face recognition or writing-style matching.'],
   ['file', 'Factual wording', 'We report content, never character. Every flag links to the post, date and context.'],
@@ -170,27 +171,37 @@ export function trust(): FrameNode {
 
 // ---------------------------------------------------------------- pricing
 
+export const PLANS: Array<[string, string, string, string[], boolean]> = [
+  ['Free', '$0', 'per month', ['1 lite report a month', 'Notes journal', 'Stay Safe'], false],
+  ['Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer', 'AI reflections on notes'], true],
+  ['Gutchek Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts', 'Compare and PDF export'], false],
+  ['Pay per report', '$2.99', 'per report', ['One full report', 'No subscription', 'Paystack and Flutterwave'], false],
+];
+export const PLAN_FEATURES: Array<[string, string[]]> = [
+  ['Reports per month', ['1 lite', '5', '15', 'As needed']],
+  ['Scores, confidence and summary', ['yes', 'yes', 'yes', 'yes']],
+  ['Evidence viewer', ['-', 'yes', 'yes', 'yes']],
+  ['Personality snapshot', ['-', 'yes', 'yes', 'yes']],
+  ['Chat checks', ['1 free a month', '1 + credits', '1 + credits', '1 credit']],
+  ['Gist Rooms', ['yes', 'yes', 'yes', 'yes']],
+  ['Notes journal, synced', ['yes', 'yes', 'yes', 'yes']],
+  ['AI reflections on notes (v1.5)', ['-', 'yes', 'yes', '-']],
+  ['Side by side', ['-', '-', 'yes', '-']],
+  ['Monitoring alerts', ['-', '-', 'yes', '-']],
+  ['PDF export and secure share links', ['-', '-', 'yes', '-']],
+  ['Stay Safe hub and Share my date', ['yes', 'yes', 'yes', 'yes']],
+];
+
+export const PRICING_FAQ: Array<[string, string]> = [
+  ['Can I cancel anytime?', 'Yes. Cancel in Settings or through the App Store or Google Play. You keep your plan until the end of the billing period.'],
+  ['What counts as a report?', 'One person, analysed across the accounts you confirm. Refreshing a saved report within 30 days is free.'],
+  ['Do unused reports roll over?', 'No. Reports reset each month on your billing date.'],
+  ['Is a search charged if nothing is found?', 'No. If we find no public profile or a search is blocked, your credit is not used.'],
+];
+
 export function pricing(): FrameNode {
-  const plans: Array<[string, string, string, string[], boolean]> = [
-    ['Free', '$0', 'per month', ['1 lite report a month', 'Notes journal', 'Stay Safe'], false],
-    ['Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer', 'AI reflections on notes'], true],
-    ['Gutchek Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts', 'Compare and PDF export'], false],
-    ['Pay per report', '$2.99', 'per report', ['One full report', 'No subscription', 'Paystack and Flutterwave'], false],
-  ];
-  const features: Array<[string, string[]]> = [
-    ['Reports per month', ['1 lite', '5', '15', 'As needed']],
-    ['Scores, confidence and summary', ['yes', 'yes', 'yes', 'yes']],
-    ['Evidence viewer', ['-', 'yes', 'yes', 'yes']],
-    ['Personality snapshot', ['-', 'yes', 'yes', 'yes']],
-    ['Chat checks', ['1 free a month', '1 + credits', '1 + credits', '1 credit']],
-    ['Gist Rooms', ['yes', 'yes', 'yes', 'yes']],
-    ['Notes journal, synced', ['yes', 'yes', 'yes', 'yes']],
-    ['AI reflections on notes (v1.5)', ['-', 'yes', 'yes', '-']],
-    ['Side by side', ['-', '-', 'yes', '-']],
-    ['Monitoring alerts', ['-', '-', 'yes', '-']],
-    ['PDF export and secure share links', ['-', '-', 'yes', '-']],
-    ['Stay Safe hub and Share my date', ['yes', 'yes', 'yes', 'yes']],
-  ];
+  const plans = PLANS;
+  const features = PLAN_FEATURES;
   const cell = (v: string, w: number | 'fill') =>
     box({ name: 'Cell', dir: 'h', w, main: 'center', cross: 'center' }, [
       v === 'yes' ? icon('check', 20, 'positive/fg') : v === '-' ? text('—', 'body', 'text/tertiary') : text(v, 'smallStrong', 'text/primary'),
@@ -209,12 +220,7 @@ export function pricing(): FrameNode {
     section('FAQ', [
       heading('Pricing questions', 'Before you subscribe', null, { align: 'center' }),
       col({ name: 'FAQ wrap', w: 880 }, [
-        faq([
-          ['Can I cancel anytime?', 'Yes. Cancel in Settings or through the App Store or Google Play. You keep your plan until the end of the billing period.'],
-          ['What counts as a report?', 'One person, analysed across the accounts you confirm. Refreshing a saved report within 30 days is free.'],
-          ['Do unused reports roll over?', 'No. Reports reset each month on your billing date.'],
-          ['Is a search charged if nothing is found?', 'No. If we find no public profile or a search is blocked, your credit is not used.'],
-        ]),
+        faq(PRICING_FAQ),
       ]),
     ], { cross: 'center' }),
     webFooter(),
@@ -341,17 +347,21 @@ export function requestStatus(): FrameNode {
 
 // ---------------------------------------------------------------- help, legal, 404
 
+export const HELP_ARTICLES = ['How does the Gut Meter work?', "Why can't Gutchek find someone?", 'Will the person know I looked them up?', 'How do I verify my identity?', 'How do I cancel or change my plan?'];
+
+export const HELP_CATS: Array<[string, string, string]> = [
+  ['sparkle', 'Getting started', 'Accounts, verification and your first Gutchek.'],
+  ['scale', 'Reports and scoring', 'How the Gut Meter, confidence and evidence work.'],
+  ['shield-check', 'Privacy and safety', 'Who sees what, and how we protect it.'],
+  ['card', 'Plans and billing', 'Subscriptions, refunds and local payments.'],
+  ['flag', 'Opt-out and disputes', 'If someone looked you up.'],
+  ['life-buoy', 'Safety resources', 'Share my date and local support lines.'],
+];
+
 export function helpCentre(): FrameNode {
-  const cats: Array<[string, string, string]> = [
-    ['sparkle', 'Getting started', 'Accounts, verification and your first Gutchek.'],
-    ['scale', 'Reports and scoring', 'How the Gut Meter, confidence and evidence work.'],
-    ['shield-check', 'Privacy and safety', 'Who sees what, and how we protect it.'],
-    ['card', 'Plans and billing', 'Subscriptions, refunds and local payments.'],
-    ['flag', 'Opt-out and disputes', 'If someone looked you up.'],
-    ['life-buoy', 'Safety resources', 'Share my date and local support lines.'],
-  ];
+  const cats = HELP_CATS;
   const article = (t: string) => row({ name: t, w: 'fill', gap: 12, pad: [18, 24] }, [icon('file', 20, 'text/tertiary'), text(t, 'body', 'text/primary', { w: 'fill' }), icon('chevron-right', 20, 'text/tertiary')]);
-  const articles = ['How does the Gut Meter work?', "Why can't Gutchek find someone?", 'Will the person know I looked them up?', 'How do I verify my identity?', 'How do I cancel or change my plan?'];
+  const articles = HELP_ARTICLES;
   return webPage('Help centre', [
     webNav('helpcenter'),
     col({ name: 'Hero', w: 'fill', pad: [96, GUTTER, 80, GUTTER], gap: 32, cross: 'center', fill: 'brand/subtle' }, [
@@ -378,33 +388,44 @@ export function helpCentre(): FrameNode {
   ]);
 }
 
+export const PRIVACY_TOC = ['Summary', 'What we collect', 'How we use it', 'Retention', 'Your rights', 'People who are searched', 'Security', 'Contact'];
+
+export const PRIVACY: Array<[string, string[]]> = [
+  ['Summary', ['Gutchek helps you make safer decisions about people you are getting to know, using public information only. We collect as little as we can, keep it for as short a time as we can, and never sell it.']],
+  ['What we collect', ['About you: your name, phone or email, age confirmation, purpose agreement, optional identity verification result, subscription status and app settings.', 'About the people you search: the name and handle you enter, public accounts you confirm, and short excerpts and links to public posts used in your report.']],
+  ['How we use it', ['To build reports you request, keep Gutchek safe from misuse, process payments, and improve the accuracy of our models using human-reviewed, de-identified samples.']],
+  ['Retention', ['Raw collected items are deleted after 30 to 90 days. Saved reports keep only the excerpts and links they need. Search history auto-deletes after 90 days.']],
+  ['Your rights', ['You can access, correct, export or delete your data at any time from Settings, or by emailing privacy@gutchek.app. We comply with the Nigeria Data Protection Act 2023, GDPR and CCPA where they apply.']],
+  ['People who are searched', ['Anyone can opt out, request correction or dispute a finding at gutchek.app/optout without an account. We never notify a person that they were searched, and we never reveal who searched them.']],
+  ['Security', ['Data is encrypted in transit and at rest. Journal notes use field-level encryption with a key for each user. Staff access is limited, logged and reviewed, and we tell you about any incident affecting your data within 72 hours.']],
+  ['Contact', ['Questions about privacy? Email privacy@gutchek.app or write to our Data Protection Officer, Gutchek Technologies Ltd, Lagos, Nigeria.']],
+];
+
 export function privacy(): FrameNode {
-  const toc = ['Summary', 'What we collect', 'How we use it', 'Retention', 'Your rights', 'People who are searched', 'Security', 'Contact'];
   return webPage('Privacy policy', [
     webNav(),
-    legalLayout('Privacy policy', 'Last updated 22 October 2026', toc, [
-      ['Summary', ['Gutchek helps you make safer decisions about people you are getting to know, using public information only. We collect as little as we can, keep it for as short a time as we can, and never sell it.']],
-      ['What we collect', ['About you: your name, phone or email, age confirmation, purpose agreement, optional identity verification result, subscription status and app settings.', 'About the people you search: the name and handle you enter, public accounts you confirm, and short excerpts and links to public posts used in your report.']],
-      ['How we use it', ['To build reports you request, keep Gutchek safe from misuse, process payments, and improve the accuracy of our models using human-reviewed, de-identified samples.']],
-      ['Retention', ['Raw collected items are deleted after 30 to 90 days. Saved reports keep only the excerpts and links they need. Search history auto-deletes after 90 days.']],
-      ['Your rights', ['You can access, correct, export or delete your data at any time from Settings, or by emailing privacy@gutchek.app. We comply with the Nigeria Data Protection Act 2023, GDPR and CCPA where they apply.']],
-      ['People who are searched', ['Anyone can opt out, request correction or dispute a finding at gutchek.app/optout without an account. We never notify a person that they were searched, and we never reveal who searched them.']],
-    ]),
+    legalLayout('Privacy policy', 'Last updated 22 October 2026', PRIVACY_TOC, PRIVACY),
     webFooter(),
   ]);
 }
 
+export const TERMS_TOC = ['Who can use Gutchek', 'Permitted use', 'Prohibited use', 'Reports are opinions', 'Subscriptions', 'Termination', 'Liability', 'Contact'];
+
+export const TERMS: Array<[string, string[]]> = [
+  ['Who can use Gutchek', ['You must be 18 or older and agree to use Gutchek for dating and personal safety decisions only.']],
+  ['Permitted use', ['Running reports on people you are getting to know, saving and comparing them, sharing summaries with trusted friends, and using the Stay Safe hub.']],
+  ['Prohibited use', ['Employment, housing, credit, insurance or tenancy decisions; stalking, harassment or doxxing; searching for anyone under 18; or attempting to identify anonymous accounts. Misuse leads to a permanent ban.']],
+  ['Reports are opinions', ['Reports describe public content and are not statements of fact about a person\'s character or conduct. Always use your own judgement. People are more than their posts.']],
+  ['Subscriptions', ['Plans renew automatically until cancelled. Unused reports do not roll over. Credits are not used when no profile is found or a search is blocked.']],
+  ['Termination', ['You can close your account at any time. We may suspend or close accounts that break these terms, especially for harassment or misuse, and we tell you why.']],
+  ['Liability', ['Gutchek gives a second opinion based on public content and what you upload. It is not a background check, and we are not liable for decisions you make using it, to the extent the law allows.']],
+  ['Contact', ['Questions about these terms? Email legal@gutchek.app.']],
+];
+
 export function terms(): FrameNode {
-  const toc = ['Who can use Gutchek', 'Permitted use', 'Prohibited use', 'Reports are opinions', 'Subscriptions', 'Termination', 'Liability', 'Contact'];
   return webPage('Terms of use', [
     webNav(),
-    legalLayout('Terms of use', 'Last updated 22 October 2026', toc, [
-      ['Who can use Gutchek', ['You must be 18 or older and agree to use Gutchek for dating and personal safety decisions only.']],
-      ['Permitted use', ['Running reports on people you are getting to know, saving and comparing them, sharing summaries with trusted friends, and using the Stay Safe hub.']],
-      ['Prohibited use', ['Employment, housing, credit, insurance or tenancy decisions; stalking, harassment or doxxing; searching for anyone under 18; or attempting to identify anonymous accounts. Misuse leads to a permanent ban.']],
-      ['Reports are opinions', ['Reports describe public content and are not statements of fact about a person\'s character or conduct. Always use your own judgement. People are more than their posts.']],
-      ['Subscriptions', ['Plans renew automatically until cancelled. Unused reports do not roll over. Credits are not used when no profile is found or a search is blocked.']],
-    ]),
+    legalLayout('Terms of use', 'Last updated 22 October 2026', TERMS_TOC, TERMS),
     webFooter(),
   ]);
 }
@@ -432,7 +453,7 @@ export function mobileOptout(): FrameNode {
       mobileNav(),
       col({ name: 'Hero', w: 'fill', pad: [40, 20, 32, 20], gap: 12, fill: 'bg/surface' }, [heading('Opt out and disputes', 'Your public content, your say', 'Ask us to stop analysing your public accounts, or correct a finding. No account needed.', { mobile: true })]),
       col({ name: 'Options', w: 'fill', pad: [24, 20], gap: 12 }, [
-        row({ name: 'Tabs', w: 'fill' }, [fill(use('Segmented', { Active: 'First' }, { first: 'Remove me', second: 'Dispute' }))]),
+        row({ name: 'Tabs', w: 'fill' }, [wlink(fill(use('Segmented', { Active: 'First' }, { first: 'Remove me', second: 'Dispute' })), 'dispute')]),
       ]),
       col({ name: 'Form', w: 'fill', pad: [0, 20, 32, 20], gap: 16 }, [
         field('Full name', 'Tobi Adeyemi'),

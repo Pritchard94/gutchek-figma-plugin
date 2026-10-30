@@ -187,7 +187,7 @@ export function settings(): FrameNode {
       plan,
       groupTitle('Privacy'),
       group([
-        link(listRow('App lock', 'Face ID to open Gutchek', 'face-id', 'SwitchOn'), 'appLocked'),
+        link(listRow('App lock', 'Face ID, every time you open Gutchek', 'face-id', 'Value', 'On'), 'appLockSettings'),
         link(listRow('Notes settings', 'Lock Notes, reminders, export', 'notebook-pen'), 'notesSettings'),
         link(listRow('Search history', null, 'clock', 'Value', '12'), 'history'),
         del,

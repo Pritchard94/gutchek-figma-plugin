@@ -142,7 +142,7 @@ export function notifPrompt(): FrameNode {
       cross: 'center',
       gap: 24,
       pad: [48, 20, 24, 20],
-      footer: [link(btn('Turn on notifications'), 'home'), link(btn('Not now', 'Tertiary'), 'home')],
+      footer: [link(btn('Turn on notifications'), 'lockSetup'), link(btn('Not now', 'Tertiary'), 'lockSetup')],
     },
     [
       heroIcon('bell', 'brand', 112),
@@ -151,22 +151,6 @@ export function notifPrompt(): FrameNode {
         center('We only notify you about your own reports and Share my date check-ins. Nothing is ever sent to the person you look up.', 'body', 'text/secondary'),
       ]),
       preview,
-    ],
-  );
-}
-
-export function appLocked(): FrameNode {
-  return screen(
-    {
-      name: 'App locked',
-      cross: 'center',
-      gap: 20,
-      pad: [140, 20, 24, 20],
-      footer: [btn('Unlock with Face ID', 'Primary', 'Large', 'face-id'), btn('Use passcode', 'Tertiary')],
-    },
-    [
-      box({ name: 'Glyph', dir: 'h', w: 96, h: 96, radius: 28, fill: 'brand/solid', main: 'center', cross: 'center' }, [glyph(56, 'text/on-solid')]),
-      col({ name: 'Copy', gap: 8, w: 'fill' }, [center('Gutchek is locked', 'h2'), center('Your reports and notes stay private. Unlock to continue.', 'body', 'text/secondary')]),
     ],
   );
 }

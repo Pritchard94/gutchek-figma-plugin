@@ -5,7 +5,7 @@ import { GUTTER, MOBILE, ctaBand, display, featureCard, heading, lead, mobileNav
 import { Screens } from './landing';
 import { use } from '../components/library';
 
-const CAUTION: Array<[string, string]> = [
+export const CAUTION: Array<[string, string]> = [
   ['Love-bombing', 'Intense affection or promises very early, then withdrawal.'],
   ['Pressure and rushing', 'Pushing to meet, move off the app or send photos faster than you want.'],
   ['Boundary violation', 'Carrying on after "no" or "not yet", or guilt-tripping after refusal.'],
@@ -16,7 +16,7 @@ const CAUTION: Array<[string, string]> = [
   ['Threats and coercion', 'Threats, revenge talk or coercive sexual messages. Safety help comes first.'],
 ];
 
-const POSITIVE: Array<[string, string]> = [
+export const POSITIVE: Array<[string, string]> = [
   ['Respects boundaries', 'Accepts "no" calmly, checks you are comfortable, waits.'],
   ['Consistent', 'Reliable replies, follows through, words match actions.'],
   ['Emotionally open', 'Shares feelings, listens and asks about you.'],
@@ -80,7 +80,7 @@ export function chatAnalysisPage(s: Screens): FrameNode {
         ]),
       ]),
     ], { pad: [0, GUTTER] }),
-    section('CTA', [ctaBand('See the conversation clearly', 'Your first two chat checks each month are free.')], { pad: [96, GUTTER] }),
+    section('CTA', [ctaBand('See the conversation clearly', 'Your first chat check each month is free.')], { pad: [96, GUTTER] }),
     webFooter(),
   ]);
 }
@@ -115,32 +115,38 @@ export function sharedPost(): FrameNode {
   );
 }
 
+export const LADDER: Array<[string, string, string, 'neutral' | 'warning' | 'caution']> = [
+  ['Warning', 'First minor breach, like rude tone or off-topic posts', 'Post removed with an explanation', 'neutral'],
+  ['Strike 1', 'Repeated minor or one moderate breach', '24-hour mute', 'warning'],
+  ['Strike 2', 'Another breach within 30 days', '7-day room ban', 'warning'],
+  ['Strike 3', 'Third breach within 90 days', '30-day ban from all rooms', 'caution'],
+  ['Permanent', 'Threats, doxxing, minors, leaked images, severe harassment', 'Removal, with a limited appeal', 'caution'],
+];
+
+export const RULES: Array<[string, string, string, boolean]> = [
+  ['1', 'Share your own experience', '"This happened to me" is welcome. Accusing a named person of a crime is not, and is held for review.', true],
+  ['2', 'Never identify anyone', 'No full names, phone numbers, addresses, workplaces, handles, photos or screenshots that reveal identity.', false],
+  ['3', 'No threats or sexual violence content', 'Including jokes, revenge posts and encouragement of harm.', false],
+  ['4', 'No hate, harassment or pile-ons', 'There are no downvotes for a reason. Disagree kindly.', false],
+  ['5', 'No selling or money requests', 'No promotions, links to paid services or requests for money.', false],
+  ['6', 'Nothing involving minors', 'Any content involving under-18s leads to an immediate ban and a safety report.', false],
+  ['7', 'Keep the room private', 'Share a post only with the Share button, which creates an anonymous card without nicknames or replies. Authors can turn sharing off. No screenshots.', false],
+];
+
 export function communityGuidelines(): FrameNode {
   const rule = (n: string, title: string, body: string, ok: boolean) =>
     row({ name: title, w: 'fill', gap: 20, pad: 28, radius: 20, fill: 'bg/surface', stroke: 'border/default', cross: 'start' }, [
       box({ name: 'Number', dir: 'h', w: 40, h: 40, radius: 20, fill: ok ? 'positive/subtle' : 'caution/subtle', main: 'center', cross: 'center' }, [text(n, 'bodyStrong', ok ? 'positive/fg' : 'caution/fg')]),
       col({ name: 'Text', gap: 6, w: 'fill' }, [text(title, 'h3', 'text/primary', { w: 'fill' }), text(body, 'body', 'text/secondary', { w: 'fill' })]),
     ]);
-  const ladder: Array<[string, string, string, 'neutral' | 'warning' | 'caution']> = [
-    ['Warning', 'First minor breach, like rude tone or off-topic posts', 'Post removed with an explanation', 'neutral'],
-    ['Strike 1', 'Repeated minor or one moderate breach', '24-hour mute', 'warning'],
-    ['Strike 2', 'Another breach within 30 days', '7-day room ban', 'warning'],
-    ['Strike 3', 'Third breach within 90 days', '30-day ban from all rooms', 'caution'],
-    ['Permanent', 'Threats, doxxing, minors, leaked images, severe harassment', 'Removal, with a limited appeal', 'caution'],
-  ];
+  const ladder = LADDER;
   return webPage('Community guidelines', [
     webNav(),
     col({ name: 'Hero', w: 'fill', pad: [96, GUTTER, 80, GUTTER], cross: 'center', fill: 'bg/surface' }, [
       heading('Gist Rooms', 'Community guidelines', 'Rooms are for sharing your own experience and supporting each other. They are not for exposing anyone. These rules apply in every room.', { align: 'center', w: 880, size: 60 }),
     ]),
     section('Rules', [
-      rule('1', 'Share your own experience', '"This happened to me" is welcome. Accusing a named person of a crime is not, and is held for review.', true),
-      rule('2', 'Never identify anyone', 'No full names, phone numbers, addresses, workplaces, handles, photos or screenshots that reveal identity.', false),
-      rule('3', 'No threats or sexual violence content', 'Including jokes, revenge posts and encouragement of harm.', false),
-      rule('4', 'No hate, harassment or pile-ons', 'There are no downvotes for a reason. Disagree kindly.', false),
-      rule('5', 'No selling or money requests', 'No promotions, links to paid services or requests for money.', false),
-      rule('6', 'Nothing involving minors', 'Any content involving under-18s leads to an immediate ban and a safety report.', false),
-      rule('7', 'Keep the room private', 'Share a post only with the Share button, which creates an anonymous card without nicknames or replies. Authors can turn sharing off. No screenshots.', false),
+      ...RULES.map(([n, t, b, ok]) => rule(n, t, b, ok)),
     ], { gap: 16 }),
     section('Strikes', [
       heading('Enforcement', 'How strikes and bans work', 'Strikes expire after 90 days of clean behaviour. Every decision records the rule, the post, the time and who or what made it.'),

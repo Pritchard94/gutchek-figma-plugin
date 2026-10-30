@@ -66,7 +66,7 @@ export function webNav(active?: string): FrameNode {
 
 export function mobileNav(): FrameNode {
   return col({ name: 'Nav', w: 'fill', fill: 'bg/surface' }, [
-    row({ name: 'Bar', w: 'fill', h: 64, pad: [0, 20], cross: 'center', main: 'between' }, [wlink(lockup(24), 'mLanding'), icon('sliders', 24, 'text/primary')]),
+    row({ name: 'Bar', w: 'fill', h: 64, pad: [0, 20], cross: 'center', main: 'between' }, [wlink(lockup(24), 'mLanding'), wlink(box({ name: 'Menu', dir: 'h', w: 40, h: 40, radius: 20, main: 'center', cross: 'center' }, [icon('menu', 24, 'text/primary')]), 'mMenu')]),
     divider(),
   ]);
 }
