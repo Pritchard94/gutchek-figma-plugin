@@ -220,9 +220,23 @@ export function adminEngagement(): FrameNode {
             ['M0', 'M1', 'M2', 'M3', 'M4', 'M5'],
           ),
         ], 'fill'),
-        card('Feature use · last 30 days', [hbars([['Reports run', 14200], ['Rooms messages', 8900], ['Chat checks', 5100], ['Share my date', 2400], ['Compare', 1300], ['Personality viewed', 9600]], 340)], 380),
+        card('Feature use · last 30 days', [hbars([['Reports run', 14200], ['Notes written', 11800], ['Personality viewed', 9600], ['Rooms messages', 8900], ['Chat checks', 5100], ['Share my date', 2400], ['Compare', 1300]], 340)], 380),
       ]),
     ),
+    card('Notes · private journal', [
+      equalize(
+        row({ name: 'Notes metrics', w: 'fill', gap: 16, cross: 'start' }, [
+          metric('Weekly note writers', '34%', '+6 pts', true, [22, 24, 25, 27, 27, 28, 30, 31, 31, 32, 33, 34], 'Of active users, last 7 days'),
+          metric('Notes per writer', '3.4', '+0.4', true, [2.6, 2.7, 2.8, 2.8, 2.9, 3.0, 3.0, 3.1, 3.2, 3.3, 3.3, 3.4], 'A week, median'),
+          metric('Checks with a gut log', '21%', '+3 pts', true, [12, 13, 14, 15, 15, 16, 17, 18, 19, 19, 20, 21], 'Log my gut · v1.1'),
+          metric('Synced across devices', '58%', '+5 pts', true, [44, 46, 47, 49, 50, 51, 53, 54, 55, 56, 57, 58], 'Writers on 2+ devices'),
+        ]),
+      ),
+      row({ name: 'Privacy', w: 'fill', gap: 8, pad: [10, 14], radius: 12, fill: 'bg/subtle' }, [
+        icon('lock', 16, 'text/secondary'),
+        text('Counts only. Staff can never read note content. Break-glass access needs logged approval, and none was used this period.', 'small', 'text/secondary', { w: 'fill' }),
+      ]),
+    ], 'fill', 'Note content outside its owner\u2019s account: 0 incidents'),
     card('Rooms engagement', [
       table(
         [

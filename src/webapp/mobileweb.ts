@@ -5,6 +5,8 @@ import { RoomMsg, composerBar, nameToken, nickAvatar, roomMessage, streamDivider
 import { addWallpaper } from '../components/doodles';
 import { modeSwitch } from '../components/appearance';
 import { people, tobi, user } from '../screens/data';
+import { WEEK, moodPicker, noteCard, weekStrip } from '../components/notes';
+import { N_KUNLE, N_TOBI_CALL } from '../screens/notes';
 import { alink } from './shell';
 
 const W = 390;
@@ -13,7 +15,7 @@ const ROOM = 'Talking Stage Diaries';
 
 const TABS: Array<[string, string, string]> = [
   ['home', 'Home', 'mwHome'],
-  ['bookmark', 'Saved', 'mwHome'],
+  ['notebook-pen', 'Notes', 'mwNotes'],
   ['message', 'Chat', 'mwAnalyse'],
   ['messages', 'Gists', 'mwRooms'],
   ['shield', 'Stay Safe', 'mwHome'],
@@ -138,6 +140,7 @@ export function mwMenu(): FrameNode {
     fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Run a Gutchek' }, { show: ['icon'], icons: { icon: 'plus' } })),
     col({ name: 'Nav', w: 'fill', gap: 2 }, [
       item('home', 'Home', 'mwHome', true),
+      item('notebook-pen', 'Notes', 'mwNotes'),
       item('bookmark', 'Saved', 'mwHome'),
       item('message', 'Check a Chat', 'mwAnalyse'),
       item('messages', 'Rooms', 'mwRooms', false, '15'),
@@ -163,7 +166,7 @@ export function mwReport(): FrameNode {
       box({ name: 'Tile', dir: 'h', w: 32, h: 32, radius: 9, fill: tone === 'caution' ? 'caution/subtle' : 'positive/subtle', main: 'center', cross: 'center' }, [icon(tone === 'caution' ? 'alert-triangle' : 'check-circle', 16, tone === 'caution' ? 'caution/fg' : 'positive/fg')]),
       col({ name: 'Text', gap: 0, w: 'fill' }, [text(l, 'smallStrong', 'text/primary', { w: 'fill' }), text(m, 'caption', 'text/secondary')]),
     ]);
-  return mwFrame({ name: 'Mobile web · Report', url: 'gutchek.app/r/tobi-adeyemi', title: 'Report', tab: 'Saved', gap: 14 }, [
+  return mwFrame({ name: 'Mobile web · Report', url: 'gutchek.app/r/tobi-adeyemi', title: 'Report', tab: 'Home', gap: 14 }, [
     row({ name: 'Person', w: 'fill', gap: 12 }, [avatar(tobi.initials, 48, tobi.tone), col({ name: 'Text', gap: 0, w: 'fill' }, [text(tobi.name, 'h3', 'text/primary'), text(tobi.handle + ' · 3 platforms', 'caption', 'text/secondary')]), use('IconButton', { Style: 'Tonal' }, {}, { icons: { icon: 'share' } })]),
     col({ name: 'Tabs', w: 'fill', gap: 0 }, [row({ name: 'Items', gap: 20 }, [tab('Overview', true), tab('Signals 9'), tab('Personality'), tab('Evidence')]), divider()]),
     col({ name: 'Dial', w: 'fill', gap: 8, pad: [16, 0], radius: 20, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [text(tobi.verdict, 'title', 'text/primary'), dial, use('ConfidenceBadge', { Level: 'High' })]),
@@ -291,9 +294,40 @@ export function mwRoomAbout(): FrameNode {
   return base;
 }
 
+export function mwNotes(): FrameNode {
+  return mwFrame(
+    {
+      name: 'Mobile web · Notes',
+      url: 'gutchek.app/notes',
+      title: 'Notes',
+      tab: 'Notes',
+      gap: 14,
+      footer: col({ name: 'Write bar', w: 'fill', pad: [10, 16], gap: 10, fill: 'bg/surface' }, [
+        divider(),
+        row({ name: 'Composer', w: 'fill', gap: 10 }, [
+          row({ name: 'Field', w: 'fill', h: 44, pad: [0, 14], gap: 8, radius: 22, fill: 'bg/subtle', cross: 'center' }, [icon('pencil', 16, 'text/tertiary'), text('Write a note', 'small', 'text/tertiary', { w: 'fill' })]),
+          box({ name: 'Save', dir: 'h', w: 44, h: 44, radius: 22, fill: 'action/solid', main: 'center', cross: 'center' }, [icon('arrow-right', 20, 'action/on')]),
+        ]),
+        moodPicker(null),
+      ]),
+    },
+    [
+      col({ name: 'Week', w: 'fill', pad: [14, 16], gap: 10, radius: 18, fill: 'bg/surface', stroke: 'border/default' }, [
+        row({ name: 'Head', w: 'fill' }, [text('This week', 'smallStrong', 'text/primary', { w: 'fill' }), text('Mostly calm', 'caption', 'text/tertiary')]),
+        weekStrip(WEEK, 6, 'fill', 30),
+      ]),
+      text('TODAY', 'overline', 'text/tertiary'),
+      noteCard(N_TOBI_CALL),
+      text('YESTERDAY', 'overline', 'text/tertiary'),
+      noteCard(N_KUNLE),
+    ],
+  );
+}
+
 export const MOBILE_WEB: Array<[string, string, () => FrameNode]> = [
   ['mwHome', 'Mobile web · Home', mwHome],
   ['mwMenu', 'Mobile web · Menu', mwMenu],
+  ['mwNotes', 'Mobile web · Notes', mwNotes],
   ['mwReport', 'Mobile web · Report', mwReport],
   ['mwAnalyse', 'Mobile web · Check a Chat', mwAnalyse],
   ['mwRooms', 'Mobile web · Rooms', mwRooms],

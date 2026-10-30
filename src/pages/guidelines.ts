@@ -4,6 +4,7 @@ import { FillSpec, Kid, abs, add, box, col, gradient, hexPaint, icon, paint, rec
 import { appIcon, glyph, lockup } from '../brand';
 import { use } from '../components/library';
 import { doodleLayer } from '../components/doodles';
+import { MOODS, moodDot, moodFg, moodTint } from '../components/notes';
 import { board, bullet, layoutHorizontally, section } from './common';
 import { swatchChip, themedPanel } from './foundations';
 
@@ -191,6 +192,9 @@ function colour(): FrameNode {
         ratioBar,
         ratioLegend,
       ]),
+      section('Mood colours', 'Notes moods borrow the member identity hues, never red or green, so a feeling never reads as a Red Flag or Green Flag. Moods are never scored.', [
+        row({ name: 'Moods', gap: 16, w: 'fill' }, MOODS.map((m) => col({ name: m.key, gap: 10, w: 'fill', pad: 20, radius: 20, fill: moodTint(m.key), cross: 'center' }, [moodDot(m.key, 56), text(m.key, 'bodyStrong', moodFg(m.key))]))),
+      ]),
       section('Accessible pairings', 'All text pairings meet WCAG 2.2 AA (4.5:1). Ratios are computed from the tokens in this file.', [
         row({ name: 'Pairs', gap: 16, w: 'fill' }, [
           pair('text/primary', 'bg/canvas', 'Text on canvas'),
@@ -298,7 +302,7 @@ function layout(): FrameNode {
           bullet('Margins 20pt. Cards pad 16 to 20pt. Sections are separated by 32pt, items inside a section by 12 to 16pt.'),
           bullet('Touch targets are at least 44 by 44pt, including icon buttons and list rows.'),
           bullet('Primary actions sit in the bottom third of the screen, within thumb reach, above the home indicator.'),
-          bullet('The tab bar floats: a translucent glass capsule with five destinations (Home, Gists, Saved, Stay Safe, Me), inset 16pt from the edges, with a separate round + action for Run a Gutchek or Check a Chat. Content scrolls underneath it, and it hides on pushed screens.'),
+          bullet('The tab bar floats: a translucent glass capsule with five destinations (Home, Notes, Gists, Stay Safe, Me; saved reports live in Home), inset 16pt from the edges, with a separate round + action for Run a Gutchek or Check a Chat. Content scrolls underneath it, and it hides on pushed screens.'),
           bullet('Android: same layout at 360 to 412dp, Material system bars replace iOS chrome.'),
           text('Corners and depth', 'h2', 'text/primary'),
           bullet('Corners grow with surface size: 8 for chips, 12 for buttons and fields, 16 for cards, 24 for sheets and swipe cards.'),
@@ -491,7 +495,7 @@ export function buildCover(previews: FrameNode[], page: PageNode, web?: FrameNod
   const left = col({ name: 'Copy', gap: 28, w: 760 }, [
     lockup(72, 'text/on-solid', 'text/on-solid'),
     text('Trust your gut. Then check it.', { family: 'display', weight: 800, size: 80, line: 88, tracking: -3 }, 'text/on-solid', { w: 'fill' }),
-    text('Brand guideline, design system, mobile app, web app, website and admin dashboard · v2.0', { family: 'ui', weight: 500, size: 24, line: 34 }, 'text/on-solid', { w: 'fill', opacity: 0.85 }),
+    text('Brand guideline, design system, mobile app, web app, website and admin dashboard · v2.1', { family: 'ui', weight: 500, size: 24, line: 34 }, 'text/on-solid', { w: 'fill', opacity: 0.85 }),
     row({ name: 'Meta', gap: 12, wrap: true, w: 'fill' }, [
       metaPill('October 2026'),
       metaPill('iOS 393 × 852'),

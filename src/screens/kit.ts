@@ -14,7 +14,7 @@ export function link<T extends SceneNode>(node: T, target: string): T {
 
 // ---------------------------------------------------------------- shell
 
-export type Tab = 'Home' | 'Gists' | 'Saved' | 'Stay Safe' | 'Me';
+export type Tab = 'Home' | 'Notes' | 'Gists' | 'Stay Safe' | 'Me';
 
 export interface NavSpec {
   type?: 'Inline' | 'Large';
@@ -90,8 +90,8 @@ export function screen(spec: ScreenSpec, body: Kid[]): FrameNode {
     add(root, abs(tabBar, 0, Math.round(root.height - tabBar.height)));
     const targets: Array<[string, string]> = [
       ['tab-home', 'home'],
+      ['tab-notes', 'notesHome'],
       ['tab-gists', 'roomsList'],
-      ['tab-saved', 'saved'],
       ['tab-stay-safe', 'safety'],
       ['tab-me', 'settings'],
       ['new-libra', 'create'],

@@ -81,6 +81,19 @@ export function wSettings(): FrameNode {
           text('System follows your computer, including automatic switching at sunset. You can also switch from the sidebar.', 'small', 'text/secondary', { w: 'fill' }),
           row({ name: 'Options', gap: 24, w: 'fill', cross: 'start' }, [modeOption('system', true, 256, 140, 'desktop'), modeOption('light', false, 256, 140, 'desktop'), modeOption('dark', false, 256, 140, 'desktop')]),
         ]),
+        card('Notes', [
+          toggle('Lock Notes', 'Ask for your passkey each time you open Notes on this browser.', true),
+          divider(),
+          toggle('Daily prompt at 21:00', 'A gentle question each evening, like \u201cHow did that chat make you feel?\u201d', true),
+          divider(),
+          toggle('AI reflections', 'Opt-in summaries of your own notes. Plus and Pro. Not used to train any model.', false),
+          divider(),
+          row({ name: 'Data', w: 'fill', gap: 12, pad: [12, 0] }, [
+            col({ name: 'Text', gap: 2, w: 'fill' }, [text('Your journal', 'bodyStrong', 'text/primary'), text('21 notes · 3 people · encrypted and synced. Auto-delete after 1 year.', 'small', 'text/secondary')]),
+            btn('Export my notes', 'Secondary', 'Small', 'download'),
+            btn('Delete journal', 'Destructive', 'Small'),
+          ]),
+        ]),
         card('Privacy and security', [
           toggle('Lock Gutchek with a passkey', 'Required on this browser after 15 minutes away.', true),
           divider(),

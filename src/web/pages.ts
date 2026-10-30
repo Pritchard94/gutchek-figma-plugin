@@ -139,7 +139,7 @@ export function trust(): FrameNode {
     section('Your data', [
       heading('Your data', 'Private by design', null),
       row({ name: 'Data', w: 'fill', gap: 24, cross: 'start' }, [
-        featureCard('lock', 'Encrypted', 'TLS 1.3 in transit, AES-256 at rest, and field-level encryption for names and notes.'),
+        featureCard('lock', 'Encrypted', 'TLS 1.3 in transit, AES-256 at rest, and field-level encryption with a key for each user for names and journal notes.'),
         featureCard('clock', 'Short retention', 'Raw collected posts are deleted after 30 to 90 days. We keep only what a saved report needs.'),
         featureCard('eye-off', 'Private searches', 'No public profiles, no leaderboards and no searchable database of reports.'),
         featureCard('trash', 'Delete anytime', 'Delete your account and all your data from Settings. It is gone within 30 days.'),
@@ -172,8 +172,8 @@ export function trust(): FrameNode {
 
 export function pricing(): FrameNode {
   const plans: Array<[string, string, string, string[], boolean]> = [
-    ['Free', '$0', 'per month', ['1 lite report a month', 'Scores and summary', 'Stay Safe'], false],
-    ['Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer', 'Personality and notes'], true],
+    ['Free', '$0', 'per month', ['1 lite report a month', 'Notes journal', 'Stay Safe'], false],
+    ['Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer', 'AI reflections on notes'], true],
     ['Gutchek Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts', 'Compare and PDF export'], false],
     ['Pay per report', '$2.99', 'per report', ['One full report', 'No subscription', 'Paystack and Flutterwave'], false],
   ];
@@ -182,9 +182,10 @@ export function pricing(): FrameNode {
     ['Scores, confidence and summary', ['yes', 'yes', 'yes', 'yes']],
     ['Evidence viewer', ['-', 'yes', 'yes', 'yes']],
     ['Personality snapshot', ['-', 'yes', 'yes', 'yes']],
-    ['Chat checks', ['2 a month', '2 + credits', '2 + credits', '1 credit']],
+    ['Chat checks', ['1 free a month', '1 + credits', '1 + credits', '1 credit']],
     ['Gist Rooms', ['yes', 'yes', 'yes', 'yes']],
-    ['Private notes', ['-', 'yes', 'yes', '-']],
+    ['Notes journal, synced', ['yes', 'yes', 'yes', 'yes']],
+    ['AI reflections on notes (v1.5)', ['-', 'yes', 'yes', '-']],
     ['Side by side', ['-', '-', 'yes', '-']],
     ['Monitoring alerts', ['-', '-', 'yes', '-']],
     ['PDF export and secure share links', ['-', '-', 'yes', '-']],

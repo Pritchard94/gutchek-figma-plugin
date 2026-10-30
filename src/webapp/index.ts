@@ -7,6 +7,7 @@ import { wCompare, wPersonality, wReport, wSaved, wSavedThreads, wSevere, wSigna
 import { wAnalyse, wChatReport, wSpeakers } from './chat';
 import { wDiscover, wRooms, wRoomsAbout, wRoomsMute, wRoomsShare, wRoomsThread } from './rooms';
 import { MOBILE_WEB } from './mobileweb';
+import { wNotes, wNotesEvidence, wNotesPerson } from './notes';
 import { wBilling, wDelete, wSafety, wSettings } from './account';
 
 type Def = [string, string, () => FrameNode];
@@ -36,7 +37,16 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     ],
   },
   {
-    title: 'Web app · 3 · Report',
+    title: 'Web app · 3 · Notes',
+    note: 'A private journal in three columns: library and people, the feed with tonight\'s prompt and this week\'s moods, and the editor. Person pages put notes, gut logs and reports on one timeline beside an opt-in reflection.',
+    pages: [
+      ['wNotes', 'Notes', wNotes],
+      ['wNotesPerson', 'Notes · person timeline and reflection', wNotesPerson],
+      ['wNotesEvidence', 'Notes · export evidence', wNotesEvidence],
+    ],
+  },
+  {
+    title: 'Web app · 4 · Report',
     note: 'Report tabs with a right rail for notes and confidence. Signals use a master-detail layout so evidence sits beside the finding.',
     pages: [
       ['wReport', 'Report · overview', wReport],
@@ -49,7 +59,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     ],
   },
   {
-    title: 'Web app · 4 · Check a Chat',
+    title: 'Web app · 5 · Check a Chat',
     note: 'Drag and drop uploads, speaker confirmation side by side, and a two-column conversation report.',
     pages: [
       ['wAnalyse', 'Check a Chat', wAnalyse],
@@ -58,7 +68,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     ],
   },
   {
-    title: 'Web app · 5 · Rooms',
+    title: 'Web app · 6 · Rooms',
     note: 'Discord-style three columns: rooms, the stream over the doodle wallpaper, and room info or an open thread.',
     pages: [
       ['wRooms', 'Rooms', wRooms],
@@ -70,7 +80,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     ],
   },
   {
-    title: 'Web app · 6 · Safety and settings',
+    title: 'Web app · 7 · Safety and settings',
     note: 'Share my date, contacts and support lines; account, privacy, plans and invoices.',
     pages: [
       ['wSafety', 'Stay Safe', wSafety],
@@ -80,13 +90,13 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
     ],
   },
   {
-    title: 'Web app · 7 · Mobile web',
+    title: 'Web app · 8 · Mobile web',
     note: 'The same web app on a phone browser: a top bar with a menu drawer, a bottom bar for the main sections, and stacked layouts. Rooms open full screen; room info opens from the header.',
     pages: MOBILE_WEB,
   },
 ];
 
-const DARK = ['wHome', 'wReport', 'wSignals', 'wChatReport', 'wRooms', 'wSafety'];
+const DARK = ['wHome', 'wNotes', 'wReport', 'wSignals', 'wChatReport', 'wRooms', 'wSafety'];
 
 const GAP = 120;
 const PAD = 120;

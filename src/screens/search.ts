@@ -1,3 +1,4 @@
+import { Token } from '../tokens';
 import { PLATFORMS, abs, add, box, col, fill, icon, platformBadge, row, text, divider } from '../core/ui';
 import { btn, center, chip, field, group, link, listRow, note, progressDots, screen, use, withSheet } from './kit';
 import { tobi } from './data';
@@ -27,6 +28,14 @@ export function newSearch(): FrameNode {
         text('Optional, helps confirm identity', 'label', 'text/secondary'),
         group([listRow('City', null, 'map-pin', 'Value', 'Lagos'), listRow('Age range', null, 'calendar', 'Value', '27 to 32'), listRow('A photo you already have', null, 'image', 'Value', 'Add')]),
       ]),
+      link(
+        row({ name: 'Log my gut', w: 'fill', gap: 12, pad: [12, 14], radius: 16, fill: 'name/sky-tint' as Token }, [
+          icon('leaf', 20, 'name/sky' as Token),
+          col({ name: 'Text', gap: 1, w: 'fill' }, [text('Log my gut first', 'smallStrong', 'text/primary'), text('How do they feel to you? See it beside the result.', 'caption', 'text/secondary', { w: 'fill' })]),
+          icon('chevron-right', 18, 'text/tertiary'),
+        ]),
+        'logGut',
+      ),
       note('shield-check', 'For dating and personal safety only. Searches are private and rate-limited to prevent misuse.', 'brand'),
     ],
   );

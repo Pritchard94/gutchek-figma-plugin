@@ -7,6 +7,7 @@ import { home, homeEmpty, saved } from './home';
 import { matchCompared, matchConfirm, newSearch, newSearchPlatform, processing } from './search';
 import { evidence, report, reportLow, reportSevere, signalsCaution, signalsPositive } from './report';
 import { appearance, compare, deleteData, personality, plans, safety, settings } from './more';
+import { NOTES_SCREENS } from './notes';
 import { appLocked, idIntro, intro, introChat, introRooms, notifPrompt, selfie } from './onboarding';
 import { analyse, chatBlocked, chatConsent, chatLimited, chatProcessing, chatReport, chatUpload, combinedView, createSheet, exportGuide, pasteText, patternDetail, safetyCard, sampleReport, speakers } from './chat';
 import { appeal, banNotice, composer, joinPending, myStanding, postHeld, reportPost, roomAbout, roomWelcome, roomsList } from './rooms';
@@ -174,9 +175,14 @@ const DEFS: Group[] = [
       ['deleteData', 'Delete data', deleteData],
     ],
   },
+  {
+    title: 'Notes',
+    note: 'A private journal: daily notes, person cards with one timeline, Log my gut, reflections and evidence. Private by default, synced to the account, never scored.',
+    screens: NOTES_SCREENS,
+  },
 ];
 
-const ORDER = ['Onboarding', 'Home and saved', 'Run a Gutchek', 'Report', 'Check a Chat', 'Gist Rooms', 'Safety', 'Settings and account'];
+const ORDER = ['Onboarding', 'Home and saved', 'Notes', 'Run a Gutchek', 'Report', 'Check a Chat', 'Gist Rooms', 'Safety', 'Settings and account'];
 DEFS.sort((a, b) => ORDER.indexOf(a.title) - ORDER.indexOf(b.title));
 
 export const GROUPS: Array<{ title: string; note: string; screens: ScreenDef[] }> = DEFS.map((g, gi) => ({

@@ -167,8 +167,8 @@ define('HomeIndicator', 'System', 'iOS home indicator area, 34pt.', [{}], () =>
 
 const TABS = [
   { key: 'Home', icon: 'home' },
+  { key: 'Notes', icon: 'notebook-pen' },
   { key: 'Gists', icon: 'messages' },
-  { key: 'Saved', icon: 'bookmark' },
   { key: 'Stay Safe', icon: 'shield' },
   { key: 'Me', icon: 'user' },
 ];
@@ -176,7 +176,7 @@ const TABS = [
 define(
   'TabBar',
   'Navigation',
-  'Floating glass tab bar in the iOS 26 style: a translucent capsule for Home, Gists, Saved, Stay Safe and Me, with the selected tab in an indigo pill, and a separate start-a-check action. Content scrolls underneath.',
+  'Floating glass tab bar in the iOS 26 style: a translucent capsule for Home, Notes, Gists, Stay Safe and Me, with the selected tab in an indigo pill, and a separate start-a-check action. Content scrolls underneath.',
   cross({ Active: TABS.map((t) => t.key) }),
   (p) => {
     const tabs = TABS.map((t) => {

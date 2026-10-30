@@ -53,7 +53,15 @@ export function home(): FrameNode {
         ]),
         'analyse',
       ),
-      col({ name: 'Recent', gap: 12, w: 'fill' }, [sectionHead('Recent reports', 'See all', 'saved'), reportRow(tobi, 'report'), reportRow(daniel, 'reportSevere')]),
+      link(
+        row({ name: 'Notes prompt', w: 'fill', gap: 14, pad: 16, radius: 20, fill: 'brand/subtle' }, [
+          iconTile('notebook-pen', 'brand', 44),
+          col({ name: 'Text', gap: 2, w: 'fill' }, [text('How did today\u2019s call with Tobi feel?', 'bodyStrong', 'text/primary', { w: 'fill' }), text('Write it in Notes. Only you can see it.', 'small', 'text/secondary', { w: 'fill' })]),
+          icon('chevron-right', 20, 'text/tertiary'),
+        ]),
+        'writeNote',
+      ),
+      col({ name: 'Recent', gap: 12, w: 'fill' }, [sectionHead('Recent reports', 'Saved', 'saved'), reportRow(tobi, 'report'), reportRow(daniel, 'reportSevere')]),
       row({ name: 'Safety tip', w: 'fill', pad: 16, gap: 14, radius: 16, fill: 'positive/subtle', cross: 'start' }, [
         iconTile('life-buoy', 'positive', 40),
         col({ name: 'Text', gap: 4, w: 'fill' }, [
@@ -111,8 +119,8 @@ export function saved(): FrameNode {
   return screen(
     {
       name: 'Saved',
-      tab: 'Saved',
-      nav: { type: 'Large', title: 'Saved', action: 'columns' },
+      tab: 'Home',
+      nav: { title: 'Saved', action: 'columns', actionTo: 'comparePicker', backTo: 'home' },
       gap: 16,
       footer: [link(btn('Side by side', 'Secondary', 'Large', 'columns'), 'comparePicker')],
     },

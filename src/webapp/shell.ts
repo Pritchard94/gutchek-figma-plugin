@@ -22,6 +22,7 @@ export function alink<T extends SceneNode>(node: T, target: string): T {
 
 const NAV: Array<[string, string, string, string?]> = [
   ['home', 'Home', 'wHome'],
+  ['notebook-pen', 'Notes', 'wNotes'],
   ['bookmark', 'Saved', 'wSaved'],
   ['message', 'Check a Chat', 'wAnalyse'],
   ['messages', 'Gists', 'wRooms', '15'],
@@ -97,7 +98,7 @@ export function topbar(title: string, crumb?: string, actions: Kid[] = []): Fram
     ...actions,
     box({ name: 'Search', dir: 'h', w: 300, h: 40, pad: [0, 14], gap: 8, radius: 10, fill: 'bg/surface', stroke: 'border/default', cross: 'center' }, [
       icon('search', 18, 'text/tertiary'),
-      text('Search people, reports, rooms', 'small', 'text/tertiary', { w: 'fill' }),
+      text('Search people, reports, notes', 'small', 'text/tertiary', { w: 'fill' }),
       box({ name: 'Key', dir: 'h', pad: [1, 6], radius: 4, stroke: 'border/strong' }, [text('⌘K', 'caption', 'text/tertiary')]),
     ]),
     alink(bell, 'wNotifications'),

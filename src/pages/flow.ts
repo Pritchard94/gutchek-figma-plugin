@@ -64,6 +64,13 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
       [frames.personality, 'Personality'],
       [frames.compare, 'Compare'],
     ]),
+    lane('Write a note', 'Flow D: Notes tab, write, pick a mood, then see it on the person\u2019s timeline beside their reports.', [
+      [frames.notesHome, 'Notes'],
+      [frames.writeNote, 'Write a note'],
+      [frames.pickPerson, 'About someone'],
+      [frames.personTimeline, 'Timeline'],
+      [frames.reflection, 'Reflection · v1.5'],
+    ]),
     lane('Check a Chat', 'User-provided evidence: consent, upload, confirm speakers, then safety before scores.', [
       [frames.analyse, 'Check a Chat'],
       [frames.chatConsent, 'Consent'],

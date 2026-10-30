@@ -3,6 +3,7 @@ import { Tone, abs, add, avatar, box, circle, col, icon, paint, platformBadge, r
 import { use } from './library';
 import { bubble, nickAvatar, roomMessage, shotThumb } from './chat';
 import { doodleLayer } from './doodles';
+import { WEEK, noteCard, weekStrip } from './notes';
 
 /**
  * Onboarding and marketing illustrations, built from real UI parts so they theme with the file
@@ -18,7 +19,7 @@ export function blob(size: number, token: Token, opacity: number): EllipseNode {
   return c;
 }
 
-function stage(name: string, glows: Array<[number, Token, number, number, number]>): FrameNode {
+export function stage(name: string, glows: Array<[number, Token, number, number, number]>): FrameNode {
   const f = box({ name, dir: 'none', w: ILLO_W, h: ILLO_H, radius: 36, fill: 'brand/subtle', clip: true });
   for (const [size, token, opacity, x, y] of glows) add(f, abs(blob(size, token, opacity), x, y));
   add(f, abs(doodleLayer(ILLO_W, ILLO_H, 'brand/fg', 0.06, name.length * 7), 0, 0));
@@ -85,6 +86,32 @@ export function illoChat(): FrameNode {
   add(f, abs(panel, 30, 86));
   add(f, abs(floatChip('sparkle', 'Finding patterns', 'brand'), 102, 30));
   add(f, abs(floatChip('eye-off', 'Numbers masked', 'neutral'), 180, 318));
+  return f;
+}
+
+/** Notes: a private journal page, a week of moods, and the promises that keep it private. */
+export function illoNotes(): FrameNode {
+  const f = stage('Illustration · Notes', [
+    [230, 'brand/border', 0.85, -50, -60],
+    [220, 'name/sky-tint' as Token, 1, 180, 200],
+  ]);
+  const back = col({ name: 'Back page', w: 250, h: 200, radius: 22, fill: 'bg/raised', stroke: 'border/default', shadow: 'e1' }, []);
+  add(f, abs(back, 70, 58));
+  back.rotation = 7;
+  const page = noteCard(
+    { time: 'Today, 21:40', mood: 'Happy', person: 'Tobi', body: 'Long call tonight. He remembered my sister\u2019s wedding without me bringing it up. Felt really seen.', tags: ['talking'] },
+    280,
+  );
+  page.effects = [];
+  add(f, abs(page, 36, 92));
+  page.rotation = -3;
+  const week = col({ name: 'Week card', w: 250, pad: [12, 14], gap: 8, radius: 20, fill: 'bg/raised', stroke: 'border/default', shadow: 'e2' }, [
+    text('This week', 'label', 'text/secondary'),
+    weekStrip(WEEK, 6, 'fill', 26),
+  ]);
+  add(f, abs(week, 84, 262));
+  add(f, abs(floatChip('lock', 'Only you can see this', 'brand'), 150, 26));
+  add(f, abs(floatChip('cloud', 'Synced', 'neutral'), 14, 34));
   return f;
 }
 

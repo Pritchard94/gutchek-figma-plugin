@@ -281,7 +281,7 @@ export function savedThreads(): FrameNode {
     return to ? link(r, to) : r;
   };
   return screen(
-    { name: 'Saved · Threads', tab: 'Saved', nav: { type: 'Large', title: 'Saved', action: 'columns', actionTo: 'comparePicker' }, gap: 12 },
+    { name: 'Saved · Threads', tab: 'Home', nav: { title: 'Saved', action: 'columns', actionTo: 'comparePicker', backTo: 'home' }, gap: 12 },
     [
       link(fill(use('Segmented', { Active: 'Second' }, { first: 'People', second: 'Threads' })), 'saved'),
       text('Saved threads keep the full gist in one place, with new replies marked.', 'caption', 'text/tertiary', { w: 'fill' }),

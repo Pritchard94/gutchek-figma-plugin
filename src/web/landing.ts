@@ -1,6 +1,8 @@
 import { Token } from '../tokens';
 import { abs, add, avatar, box, col, hexPaint, icon, pill, row, text } from '../core/ui';
 import { use } from '../components/library';
+import { illoNotes } from '../components/illustrations';
+import { moodPill } from '../components/notes';
 import { DESKTOP, GUTTER, MOBILE, check, ctaBand, display, faq, featureCard, heading, lead, mobileNav, phone, section, storeBadge, webFooter, webNav, webPage, wlink } from './kit';
 
 export type Screens = Record<string, FrameNode>;
@@ -27,7 +29,7 @@ const STEPS: Array<[string, string, string, string]> = [
 const FEATURES: Array<[string, string, string]> = [
   ['file', 'Evidence viewer', 'Every flag and every positive opens the original post, with date, platform and context checks.'],
   ['message', 'Check a Chat', 'Upload a conversation and see patterns like pressure, love-bombing or money requests, with the exact messages.'],
-  ['sparkle', 'Personality snapshot', 'How someone communicates online: tone, humour, conflict style. Observations, never diagnoses.'],
+  ['notebook-pen', 'Notes', 'A private journal for how you feel, in general or about someone, with one timeline per person. Synced, encrypted, never scored.'],
   ['users', 'Gist Rooms', 'Moderated rooms to share your own experience under a nickname. Never a place to expose anyone.'],
   ['navigation', 'Share my date', 'Send plans and live location to a trusted friend, with check-ins that escalate if you miss one.'],
   ['lock', 'Private by design', 'Searches stay private, reports are encrypted, and you can delete everything in a tap.'],
@@ -146,12 +148,44 @@ export function planCard(name: string, price: string, per: string, items: string
 export function pricingPreview(): SceneNode[] {
   return [
     row({ name: 'Plans', w: 'fill', gap: 24, cross: 'start' }, [
-      planCard('Free', '$0', 'per month', ['1 lite report a month', 'Scores and summary', 'Stay Safe hub and Share my date']),
-      planCard('Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer and personality', 'Private notes'], true, 'Start with Plus'),
+      planCard('Free', '$0', 'per month', ['1 lite report a month', 'Notes journal, synced to every device', 'Stay Safe hub and Share my date']),
+      planCard('Gutchek Plus', '$7.99', 'per month', ['5 full reports a month', 'Evidence viewer and personality', 'AI reflections on your notes'], true, 'Start with Plus'),
       planCard('Gutchek Pro', '$14.99', 'per month', ['15 reports a month', 'Monitoring alerts and compare', 'PDF export']),
     ]),
     wlink(text('Need just one? Pay per report for $2.99, with local payment options.', 'bodyStrong', 'brand/fg'), 'pricing'),
   ];
+}
+
+const NOTE_POINTS: Array<[string, string, string]> = [
+  ['notebook-pen', 'Write how it felt', 'A few words and a mood after a date or a chat, or just about your day.'],
+  ['users', 'One timeline per person', 'Notes, gut logs and reports in date order, so patterns are easy to spot.'],
+  ['leaf', 'Log your gut first', 'Say how they feel to you before a check, then see it beside the Gut Meter.'],
+];
+
+function notesBand(s: Screens, mobile = false): FrameNode {
+  const point = ([i, t, b]: (typeof NOTE_POINTS)[number]) =>
+    row({ name: t, gap: 16, w: 'fill', cross: 'start' }, [
+      box({ name: 'Icon', dir: 'h', w: 44, h: 44, radius: 12, fill: 'brand/subtle', main: 'center', cross: 'center' }, [icon(i, 22, 'brand/fg')]),
+      col({ name: 'Text', gap: 4, w: 'fill' }, [text(t, mobile ? 'title' : 'h3', 'text/primary'), text(b, mobile ? 'small' : 'body', 'text/secondary', { w: 'fill' })]),
+    ]);
+  const copy = col({ name: 'Copy', gap: 28, w: 'fill' }, [
+    heading('Notes', 'Your gut, written down', 'Often the clearest signal is how you felt after each chat. Notes keeps it, privately, on every device.', { mobile }),
+    row({ name: 'Moods', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, [moodPill('Calm'), moodPill('Happy'), moodPill('Uneasy'), moodPill('Anxious'), moodPill('Confused')]),
+    ...NOTE_POINTS.map(point),
+    row({ name: 'Privacy', gap: 8, w: 'fill' }, [icon('lock', 18, 'text/tertiary'), text('Private by default. Never in rooms, shares or scores. The people you write about are never notified.', 'small', 'text/tertiary', { w: 'fill' })]),
+  ]);
+  if (mobile) {
+    const illo = illoNotes();
+    illo.rescale(350 / illo.width);
+    const art = box({ name: 'Notes art', dir: 'h', w: 'fill', main: 'center' }, [illo]);
+    return col({ name: 'Notes', w: 'fill', pad: [48, 20], gap: 28 }, [copy, art]);
+  }
+  const art = box({ name: 'Notes art', dir: 'none', w: 560, h: 600, radius: 48, fill: 'brand/subtle', clip: true });
+  const illo = illoNotes();
+  illo.rescale(1.12);
+  add(art, abs(illo, 28, 40));
+  add(art, abs(phone(s.personTimeline, 0.5, 'Phone · Person timeline'), 318, 128));
+  return section('Notes', [row({ name: 'Notes', w: 'fill', gap: 80, cross: 'center' }, [art, copy])], { fill: 'bg/surface' });
 }
 
 export function landing(s: Screens): FrameNode {
@@ -185,6 +219,7 @@ export function landing(s: Screens): FrameNode {
       heading('Everything in one calm place', 'More than a score', 'Tools for every stage of getting to know someone, from first DM to first date.', { align: 'center', w: 820 }),
       row({ name: 'Grid', w: 'fill', gap: 24, wrap: true, wrapGap: 24 }, FEATURES.map(([i, t, b]) => featureCard(i, t, b, 384))),
     ], { cross: 'center' }),
+    notesBand(s),
     principlesBand(),
     section('Voices', [heading('From our beta', 'People are more than their posts', null, { align: 'center' }), quotes()], { cross: 'center' }),
     section('Pricing', [heading('Pricing', 'Start free. Upgrade when you need more.', null, { align: 'center' }), ...pricingPreview()], { fill: 'bg/surface', cross: 'center' }),
@@ -217,6 +252,7 @@ export function mobileLanding(s: Screens): FrameNode {
       stats(true),
       col({ name: 'How it works', w: 'fill', pad: [48, 20], gap: 24 }, [heading('How it works', 'Three steps to a clearer picture', null, { mobile: true }), ...STEPS.map(step)]),
       col({ name: 'Scale', w: 'fill', pad: [48, 20], gap: 24, fill: 'bg/surface' }, [heading('The Gut Meter', 'Two halves, scored separately', null, { mobile: true }), scaleCard('fill')]),
+      notesBand(s, true),
       principlesBand(true),
       col({ name: 'FAQ', w: 'fill', pad: [48, 20], gap: 24 }, [heading('Questions', 'Good questions to ask', null, { mobile: true }), faq(FAQ.slice(0, 3))]),
       col({ name: 'CTA', w: 'fill', pad: [0, 20, 48, 20] }, [ctaBand('Date with clear eyes', 'Run your first report free.', true)]),

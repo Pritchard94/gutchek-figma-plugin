@@ -165,8 +165,8 @@ export function addNote(): FrameNode {
     [
       row({ name: 'About', gap: 10 }, [avatar(tobi.initials, 32, tobi.tone), text('About ' + tobi.name, 'smallStrong', 'text/secondary')]),
       textArea('Note', 'Met at the Bolt hackathon. Seems kind; check the football threads before Saturday.', false, 132),
-      row({ name: 'Privacy', gap: 8, w: 'fill' }, [icon('lock', 16, 'text/tertiary'), text('Only you can see notes. They are encrypted and never shared.', 'caption', 'text/tertiary', { w: 'fill' })]),
-      link(btn('Save note'), 'saved'),
+      row({ name: 'Privacy', gap: 8, w: 'fill' }, [icon('lock', 16, 'text/tertiary'), text('Only you can see notes. Saved to Tobi\u2019s timeline in Notes.', 'caption', 'text/tertiary', { w: 'fill' })]),
+      link(btn('Save note'), 'personTimeline'),
     ],
     'Saved · Private note',
   );
