@@ -1,9 +1,10 @@
 import { ctx, later, warn } from '../core/ctx';
-import { FillSpec, Kid, abs, add, box, col, divider, fill, gradient, hexPaint, icon, pill, rect, row, text } from '../core/ui';
+import { FillSpec, Kid, abs, paint, add, box, col, divider, fill, gradient, hexPaint, icon, pill, rect, row, text } from '../core/ui';
 import { glyph, lockup } from '../brand';
 import { use } from '../components/library';
 import { doodleLayer } from '../components/doodles';
-import { ILLO_W, blob, illoChat, illoMeter, illoNotes, illoRooms } from '../components/illustrations';
+import { ILLO_W, blob, illoChat, illoMeter, illoNotes } from '../components/illustrations';
+import { nickAvatar, roomMessage } from '../components/chat';
 import { DESKTOP, GUTTER, MOBILE, display, faq, heading, lead } from './kit';
 import { sectionFor } from './index';
 
@@ -125,9 +126,21 @@ function featureCard([illo, title, body, when]: (typeof FEATURES)[number], w: nu
 }
 
 function laterStrip(mobile: boolean): FrameNode {
-  const art = illoRooms();
-  art.rescale(mobile ? 0.5 : 0.56);
-  return row({ name: 'Also coming', w: 'fill', gap: mobile ? 14 : 32, pad: mobile ? 16 : 24, radius: 28, fill: 'brand/subtle', cross: 'center' }, [
+  const faces = ['NaijaBelle', 'Tayo_Writes', 'Ronke.writes'].map((n) => {
+    const a = nickAvatar(n, undefined, 28);
+    a.strokes = [paint('bg/raised')];
+    a.strokeWeight = 2;
+    return a;
+  });
+  const art = col({ name: 'Room preview', w: mobile ? 'fill' : 380, gap: 8, pad: [14, 14, 10, 14], radius: 22, fill: 'bg/raised', stroke: 'border/default', shadow: 'e2' }, [
+    row({ name: 'Head', gap: 10, w: 'fill' }, [
+      box({ name: 'Tile', dir: 'h', w: 32, h: 32, radius: 10, fill: 'brand/subtle', main: 'center', cross: 'center' }, [icon('messages', 16, 'brand/fg')]),
+      col({ name: 'Text', gap: 0, w: 'fill' }, [text('Talking Stage Diaries', 'smallStrong', 'text/primary'), text('Approval required · nicknames only', 'caption', 'text/tertiary')]),
+      row({ name: 'Members', gap: -8 }, faces),
+    ]),
+    roomMessage({ nick: 'QuietStorm_24', tone: 'brand', type: 'Win', time: '19:58', body: 'He said "no pressure" and actually meant it.', reactions: [[0, 24], [1, 11]], mine: 0 }),
+  ]);
+  return (mobile ? col : row)({ name: 'Also coming', w: 'fill', gap: mobile ? 16 : 32, pad: mobile ? 16 : 24, radius: 28, fill: 'brand/subtle', cross: mobile ? 'start' : 'center' }, [
     art,
     col({ name: 'Copy', gap: 8, w: 'fill' }, [
       pill('Later', 'neutral', 'clock'),

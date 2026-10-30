@@ -60,8 +60,8 @@ export function illoMeter(): FrameNode {
   add(f, abs(orbit('X'), 298, 120));
   add(f, abs(orbit('TT'), 10, 236));
   add(f, abs(floatChip('check-circle', 'Supportive replies', 'positive'), 150, 26));
-  add(f, abs(floatChip('flag', 'One heated thread', 'caution'), 26, 300));
-  add(f, abs(floatChip('link', 'See the proof', 'brand'), 196, 300));
+  add(f, abs(floatChip('flag', 'One heated thread', 'caution'), 20, 316));
+  add(f, abs(floatChip('link', 'See the proof', 'brand'), 200, 316));
   return f;
 }
 
@@ -84,8 +84,8 @@ export function illoChat(): FrameNode {
     bubble('No pressure at all, take your time', 'them', { flag: 'positive', tag: 'Respects boundaries', max: 228 }),
   ]);
   add(f, abs(panel, 30, 86));
-  add(f, abs(floatChip('sparkle', 'Finding patterns', 'brand'), 102, 30));
-  add(f, abs(floatChip('eye-off', 'Numbers masked', 'neutral'), 180, 318));
+  add(f, abs(floatChip('sparkle', 'Finding patterns', 'brand'), 16, 28));
+  add(f, abs(floatChip('eye-off', 'Numbers masked', 'neutral'), 188, 28));
   return f;
 }
 
