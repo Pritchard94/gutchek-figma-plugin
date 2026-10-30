@@ -7,6 +7,7 @@ import { layoutHorizontally, newPage } from './pages/common';
 import { buildScreens } from './screens';
 import { buildWebsite } from './web';
 import { buildWebApp } from './webapp';
+import { buildWaitlist } from './web/waitlist';
 
 const WORK_PAGE = 'Gutchek · generating';
 const LOG_PAGE = 'Gutchek · Generator log';
@@ -65,6 +66,10 @@ async function run() {
     buildWebsite(page, light.frames);
     return page;
   });
+  const waitlist = await onPage('Waitlist', 'Designing the waitlist', (page) => {
+    buildWaitlist(page);
+    return page;
+  });
   let webFrames: Record<string, FrameNode> = {};
   const webapp = await onPage('Web App', 'Designing the web app', (page) => {
     webFrames = buildWebApp(page);
@@ -75,7 +80,7 @@ async function run() {
   );
 
   stage = 'Arranging pages';
-  const order = [cover, guidelines, foundations, components, light.page, dark.page, webapp, flow, website];
+  const order = [cover, guidelines, foundations, components, light.page, dark.page, webapp, flow, website, waitlist];
   order.forEach((p, i) => figma.root.insertChild(i, p));
 
   await figma.setCurrentPageAsync(cover);

@@ -53,7 +53,7 @@ const MOBILE_PAGES: WebDef[] = [
 const GAP = 120;
 const PAD = 120;
 
-function sectionFor(page: PageNode, title: string, note: string, frames: FrameNode[], y: number, gap = GAP): number {
+export function sectionFor(page: PageNode, title: string, note: string, frames: FrameNode[], y: number, gap = GAP): number {
   const tallest = frames.reduce((m, f) => Math.max(m, f.height), 0);
   const width = frames.reduce((w, f) => w + f.width, 0) + gap * Math.max(0, frames.length - 1) + PAD * 2;
   let container: SectionNode | FrameNode;
