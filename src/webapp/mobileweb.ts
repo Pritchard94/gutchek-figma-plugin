@@ -1,3 +1,4 @@
+import { ctx } from '../core/ctx';
 import { Kid, abs, add, avatar, box, col, divider, fill, gradient, icon, pill, rect, row, text } from '../core/ui';
 import { glyph, lockup } from '../brand';
 import { use } from '../components/library';
@@ -148,7 +149,7 @@ export function mwMenu(): FrameNode {
       item('settings', 'Settings', 'mwHome'),
     ]),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
-    col({ name: 'Appearance', w: 'fill', gap: 6 }, [text('Appearance', 'overline', 'text/tertiary'), modeSwitch('system')]),
+    col({ name: 'Appearance', w: 'fill', gap: 6 }, [text('Appearance', 'overline', 'text/tertiary'), modeSwitch(ctx.theme === 'dark' ? 'dark' : 'system')]),
     row({ name: 'Me', w: 'fill', gap: 10 }, [avatar(user.initials, 36, 'brand'), col({ name: 'Text', gap: 0, w: 'fill' }, [text(user.name, 'smallStrong', 'text/primary'), text('Gutchek Plus · 3 reports left', 'caption', 'text/tertiary')])]),
   ]);
   const scrim = rect(W, H, 'bg/scrim', 0, 'Scrim');

@@ -96,12 +96,10 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
   },
 ];
 
-const DARK = ['wHome', 'wNotes', 'wReport', 'wSignals', 'wChatReport', 'wRooms', 'wSafety'];
-
 const GAP = 120;
 const PAD = 120;
 
-function section(page: PageNode, title: string, note: string, frames: FrameNode[], y: number, dark: boolean): number {
+function section(page: PageNode, title: string, note: string, frames: FrameNode[], y: number, dark: boolean, x0 = 0): number {
   const tallest = frames.reduce((m, f) => Math.max(m, f.height), 0);
   const width = frames.reduce((w, f) => w + f.width, 0) + GAP * Math.max(0, frames.length - 1) + PAD * 2;
   let container: SectionNode | FrameNode;
@@ -118,7 +116,7 @@ function section(page: PageNode, title: string, note: string, frames: FrameNode[
     container = f;
   }
   page.appendChild(container);
-  container.x = 0;
+  container.x = x0;
   container.y = y;
   const caption = text(note, 'body', 'text/secondary');
   caption.fills = [hexPaint(dark ? '#A9A9BC' : '#475467')];
@@ -177,7 +175,9 @@ export function buildWebApp(page: PageNode): Record<string, FrameNode> {
   page.backgrounds = [hexPaint('#E9EBF0')];
   appLinks.length = 0;
   const light: Record<string, FrameNode> = {};
+  const rows: Array<{ y: number; g: (typeof GROUPS)[number] }> = [];
   let y = 0;
+  let widest = 0;
   for (const g of GROUPS) {
     const frames: FrameNode[] = [];
     for (const d of g.pages) {
@@ -187,29 +187,33 @@ export function buildWebApp(page: PageNode): Record<string, FrameNode> {
         frames.push(f);
       }
     }
+    rows.push({ y, g });
     y = section(page, g.title, g.note, frames, y, false);
+    const last = page.children[page.children.length - 1] as SceneNode;
+    widest = Math.max(widest, last.width);
   }
   resolve(light);
 
   const dark: Record<string, FrameNode> = {};
-  const darkFrames: FrameNode[] = [];
-  for (const g of GROUPS) {
+  const darkX = widest + 400;
+  for (const { y: rowY, g } of rows) {
+    const frames: FrameNode[] = [];
     for (const d of g.pages) {
-      if (DARK.indexOf(d[0]) === -1) continue;
       const f = build(d, 'dark');
       if (f) {
         dark[d[0]] = f;
-        darkFrames.push(f);
+        frames.push(f);
       }
     }
+    section(page, g.title + ' · Dark', g.note + ' Dark mode, from the same tokens.', frames, rowY, true, darkX);
   }
-  section(page, 'Web app · Dark mode', 'Key pages in dark mode, from the same tokens. Every other page follows the same rules.', darkFrames, y, true);
-  resolve(Object.assign({}, light, dark));
+  resolve(dark);
 
   try {
     page.flowStartingPoints = [
       { nodeId: light.wSignIn && light.wSignIn.id, name: 'Web app · Sign in' },
       { nodeId: light.wHome && light.wHome.id, name: 'Web app · Home' },
+      { nodeId: dark.wHome && dark.wHome.id, name: 'Web app · Home · Dark' },
     ].filter((p) => !!p.nodeId);
   } catch (_) {
     warn('Could not set web app prototype starting points.');
