@@ -113,6 +113,28 @@ function buildVisual(spec: string, env: Env, theme: Theme): SceneNode | null {
       use('ConfidenceBadge', { Level: 'High' }),
     ]);
   }
+  if (/^icon\b/.test(low)) {
+    const name = (arg || 'flag').toLowerCase();
+    const caution = name === 'flag' || name === 'alert-triangle';
+    const positive = name === 'check-circle';
+    const tone: Token = caution ? 'caution/fg' : positive ? 'positive/fg' : 'brand/fg';
+    return col({ name: 'Icon · ' + name, w: 300, h: 300, radius: 80, fill: 'bg/raised', shadow: 'e3', main: 'center', cross: 'center', gap: 18 }, [
+      icon(name, 132, tone),
+      caution || positive ? text(caution ? 'Red flag' : 'Green flag', { family: 'ui', weight: 700, size: 30, line: 36 }, tone) : null,
+    ]);
+  }
+  if (/^poll\b/.test(low)) {
+    const options = (arg || 'Yes, Maybe, No').split(/\s*[,/]\s*/).filter(Boolean);
+    return col({ name: 'Poll sticker', w: 760, pad: 36, gap: 18, radius: 44, fill: 'bg/raised', shadow: 'e3' }, options.map((o) =>
+      box({ name: 'Option · ' + o, dir: 'h', w: 'fill', h: 104, radius: 52, fill: 'bg/subtle', main: 'center', cross: 'center' }, [text(o, { family: 'display', weight: 700, size: 40, line: 48, tracking: -1 }, 'brand/fg')]),
+    ));
+  }
+  if (/^ask\b/.test(low)) {
+    return col({ name: 'Question box', w: 760, pad: [36, 36, 40, 36], gap: 22, radius: 44, fill: 'bg/raised', shadow: 'e3', cross: 'center' }, [
+      text(arg || 'Ask us anything', { family: 'display', weight: 700, size: 38, line: 48, tracking: -1 }, 'text/primary', { w: 'fill', align: 'center' }),
+      box({ name: 'Answer', dir: 'h', w: 'fill', h: 104, radius: 28, fill: 'bg/subtle', main: 'center', cross: 'center' }, [text('Tap to answer', { family: 'ui', weight: 500, size: 32, line: 40 }, 'text/tertiary')]),
+    ]);
+  }
   if (/^quote\b/.test(low)) {
     return col({ name: 'Quote', w: 760, pad: 48, gap: 20, radius: 40, fill: 'bg/raised', shadow: 'e3' }, [
       icon('quote', 48, 'brand/fg'),
@@ -139,7 +161,7 @@ function buildVisual(spec: string, env: Env, theme: Theme): SceneNode | null {
     }
     return phone(f, 1, 'Phone · ' + (arg || 'Home'));
   }
-  env.notes.push('Visual "' + s + '" is not one of meter, chat, notes, rooms, gauge, logo, quote, phone or phones; the Gut Meter illustration was used.');
+  env.notes.push('Visual "' + s + '" is not one of meter, chat, notes, rooms, gauge, logo, quote, icon, poll, ask, phone or phones; the Gut Meter illustration was used.');
   return illoMeter();
 }
 
@@ -162,15 +184,17 @@ interface Copy {
   theme: Theme;
 }
 
+const off = (v?: string) => (v && /^(none|no|off|-)$/i.test(v.trim()) ? '' : v);
+
 function resolve(item: Item, d: Fields, index: number): Copy {
   const f = item.format;
   const visual = item.visual || d.visual || DEFAULT_VISUALS[index % DEFAULT_VISUALS.length];
   return {
     headline: item.headline || d.headline || 'Trust your gut. Then check it.',
-    body: f.body === false ? undefined : item.body || (f.slides ? undefined : d.body),
-    cta: f.cta === false ? undefined : item.cta || d.cta || 'Join the waitlist',
+    body: f.body === false ? undefined : off(item.body !== undefined ? item.body : f.slides ? undefined : d.body) || undefined,
+    cta: f.cta === false ? undefined : (item.cta !== undefined ? off(item.cta) : off(d.cta) === undefined ? 'Join the waitlist' : off(d.cta)) || undefined,
     link: item.link || d.link,
-    eyebrow: item.eyebrow || d.eyebrow,
+    eyebrow: off(item.eyebrow !== undefined ? item.eyebrow : d.eyebrow) || undefined,
     visual,
     theme: item.theme || d.theme || 'brand',
   };

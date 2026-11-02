@@ -75,6 +75,17 @@ async function runGraphics(label, text) {
   const tplText = await reader(tpl.buffer.slice(tpl.byteOffset, tpl.byteOffset + tpl.byteLength));
   const fromWord = await runGraphics('Word template brief', tplText);
   if (fromWord.res.count !== 28) throw new Error('the Word template should give 28 graphics, got ' + fromWord.res.count);
+  const calendar = fs.readFileSync(path.join(root, 'graphics', 'briefs', 'waitlist-calendar-nov-2-13.md'), 'utf8');
+  const cal = await runGraphics('waitlist calendar brief', calendar);
+  if (cal.res.count !== 26) throw new Error('the calendar brief should give 26 graphics, got ' + cal.res.count);
+  const names = cal.frames.map((f) => f.name);
+  if (new Set(names).size !== names.length) throw new Error('duplicate graphic names: ' + names.join(', '));
+  if (cal.res.notes.some((n) => /not one of|Unknown format|ignored/.test(n))) throw new Error('calendar brief produced warnings');
+  console.log('    ' + names.slice(0, 5).join(' | '));
+  const calDocx = fs.readFileSync(path.join(root, 'graphics', 'briefs', 'waitlist-calendar-nov-2-13.docx'));
+  const calText = await reader(calDocx.buffer.slice(calDocx.byteOffset, calDocx.byteOffset + calDocx.byteLength));
+  const calWord = await runGraphics('waitlist calendar brief (Word)', calText);
+  if (calWord.res.count !== 26) throw new Error('the Word calendar brief should give 26 graphics, got ' + calWord.res.count);
   console.log('graphics: ok');
   process.exit(0);
 })().catch((e) => {

@@ -125,7 +125,7 @@ function parseSlide(text: string): Fields {
   for (const p of parts) {
     const pkv = parseKeyValue(p);
     if (pkv && pkv[0] !== 'campaign') setField(out, pkv[0], pkv[1]);
-    else if (/^(phone|phones|screen|meter|chat|notes|rooms|gauge|logo|quote|none)\b/i.test(p)) out.visual = p;
+    else if (/^(phone|phones|screen|meter|chat|notes|rooms|gauge|logo|quote|icon|poll|ask|none)\b/i.test(p)) out.visual = p;
     else if (toTheme(p)) out.theme = toTheme(p);
     else out.body = out.body ? out.body + ' ' + p : p;
   }
@@ -138,16 +138,17 @@ export function parseBrief(source: string): Brief {
     .map(clean)
     .filter((l) => l && !/^-{3,}$/.test(l));
   const brief: Brief = { campaign: 'Gutchek campaign', defaults: {}, items: [], notes: [] };
-  let block: { ids: string[]; fields: Fields; slides: Fields[]; label: string } | null = null;
+  let block: { ids: string[]; fields: Fields; slides: Fields[]; label: string; tag: string } | null = null;
 
   const close = () => {
     if (!block) return;
     for (const id of block.ids) {
       const format = byId(id);
+      const base = format.name + (block.tag ? ' \u00b7 ' + block.tag : '');
       if (format.slides && block.slides.length) {
-        block.slides.forEach((s, i) => brief.items.push(Object.assign({}, block!.fields, s, { format, label: format.name + ' ' + (i + 1) })));
+        block.slides.forEach((s, i) => brief.items.push(Object.assign({}, block!.fields, s, { format, label: base + (block!.slides.length > 1 ? ' \u00b7 ' + (i + 1) + '/' + block!.slides.length : '') })));
       } else {
-        brief.items.push(Object.assign({}, block.fields, { format, label: format.name }));
+        brief.items.push(Object.assign({}, block.fields, { format, label: base }));
         if (block.slides.length && !format.slides) brief.notes.push('Numbered lines under "' + block.label + '" were ignored: only carousels and store screenshots use them.');
       }
     }
@@ -158,7 +159,7 @@ export function parseBrief(source: string): Brief {
     const heading = /^#+\s/.test(line) || !parseKeyValue(line) ? matchHeading(line) : null;
     if (heading) {
       close();
-      block = { ids: heading, fields: {}, slides: [], label: line.replace(/^#+\s*/, '') };
+      block = { ids: heading, fields: {}, slides: [], label: line.replace(/^#+\s*/, ''), tag: ((line.match(/\(([^)]+)\)\s*:?\s*$/) || [])[1] || '').trim() };
       continue;
     }
     const list = line.match(/^(?:\d+[.)]|[-*\u2022])\s+(.+)$/);
