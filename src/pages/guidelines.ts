@@ -114,7 +114,7 @@ function logo(): FrameNode {
   return board(
     EYEBROW + ' · 02',
     'Logo',
-    'The glyph is a G whose crossbar becomes a check that breaks out of the letter: the gut feeling, then the proof. One stroke weight with round caps. The letter is Gutchek Indigo and the check is Action Amber. The lowercase wordmark is set in Plus Jakarta Sans ExtraBold with tight tracking, so it feels friendly rather than official.',
+    'The mark is two soft halves curling into each other: your gut and the evidence, meeting in the middle. Ink (#241B43) carries the weight; Lilac (#B9A1EF) answers it. On dark surfaces the ink half turns white. The lowercase wordmark is set in Plus Jakarta Sans ExtraBold in Ink, with tight tracking, so it feels friendly rather than official.',
     [
       row({ name: 'Primary', gap: 24, w: 'fill' }, [
         labelled('Primary lockup on light surfaces', stage([lockup(72)], 'bg/canvas', 'Primary stage')),
@@ -122,11 +122,11 @@ function logo(): FrameNode {
         labelled('Mono for single-colour print and partner use', stage([lockup(72, 'text/primary', 'text/primary')], 'bg/muted', 'Mono stage')),
       ]),
       row({ name: 'Marks', gap: 24, w: 'fill', cross: 'start' }, [
-        labelled('App icon. Gradient Indigo 500 to 700 at 135 degrees, glyph at 58% of the tile.', stage([row({ name: 'Icons', gap: 24, cross: 'end' }, [appIcon(112), appIcon(80), appIcon(56), appIcon(40)])], 'bg/canvas', 'Icon stage', 300)),
-        labelled('Clear space equals x, the height of the G from its crossbar to the base, on every side.', stage([clear], 'bg/canvas', 'Clear space stage', 300)),
+        labelled('App icon. The full-colour mark at 68% of a white tile, with a hairline border on light backgrounds.', stage([row({ name: 'Icons', gap: 24, cross: 'end' }, [appIcon(112), appIcon(80), appIcon(56), appIcon(40)])], 'bg/canvas', 'Icon stage', 300)),
+        labelled('Clear space equals x, a quarter of the mark\u2019s height, on every side.', stage([clear], 'bg/canvas', 'Clear space stage', 300)),
         labelled('Minimum sizes: glyph 20pt, lockup 88pt wide. Below that, use the glyph alone.', stage([row({ name: 'Minimums', gap: 32, cross: 'center' }, [glyph(20, 'brand/fg'), lockup(24)])], 'bg/canvas', 'Minimum stage', 300)),
       ]),
-      section('Misuse', 'Keep the mark upright, in Indigo and Amber (or one colour), and free of surveillance imagery.', [
+      section('Misuse', 'Keep the mark upright, in Ink and Lilac (or one colour), and free of surveillance imagery.', [
         row({ name: 'Misuse grid', gap: 24, w: 'fill', cross: 'start' }, [
           misuse('Do not tilt the mark. Only the Gut Meter needle moves, and only toward real evidence.', tilted),
           misuse('Do not recolour it red and green. Those belong to Caution and Positive; scores carry meaning.', twoTone),

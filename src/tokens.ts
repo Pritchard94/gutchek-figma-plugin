@@ -1,6 +1,8 @@
 export type Theme = 'light' | 'dark';
 
 export const primitives: Record<string, Record<string, string>> = {
+  /** The two halves of the Gutchek mark. */
+  logo: { ink: '#241B43', lilac: '#B9A1EF' },
   indigo: {
     '50': '#F4F1FE',
     '100': '#EAE4FD',
@@ -123,6 +125,10 @@ export const semantic: Record<string, { light: Ref; dark: Ref; group: 'bg' | 'te
   'brand/solid': { light: 'indigo/600', dark: 'indigo/500', group: 'any' },
   'brand/solid-pressed': { light: 'indigo/700', dark: 'indigo/600', group: 'any' },
   'brand/fg': { light: 'indigo/600', dark: 'indigo/400', group: 'any' },
+  /** Gutchek mark: the ink half turns white on dark surfaces; the static ink stays navy for app icons on white. */
+  'logo/ink': { light: 'logo/ink', dark: 'neutral/0', group: 'any' },
+  'logo/ink-static': { light: 'logo/ink', dark: 'logo/ink', group: 'any' },
+  'logo/lilac': { light: 'logo/lilac', dark: 'logo/lilac', group: 'any' },
   'brand/subtle': { light: 'indigo/50', dark: 'indigo/950', group: 'bg' },
   'brand/on-subtle': { light: 'indigo/700', dark: 'indigo/300', group: 'text' },
   'brand/border': { light: 'indigo/200', dark: 'indigo/800', group: 'border' },
