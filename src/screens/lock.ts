@@ -1,6 +1,6 @@
 import { Token } from '../tokens';
 import { abs, add, box, col, gradient, hexPaint, icon, rect, row, text } from '../core/ui';
-import { appIcon, glyph, wordmark } from '../brand';
+import { appIcon, glyph, lockup } from '../brand';
 import { btn, center, group, groupTitle, heroIcon, iconTile, link, listRow, note, radioGroup, screen, use, viewport } from './kit';
 import { user } from './data';
 
@@ -178,8 +178,7 @@ export function lockCover(): FrameNode {
   const other = box({ name: 'Other app', w: 250, h: 540, radius: 34, fill: [hexPaint('#2A2A33')] });
   add(f, abs(other, -196, 170));
   const cover = col({ name: 'Gutchek card', w: 270, h: 584, radius: 36, main: 'center', cross: 'center', gap: 16, fill: [gradient([['#7556E3', 0], ['#2C1E66', 1]], 135)] }, [
-    glyph(72, 'text/on-solid'),
-    wordmark(30, 'text/on-solid'),
+    lockup(48, 'text/on-solid', 'text/on-solid'),
   ]);
   add(f, abs(cover, 62, 170));
   const label = row({ name: 'Label', gap: 8 }, [appIcon(26), text('Gutchek', 'smallStrong', 'text/inverse')]);

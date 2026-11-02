@@ -114,7 +114,7 @@ function logo(): FrameNode {
   return board(
     EYEBROW + ' · 02',
     'Logo',
-    'The mark is two soft halves curling into each other: your gut and the evidence, meeting in the middle. Ink (#241B43) carries the weight; Lilac (#B9A1EF) answers it. On dark surfaces the ink half turns white. The lowercase wordmark is set in Plus Jakarta Sans ExtraBold in Ink, with tight tracking, so it feels friendly rather than official.',
+    'The mark is two soft halves curling into each other: your gut and the evidence, meeting in the middle. Ink (#241B43) carries the weight; Lilac (#B9A1EF) answers it. On dark surfaces the ink half turns white. The wordmark GutChek is set in Plus Jakarta Sans Bold in Ink, with capital G and C so both halves of the name read at a glance. The mark always sits beside the wordmark, never above it.',
     [
       row({ name: 'Primary', gap: 24, w: 'fill' }, [
         labelled('Primary lockup on light surfaces', stage([lockup(72)], 'bg/canvas', 'Primary stage')),
