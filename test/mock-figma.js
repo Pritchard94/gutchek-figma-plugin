@@ -511,6 +511,18 @@ const mock = {
   notify(msg) {
     mock.notes.push(msg);
   },
+  uiMessages: [],
+  showUI(html, opts) {
+    if (typeof html !== 'string') throw new Error('showUI needs html');
+    mock.uiShown = opts || {};
+  },
+  ui: {
+    onmessage: null,
+    postMessage(m) {
+      mock.uiMessages.push(m);
+    },
+    close() {},
+  },
   closePlugin(msg) {
     mock.closed = msg || '';
   },
@@ -549,6 +561,7 @@ const mock = {
         type: 'VARIABLE',
         name,
         collection,
+        variableCollectionId: collection.id,
         resolvedType: type,
         values: {},
         scopes: [],
@@ -572,6 +585,9 @@ const mock = {
     },
     async getLocalVariableCollectionsAsync() {
       return collections.slice();
+    },
+    async getLocalVariablesAsync(type) {
+      return variables.filter((v) => !type || v.resolvedType === type);
     },
   },
 };

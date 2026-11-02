@@ -2,13 +2,14 @@
   "name": "libra-figma",
   "version": "1.0.0",
   "private": true,
-  "description": "Figma plugin that generates the Libra brand guideline, design system and mobile app screens.",
+  "description": "Figma plugins for Gutchek: the design generator (brand, design system, app, web app, website) and the graphic designer (social, share, store and ad graphics from a brief).",
   "scripts": {
-    "build": "esbuild src/main.ts --bundle --target=es2017 --format=iife --outfile=code.js",
+    "build": "esbuild src/main.ts --bundle --target=es2017 --format=iife --outfile=code.js && npm run build:graphics",
     "watch": "npm run build -- --watch",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build && npm run smoke",
-    "smoke": "node test/run.js && MAX_MODES=1 node test/run.js && NO_JAKARTA=1 RERUN=1 node test/run.js"
+    "smoke": "node test/run.js && MAX_MODES=1 node test/run.js && NO_JAKARTA=1 RERUN=1 node test/run.js && node test/run-graphics.js",
+    "build:graphics": "esbuild src/graphics/main.ts --bundle --target=es2017 --format=iife --outfile=graphics/code.js"
   },
   "devDependencies": {
     "@figma/plugin-typings": "*",

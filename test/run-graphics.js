@@ -1,0 +1,83 @@
+// Smoke test for the Graphic Designer plugin against the mock API.
+// 1. An empty file: tokens, styles and icons are created, phones fall back to illustrations.
+// 2. After the generator has run: tokens are reused and phone mockups use real app screens.
+// 3. The .docx reader in ui.html extracts text from a real Word file.
+const fs = require('fs');
+const path = require('path');
+const { mock } = require('./mock-figma');
+
+global.figma = mock;
+global.__html__ = '<html></html>';
+
+const root = path.join(__dirname, '..');
+const graphics = path.join(root, 'graphics', 'code.js');
+const generator = path.join(root, 'code.js');
+
+const until = (pred, ms = 120000) =>
+  new Promise((resolve, reject) => {
+    const t0 = Date.now();
+    const id = setInterval(() => {
+      if (pred()) {
+        clearInterval(id);
+        resolve();
+      } else if (Date.now() - t0 > ms) {
+        clearInterval(id);
+        reject(new Error('timed out'));
+      }
+    }, 25);
+  });
+
+async function runGraphics(label, text) {
+  mock.uiMessages.length = 0;
+  delete require.cache[require.resolve(graphics)];
+  require(graphics);
+  const sample = mock.uiMessages.find((m) => m.type === 'sample');
+  if (!sample) throw new Error('UI did not receive the sample brief');
+  await mock.ui.onmessage({ type: 'generate', text: text || sample.text });
+  await until(() => mock.uiMessages.some((m) => m.type === 'done' || m.type === 'error'));
+  const res = mock.uiMessages.find((m) => m.type === 'done' || m.type === 'error');
+  if (res.type === 'error') throw new Error(label + ': ' + res.text);
+  const page = mock.root.children.find((p) => p.name === 'Graphic Design');
+  const frames = page.findAll((n) => n.type === 'FRAME' && /·\s\d+×\d+$/.test(n.name));
+  const phones = page.findAll((n) => n.type === 'FRAME' && /^Phone · /.test(n.name)).length;
+  console.log(`  ${label}: ${res.count} graphics, ${frames.length} frames, ${phones} phone mockups, ${page.findAll().length} nodes`);
+  for (const n of res.notes) console.log('    note:', n);
+  return { res, frames, phones };
+}
+
+(async () => {
+  const empty = await runGraphics('empty file');
+  if (empty.res.count !== 28) throw new Error('expected 28 graphics from the sample brief, got ' + empty.res.count);
+  const again = await runGraphics('second run on the same page');
+  if (again.frames.length !== 28) throw new Error('rerun did not replace the page contents');
+
+  require(generator);
+  await until(() => mock.closed !== null, 120000);
+  if (mock.closed.indexOf('failed') !== -1) throw new Error('generator failed: ' + mock.closed);
+  const withScreens = await runGraphics('after the generator');
+  if (withScreens.phones < 8) throw new Error('expected phone mockups from real screens, got ' + withScreens.phones);
+
+  const small = await runGraphics('short brief', 'Campaign: Test\n## Google display\nHeadline: Hello\n## Unknown thing\n## Instagram story\nTheme: dark\nVisual: notes');
+  if (small.res.count !== 9) throw new Error('expected 9 graphics from the short brief, got ' + small.res.count);
+
+  const html = fs.readFileSync(path.join(root, 'graphics', 'ui.html'), 'utf8');
+  const code = html.slice(html.indexOf('/* docx:start */'), html.indexOf('/* docx:end */'));
+  const reader = new Function(code + '; return readDocx;')();
+  const docx = process.env.DOCX || '/Users/bigmac/Downloads/Gutchek_Product_Spec(1).docx';
+  if (fs.existsSync(docx)) {
+    const buf = fs.readFileSync(docx);
+    const text = await reader(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
+    const lines = text.split('\n');
+    if (lines.length < 100 || text.indexOf('Gutchek') === -1) throw new Error('docx text extraction looks wrong');
+    console.log(`  docx reader: ${lines.length} lines from ${path.basename(docx)}`);
+  }
+  const tpl = fs.readFileSync(path.join(root, 'graphics', 'brief-template.docx'));
+  const tplText = await reader(tpl.buffer.slice(tpl.byteOffset, tpl.byteOffset + tpl.byteLength));
+  const fromWord = await runGraphics('Word template brief', tplText);
+  if (fromWord.res.count !== 28) throw new Error('the Word template should give 28 graphics, got ' + fromWord.res.count);
+  console.log('graphics: ok');
+  process.exit(0);
+})().catch((e) => {
+  console.error('graphics: FAILED', e && e.stack ? e.stack : e);
+  process.exit(1);
+});

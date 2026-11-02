@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  :root { --indigo: #5b3fd1; --ink: #1f2937; --amber: #f5b83d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; font: 13px/1.45 Inter, system-ui, sans-serif; color: var(--figma-color-text, #101828); background: var(--figma-color-bg, #fff); }
+  h1 { font-size: 15px; margin: 0 0 2px; display: flex; gap: 8px; align-items: center; }
+  h1 i { width: 20px; height: 20px; border-radius: 6px; background: linear-gradient(135deg, #7556e3, #2c1e66); display: inline-block; }
+  p.lead { margin: 0 0 12px; color: var(--figma-color-text-secondary, #475467); }
+  #drop { border: 1.5px dashed var(--figma-color-border-strong, #d0d5dd); border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; transition: background .15s; }
+  #drop.over { background: var(--figma-color-bg-brand-tertiary, #f1edfd); border-color: var(--indigo); }
+  #drop b { display: block; margin-bottom: 2px; }
+  #drop span { color: var(--figma-color-text-secondary, #667085); font-size: 12px; }
+  textarea { width: 100%; height: 300px; margin-top: 10px; padding: 10px; border-radius: 10px; border: 1px solid var(--figma-color-border, #e4e7ec); background: var(--figma-color-bg-secondary, #f9fafb); color: inherit; font: 12px/1.5 ui-monospace, Menlo, monospace; resize: vertical; }
+  .row { display: flex; gap: 8px; margin-top: 10px; }
+  button { border: 0; border-radius: 10px; padding: 10px 14px; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer; }
+  .primary { flex: 1; background: var(--amber); color: var(--ink); }
+  .secondary { background: var(--figma-color-bg-secondary, #f2f4f7); color: inherit; }
+  button:disabled { opacity: .5; cursor: default; }
+  #status { margin-top: 10px; font-size: 12px; color: var(--figma-color-text-secondary, #475467); }
+  #status.error { color: #b42318; }
+  #status ul { margin: 6px 0 0; padding-left: 16px; }
+  details { margin-top: 10px; font-size: 12px; color: var(--figma-color-text-secondary, #475467); }
+  details code { font-size: 11px; }
+</style>
+</head>
+<body>
+  <h1><i></i>Gutchek Graphic Designer</h1>
+  <p class="lead">Drop a brief and every graphic it lists is designed on the “Graphic Design” page.</p>
+  <div id="drop"><b>Drop your brief here</b><span>Word (.docx), Markdown (.md) or text (.txt), or click to choose</span></div>
+  <input id="file" type="file" accept=".docx,.md,.markdown,.txt" hidden />
+  <textarea id="brief" spellcheck="false" placeholder="Your brief appears here. You can edit it before generating."></textarea>
+  <div class="row">
+    <button class="secondary" id="sample">Sample brief</button>
+    <button class="primary" id="go">Generate graphics</button>
+  </div>
+  <div id="status"></div>
+  <details>
+    <summary>How to write a brief</summary>
+    <p>Start with campaign defaults, then one heading per format. Each heading takes <code>Headline:</code>, <code>Body:</code>, <code>CTA:</code>, <code>Visual:</code>, <code>Theme:</code> (brand, light or dark), <code>Eyebrow:</code> and <code>Link:</code>.</p>
+    <p>Formats: Instagram post, portrait, carousel, story · WhatsApp status · TikTok cover · X, Facebook and LinkedIn posts · Website share image · Email header · App Store screenshots · Google Play screenshots and feature graphic · Meta ads · Google display (all IAB sizes) · Full set.</p>
+    <p>Visuals: <code>meter</code>, <code>chat</code>, <code>notes</code>, <code>rooms</code>, <code>gauge</code>, <code>logo</code>, <code>quote: …</code>, <code>phone: Home</code>, <code>phones: Home, Report overview</code>. Phones use screens from the Screens · Light page.</p>
+    <p>Carousels and store screenshots: one numbered line per slide, for example <code>1. A fair read, with the receipts | phone: Report overview | theme: light</code>.</p>
+  </details>
+<script>
+/* docx:start */
+function decodeXml(s) {
+  return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, function (_, n) { return String.fromCharCode(+n); }).replace(/&amp;/g, '&');
+}
+function docxXmlToText(xml) {
+  var out = [];
+  var paras = xml.match(/<w:p[ >][\s\S]*?<\/w:p>/g) || [];
+  for (var i = 0; i < paras.length; i++) {
+    var p = paras[i];
+    var style = (p.match(/<w:pStyle w:val="([^"]+)"/) || [])[1] || '';
+    var list = /<w:numPr>/.test(p);
+    var t = '';
+    var re = /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:tab\/>|<w:br\/>/g;
+    var m;
+    while ((m = re.exec(p))) {
+      if (m[1] !== undefined) t += m[1];
+      else t += m[0] === '<w:tab/>' ? '\t' : ' ';
+    }
+    t = decodeXml(t).trim();
+    if (!t) continue;
+    if (/^(Heading|Title)/i.test(style)) t = '## ' + t;
+    else if (list && !/^\d+[.)]\s/.test(t)) t = '- ' + t;
+    out.push(t);
+  }
+  return out.join('\n');
+}
+async function readDocx(buf) {
+  var dv = new DataView(buf);
+  var u8 = new Uint8Array(buf);
+  var eocd = -1;
+  for (var i = u8.length - 22; i >= Math.max(0, u8.length - 66000); i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error('This does not look like a Word document.');
+  var count = dv.getUint16(eocd + 10, true);
+  var p = dv.getUint32(eocd + 16, true);
+  for (var n = 0; n < count; n++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    var method = dv.getUint16(p + 10, true);
+    var csize = dv.getUint32(p + 20, true);
+    var nameLen = dv.getUint16(p + 28, true);
+    var extraLen = dv.getUint16(p + 30, true);
+    var commentLen = dv.getUint16(p + 32, true);
+    var local = dv.getUint32(p + 42, true);
+    var name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nameLen));
+    if (name === 'word/document.xml') {
+      var start = local + 30 + dv.getUint16(local + 26, true) + dv.getUint16(local + 28, true);
+      var data = u8.subarray(start, start + csize);
+      var xml;
+      if (method === 0) xml = new TextDecoder().decode(data);
+      else if (method === 8) {
+        if (typeof DecompressionStream === 'undefined') throw new Error('This Figma version cannot read .docx. Save the brief as .txt or .md.');
+        xml = await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+      } else throw new Error('Unsupported compression in this .docx.');
+      return docxXmlToText(xml);
+    }
+    p += 46 + nameLen + extraLen + commentLen;
+  }
+  throw new Error('No document text was found in this .docx.');
+}
+/* docx:end */
+
+var area = document.getElementById('brief');
+var status = document.getElementById('status');
+var go = document.getElementById('go');
+var drop = document.getElementById('drop');
+var input = document.getElementById('file');
+var sample = '';
+
+function say(html, error) { status.innerHTML = html; status.className = error ? 'error' : ''; }
+function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+
+async function load(file) {
+  try {
+    say('Reading ' + esc(file.name) + '…');
+    var buf = await file.arrayBuffer();
+    var text = /\.docx$/i.test(file.name) ? await readDocx(buf) : new TextDecoder().decode(buf);
+    area.value = text;
+    say('Loaded ' + esc(file.name) + '. Check the brief, then generate.');
+  } catch (e) {
+    say(esc(e.message || e), true);
+  }
+}
+
+drop.onclick = function () { input.click(); };
+input.onchange = function () { if (input.files[0]) load(input.files[0]); };
+drop.ondragover = function (e) { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = function () { drop.classList.remove('over'); };
+drop.ondrop = function (e) { e.preventDefault(); drop.classList.remove('over'); if (e.dataTransfer.files[0]) load(e.dataTransfer.files[0]); };
+document.getElementById('sample').onclick = function () { area.value = sample; say('Sample brief loaded.'); };
+go.onclick = function () {
+  if (!area.value.trim()) { say('Add a brief first, or load the sample.', true); return; }
+  go.disabled = true;
+  parent.postMessage({ pluginMessage: { type: 'generate', text: area.value } }, '*');
+};
+
+onmessage = function (e) {
+  var m = e.data.pluginMessage;
+  if (!m) return;
+  if (m.type === 'sample') { sample = m.text; if (!area.value) area.value = sample; }
+  if (m.type === 'status') say(esc(m.text));
+  if (m.type === 'error') { go.disabled = false; say(esc(m.text), true); }
+  if (m.type === 'done') {
+    go.disabled = false;
+    var notes = (m.notes || []).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('');
+    say('<b>' + m.count + ' graphics</b> for “' + esc(m.campaign) + '” are on the Graphic Design page.' + (notes ? '<ul>' + notes + '</ul>' : ''));
+  }
+};
+</script>
+</body>
+</html>
