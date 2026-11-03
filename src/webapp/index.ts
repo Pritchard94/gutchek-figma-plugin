@@ -1,5 +1,5 @@
 import { Theme } from '../tokens';
-import { applyThemeMode, ctx, later, warn } from '../core/ctx';
+import { applyThemeMode, ctx, flush, later, warn } from '../core/ctx';
 import { hexPaint, text } from '../core/ui';
 import { appLinks } from './shell';
 import { wHome, wHomeEmpty, wLinked, wMatch, wNotifications, wPaywall, wProcessing, wPurpose, wSearch, wSignIn, wVerify } from './core';
@@ -171,7 +171,12 @@ function build(def: Def, theme: Theme): FrameNode | null {
   }
 }
 
-export function buildWebApp(page: PageNode): Record<string, FrameNode> {
+export async function buildWebApp(page: PageNode, progress: (step: string) => void = () => {}): Promise<Record<string, FrameNode>> {
+  const pause = async (step: string) => {
+    progress(step);
+    await flush();
+    await new Promise((r) => setTimeout(r, 0));
+  };
   page.backgrounds = [hexPaint('#E9EBF0')];
   appLinks.length = 0;
   const light: Record<string, FrameNode> = {};
@@ -189,6 +194,7 @@ export function buildWebApp(page: PageNode): Record<string, FrameNode> {
     }
     rows.push({ y, g });
     y = section(page, g.title, g.note, frames, y, false);
+    await pause(g.title.replace('Web app · ', ''));
     const last = page.children[page.children.length - 1] as SceneNode;
     widest = Math.max(widest, last.width);
   }
@@ -206,6 +212,7 @@ export function buildWebApp(page: PageNode): Record<string, FrameNode> {
       }
     }
     section(page, g.title + ' · Dark', g.note + ' Dark mode, from the same tokens.', frames, rowY, true, darkX);
+    await pause(g.title.replace('Web app · ', '') + ' · Dark');
   }
   resolve(dark);
 
