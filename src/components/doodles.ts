@@ -1,5 +1,5 @@
 import { Token } from '../tokens';
-import { ctx } from '../core/ctx';
+import { ctx, tag, tagOf } from '../core/ctx';
 import { box, icon, placeRotated } from '../core/ui';
 
 /** Line-art motifs for chat wallpaper: dating, care and the check. No surveillance imagery. */
@@ -19,6 +19,11 @@ const cache = new Map<string, ComponentNode>();
 export function setWallpaperHolder(node: FrameNode | SectionNode | null) {
   holder = node;
   cache.clear();
+  if (!node) return;
+  for (const c of node.children) {
+    const key = c.type === 'COMPONENT' ? tagOf(c, 'wallpaper') : '';
+    if (key && !cache.has(key)) cache.set(key, c as ComponentNode);
+  }
 }
 
 export function doodleLayer(w: number, h: number, token: Token = 'brand/fg', opacity = 0.09, seed = 11): FrameNode | InstanceNode {
@@ -29,6 +34,7 @@ export function doodleLayer(w: number, h: number, token: Token = 'brand/fg', opa
       comp = figma.createComponentFromNode(drawDoodles(w, h, token, opacity, seed));
       comp.name = 'Wallpaper/' + Math.round(w) + '\u00d7' + Math.round(h) + ' \u00b7 ' + token + ' \u00b7 ' + Math.round(opacity * 100) + '%';
       comp.description = 'Doodle wallpaper, generated. Reused as an instance wherever this size and colour appear.';
+      tag(comp, 'wallpaper', key);
       holder.appendChild(comp);
       const kids = holder.children.length;
       comp.x = ((kids - 1) % 6) * 1600;

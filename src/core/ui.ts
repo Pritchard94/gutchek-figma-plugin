@@ -474,6 +474,15 @@ export function platformBadge(code: string, size = 20): FrameNode {
   );
 }
 
+/** Clones a frame to use as a picture. Its prototype links are cleared: they would point at frames on another page. */
+export function snapshot(frame: FrameNode): FrameNode {
+  const c = frame.clone();
+  const linked: SceneNode[] = c.findAll((n) => 'reactions' in n && (n as ReactionMixin).reactions.length > 0);
+  if (c.reactions.length) linked.push(c);
+  for (const n of linked) later(() => (n as ReactionMixin).setReactionsAsync([]), n);
+  return c;
+}
+
 /** Find a descendant by layer name, searching instances too. */
 export function findByName(node: SceneNode, name: string): SceneNode | null {
   if (!('findOne' in node)) return null;

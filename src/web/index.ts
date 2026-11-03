@@ -1,4 +1,4 @@
-import { ctx, flush, later, warn } from '../core/ctx';
+import { ctx, later, tag, warn } from '../core/ctx';
 import { hexPaint, text } from '../core/ui';
 import { webLinks } from './kit';
 import { Screens, landing, mobileLanding } from './landing';
@@ -53,7 +53,8 @@ const MOBILE_PAGES: WebDef[] = [
 const GAP = 120;
 const PAD = 120;
 
-export function sectionFor(page: PageNode, title: string, note: string, frames: FrameNode[], y: number, gap = GAP): number {
+/** Wraps built frames in a titled section on the page. The caller positions it. */
+export function sectionFor(page: PageNode, title: string, note: string, frames: FrameNode[], gap = GAP): SectionNode | FrameNode {
   const tallest = frames.reduce((m, f) => Math.max(m, f.height), 0);
   const width = frames.reduce((w, f) => w + f.width, 0) + gap * Math.max(0, frames.length - 1) + PAD * 2;
   let container: SectionNode | FrameNode;
@@ -70,8 +71,6 @@ export function sectionFor(page: PageNode, title: string, note: string, frames: 
     container = f;
   }
   page.appendChild(container);
-  container.x = 0;
-  container.y = y;
   const caption = text(note, 'body', 'text/secondary');
   container.appendChild(caption);
   caption.x = PAD;
@@ -83,45 +82,60 @@ export function sectionFor(page: PageNode, title: string, note: string, frames: 
     f.y = PAD;
     x += f.width + gap;
   }
-  return y + container.height + 200;
+  return container;
 }
 
-export async function buildWebsite(page: PageNode, screens: Screens, progress: (step: string) => void = () => {}): Promise<Record<string, FrameNode>> {
-  const pause = async (step: string) => {
-    progress(step);
-    await flush();
-    await new Promise((r) => setTimeout(r, 0));
-    ctx.theme = 'light';
-  };
+export const SECTION_SPACING = 200;
+
+const ADMIN_DEFS: WebDef[] = [...ANALYTICS_PAGES, ADMIN_PAGES[0], ADMIN_EXTRA[0], ADMIN_EXTRA[1], ...ADMIN_PAGES.slice(1), ...ADMIN_EXTRA.slice(2)].map(([id, label, fn]) => ({ id, label, build: () => fn() }));
+
+export interface WebSection {
+  title: string;
+  note: string;
+  gap: number;
+  pages: WebDef[];
+}
+
+export const WEBSITE_SECTIONS: WebSection[] = [
+  { title: 'Website · Desktop 1440', note: 'Marketing site, public opt-out and dispute flow, help centre and legal pages. Click through with Play.', gap: GAP, pages: DESKTOP_PAGES },
+  { title: 'Website · Mobile 390', note: 'Every website page at 390 wide: the same copy stacked into one column, a full-screen menu, and links that stay on mobile pages.', gap: 80, pages: MOBILE_PAGES },
+  {
+    title: 'Admin dashboard · Web app',
+    note: 'Staff-only admin: growth, engagement and revenue analytics with a timeline filter, room creation and moderation, trust and safety queues, users and billing, bot rules, staff roles and an immutable audit log. Role-based access with MFA.',
+    gap: 80,
+    pages: ADMIN_DEFS,
+  },
+];
+
+export function websiteKeys(): Array<[string, string]> {
+  const out: Array<[string, string]> = [];
+  for (const s of WEBSITE_SECTIONS) for (const d of s.pages) out.push([d.id, d.label]);
+  return out;
+}
+
+/** Builds one website section on the current page. Links are queued in webLinks for resolveWebsiteLinks. */
+export function buildWebsiteSection(page: PageNode, s: WebSection, screens: Screens): { section: SectionNode | FrameNode; frames: Record<string, FrameNode> } {
   ctx.theme = 'light';
-  webLinks.length = 0;
-  page.backgrounds = [hexPaint('#E9EBF0')];
   const frames: Record<string, FrameNode> = {};
-  const build = (defs: WebDef[]) =>
-    defs
-      .map((d) => {
-        try {
-          const f = d.build(screens);
-          f.name = d.label;
-          frames[d.id] = f;
-          return f;
-        } catch (e) {
-          warn('Web page ' + d.label + ' failed: ' + String(e && (e as Error).message ? (e as Error).message : e));
-          return null;
-        }
-      })
-      .filter((f): f is FrameNode => !!f);
+  const built = s.pages
+    .map((d) => {
+      try {
+        const f = d.build(screens);
+        f.name = d.label;
+        tag(f, 'id', d.id);
+        frames[d.id] = f;
+        return f;
+      } catch (e) {
+        warn('Web page ' + d.label + ' failed: ' + String(e && (e as Error).message ? (e as Error).message : e));
+        return null;
+      }
+    })
+    .filter((f): f is FrameNode => !!f);
+  return { section: sectionFor(page, s.title, s.note, built, s.gap), frames };
+}
 
-  const desktop = build(DESKTOP_PAGES);
-  await pause('Desktop pages');
-  const mobile = build(MOBILE_PAGES);
-  await pause('Mobile pages');
-  const adminDefs = [...ANALYTICS_PAGES, ADMIN_PAGES[0], ADMIN_EXTRA[0], ADMIN_EXTRA[1], ...ADMIN_PAGES.slice(1), ...ADMIN_EXTRA.slice(2)];
-  const admin = build(adminDefs.map(([id, label, fn]) => ({ id, label, build: () => fn() })));
-  let y = sectionFor(page, 'Website · Desktop 1440', 'Marketing site, public opt-out and dispute flow, help centre and legal pages. Click through with Play.', desktop, 0);
-  y = sectionFor(page, 'Website · Mobile 390', 'Every website page at 390 wide: the same copy stacked into one column, a full-screen menu, and links that stay on mobile pages.', mobile, y, 80);
-  sectionFor(page, 'Admin dashboard · Web app', 'Staff-only admin: growth, engagement and revenue analytics with a timeline filter, room creation and moderation, trust and safety queues, users and billing, bot rules, staff roles and an immutable audit log. Role-based access with MFA.', admin, y, 80);
-
+/** Wires queued website links to their destinations, which may be new or already on the page. */
+export function resolveWebsiteLinks(frames: Record<string, FrameNode>) {
   const mobileTargets: Record<string, string> = {
     landing: 'mLanding',
     how: 'mHow',
@@ -146,7 +160,7 @@ export async function buildWebsite(page: PageNode, screens: Screens, progress: (
     const top = topOf(node);
     const isMobile = !!top && (top as FrameNode).width === MOBILE;
     const dest = frames[isMobile && mobileTargets[target] ? mobileTargets[target] : target] || frames[target];
-    if (!dest || node.removed || top === dest) continue;
+    if (!dest || dest.removed || node.removed || top === dest) continue;
     later(() => (node as FrameNode).setReactionsAsync([
       {
         trigger: { type: 'ON_CLICK' },
@@ -154,14 +168,13 @@ export async function buildWebsite(page: PageNode, screens: Screens, progress: (
       },
     ]), node);
   }
-  try {
-    page.flowStartingPoints = [
-      { nodeId: frames.landing && frames.landing.id, name: 'Website · Desktop' },
-      { nodeId: frames.mLanding && frames.mLanding.id, name: 'Website · Mobile' },
-      { nodeId: frames.adminGrowth && frames.adminGrowth.id, name: 'Admin dashboard' },
-    ].filter((p) => !!p.nodeId);
-  } catch (_) {
-    warn('Could not set website prototype starting points.');
-  }
-  return frames;
+  webLinks.length = 0;
+}
+
+export function websiteStarts(frames: Record<string, FrameNode>): Array<{ name: string; node?: FrameNode }> {
+  return [
+    { name: 'Website · Desktop', node: frames.landing },
+    { name: 'Website · Mobile', node: frames.mLanding },
+    { name: 'Admin dashboard', node: frames.adminGrowth },
+  ];
 }

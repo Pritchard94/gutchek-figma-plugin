@@ -1,7 +1,7 @@
 import { Theme, Token, contrast, elevation, primitives, radius, resolveRef, semantic, spacing, typeScale, TypeKey, luminance } from '../tokens';
 import { ctx, applyThemeMode, flush } from '../core/ctx';
 import { box, col, hexPaint, row, text, rect } from '../core/ui';
-import { board, layoutHorizontally, section } from './common';
+import { board, section } from './common';
 
 export function withTheme<T>(theme: Theme, fn: () => T): T {
   const prev = ctx.theme;
@@ -83,7 +83,8 @@ function typeRow(key: TypeKey): FrameNode {
   ]);
 }
 
-export function buildFoundations(page: PageNode): PageNode {
+/** Builds the foundation boards on the page. The caller places them. */
+export function buildFoundations(page: PageNode): FrameNode[] {
   ctx.theme = 'light';
 
   const tokens = board(
@@ -144,9 +145,9 @@ export function buildFoundations(page: PageNode): PageNode {
     1440,
   );
 
-  for (const b of [tokens, prims, type, space]) page.appendChild(b);
-  layoutHorizontally([tokens, prims, type, space], 160);
-  return page;
+  const boards = [tokens, prims, type, space];
+  for (const b of boards) page.appendChild(b);
+  return boards;
 }
 
 export async function finishPage() {

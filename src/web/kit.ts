@@ -1,5 +1,5 @@
 import { Token, TypeKey } from '../tokens';
-import { Kid, abs, add, box, col, divider, fill, gradient, hexPaint, icon, recolor, row, text } from '../core/ui';
+import { Kid, abs, add, box, col, divider, fill, gradient, hexPaint, icon, recolor, row, snapshot, text } from '../core/ui';
 import { glyph, lockup, wordmark } from '../brand';
 import { use } from '../components/library';
 
@@ -169,7 +169,7 @@ export function phone(screen: FrameNode | undefined, scale = 0.62, name = 'Phone
   const frame = box({ name, dir: 'h', w: w + bezel * 2, h: h + bezel * 2, pad: bezel, radius: Math.round(62 * scale) + bezel, fill: [hexPaint('#0B0B12')], shadow: 'e3' });
   const view = box({ name: 'Screen', dir: 'none', w, h, radius: Math.round(56 * scale), clip: true, fill: 'bg/canvas' });
   if (screen) {
-    const c = screen.clone();
+    const c = snapshot(screen);
     c.rescale(scale);
     view.appendChild(c);
     c.x = 0;

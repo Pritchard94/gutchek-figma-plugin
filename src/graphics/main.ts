@@ -100,7 +100,7 @@ async function generate(source: string) {
   if (env.missing.length) {
     const names = env.missing.filter((n, i) => env.missing.indexOf(n) === i);
     env.notes.push(
-      (env.screens.size ? 'These screens were not found on Screens · Light, so illustrations were used: ' : 'Phone mockups use the Screens · Light page from the Gutchek generator, which is not in this file, so illustrations were used for: ') + names.join(', ') + '.',
+      (env.screens.size ? 'These screens were not found on Screens · Light, so illustrations were used: ' : 'Phone mockups use the Screens · Light page from Gutchek Mobile, which is not in this file, so illustrations were used for: ') + names.join(', ') + '.',
     );
   }
   const notes = brief.notes.concat(sysNotes, env.notes, ctx.warnings.splice(0));

@@ -1,4 +1,4 @@
-import { ctx, later, warn } from '../core/ctx';
+import { ctx, later, tag, warn } from '../core/ctx';
 import { FillSpec, Kid, abs, paint, add, box, col, divider, fill, gradient, hexPaint, icon, pill, rect, row, text } from '../core/ui';
 import { glyph, lockup } from '../brand';
 import { use } from '../components/library';
@@ -14,7 +14,8 @@ import { sectionFor } from './index';
  * never change that.
  */
 
-const links: Array<[SceneNode, string]> = [];
+export const waitlistLinks: Array<[SceneNode, string]> = [];
+const links = waitlistLinks;
 const go = <T extends SceneNode>(node: T, target: string): T => {
   links.push([node, target]);
   return node;
@@ -396,39 +397,78 @@ function mobileShare(): FrameNode {
 
 // ---------------------------------------------------------------- page
 
-export function buildWaitlist(page: PageNode): Record<string, FrameNode> {
-  ctx.theme = 'light';
-  links.length = 0;
-  page.backgrounds = [hexPaint('#E9EBF0')];
-  const frames: Record<string, FrameNode> = {};
-  const make = (defs: Array<[string, () => FrameNode]>) =>
-    defs
-      .map(([id, fn]) => {
-        try {
-          const f = fn();
-          frames[id] = f;
-          return f;
-        } catch (e) {
-          warn('Waitlist page ' + id + ' failed: ' + String(e && (e as Error).message ? (e as Error).message : e));
-          return null;
-        }
-      })
-      .filter((f): f is FrameNode => !!f);
-  const desktop = make([
-    ['wlLanding', () => desktopLanding(false)],
-    ['wlErrors', () => desktopLanding(true)],
-    ['wlSuccess', desktopSuccess],
-  ]);
-  const mobile = make([
-    ['wlmLanding', mobileLanding],
-    ['wlmForm', () => mobileForm(false)],
-    ['wlmErrors', () => mobileForm(true)],
-    ['wlmSuccess', mobileSuccess],
-    ['wlmShare', mobileShare],
-  ]);
-  const y = sectionFor(page, 'Waitlist · Desktop 1440', 'Pre-launch sign-up test with the Gutchek name and tagline (spec 14.5). Collects contact, city, age range and the feature people want first. No queue positions; invites never change access.', desktop, 0);
-  sectionFor(page, 'Waitlist · Mobile 390', 'The same waitlist on phones, where most WhatsApp and Instagram links will land: landing, the join form and its errors, success, and the invite share sheet.', mobile, y, 80);
+export interface WaitlistSection {
+  title: string;
+  note: string;
+  gap: number;
+  pages: Array<[string, () => FrameNode]>;
+}
 
+export const WAITLIST_SECTIONS: WaitlistSection[] = [
+  {
+    title: 'Waitlist · Desktop 1440',
+    note: 'Pre-launch sign-up test with the Gutchek name and tagline (spec 14.5). Collects contact, city, age range and the feature people want first. No queue positions; invites never change access.',
+    gap: 120,
+    pages: [
+      ['wlLanding', () => desktopLanding(false)],
+      ['wlErrors', () => desktopLanding(true)],
+      ['wlSuccess', desktopSuccess],
+    ],
+  },
+  {
+    title: 'Waitlist · Mobile 390',
+    note: 'The same waitlist on phones, where most WhatsApp and Instagram links will land: landing, the join form and its errors, success, and the invite share sheet.',
+    gap: 80,
+    pages: [
+      ['wlmLanding', mobileLanding],
+      ['wlmForm', () => mobileForm(false)],
+      ['wlmErrors', () => mobileForm(true)],
+      ['wlmSuccess', mobileSuccess],
+      ['wlmShare', mobileShare],
+    ],
+  },
+];
+
+/** Frame names the builders give each waitlist page, for matching files built before frames were tagged. */
+const WAITLIST_NAMES: Record<string, string> = {
+  wlLanding: 'Waitlist',
+  wlErrors: 'Waitlist · Form errors',
+  wlSuccess: 'Waitlist · You\u2019re on the list',
+  wlmLanding: 'Waitlist · Mobile',
+  wlmForm: 'Waitlist · Mobile · Join',
+  wlmErrors: 'Waitlist · Mobile · Form errors',
+  wlmSuccess: 'Waitlist · Mobile · You\u2019re on the list',
+  wlmShare: 'Waitlist · Mobile · Invite a friend',
+};
+
+export function waitlistKeys(): Array<[string, string]> {
+  const out: Array<[string, string]> = [];
+  for (const s of WAITLIST_SECTIONS) for (const [id] of s.pages) out.push([id, WAITLIST_NAMES[id] || id]);
+  return out;
+}
+
+/** Builds one waitlist section on the current page. Links are queued for resolveWaitlistLinks. */
+export function buildWaitlistSection(page: PageNode, s: WaitlistSection): { section: SectionNode | FrameNode; frames: Record<string, FrameNode> } {
+  ctx.theme = 'light';
+  const frames: Record<string, FrameNode> = {};
+  const built = s.pages
+    .map(([id, fn]) => {
+      try {
+        const f = fn();
+        tag(f, 'id', id);
+        frames[id] = f;
+        return f;
+      } catch (e) {
+        warn('Waitlist page ' + id + ' failed: ' + String(e && (e as Error).message ? (e as Error).message : e));
+        return null;
+      }
+    })
+    .filter((f): f is FrameNode => !!f);
+  return { section: sectionFor(page, s.title, s.note, built, s.gap), frames };
+}
+
+/** Wires queued waitlist links to their destinations, which may be new or already on the page. */
+export function resolveWaitlistLinks(frames: Record<string, FrameNode>) {
   const topOf = (n: BaseNode): BaseNode | null => {
     let p: BaseNode | null = n;
     while (p && !(p.type === 'FRAME' && (p as FrameNode).getPluginData('webpage') === '1')) p = p.parent;
@@ -436,7 +476,7 @@ export function buildWaitlist(page: PageNode): Record<string, FrameNode> {
   };
   for (const [node, target] of links) {
     const dest = frames[target];
-    if (!dest || node.removed || topOf(node) === dest) continue;
+    if (!dest || dest.removed || node.removed || topOf(node) === dest) continue;
     later(() => (node as FrameNode).setReactionsAsync([
       {
         trigger: { type: 'ON_CLICK' },
@@ -444,13 +484,12 @@ export function buildWaitlist(page: PageNode): Record<string, FrameNode> {
       },
     ]), node);
   }
-  try {
-    page.flowStartingPoints = [
-      { nodeId: frames.wlLanding && frames.wlLanding.id, name: 'Waitlist · Desktop' },
-      { nodeId: frames.wlmLanding && frames.wlmLanding.id, name: 'Waitlist · Mobile' },
-    ].filter((p) => !!p.nodeId);
-  } catch (_) {
-    warn('Could not set waitlist prototype starting points.');
-  }
-  return frames;
+  links.length = 0;
+}
+
+export function waitlistStarts(frames: Record<string, FrameNode>): Array<{ name: string; node?: FrameNode }> {
+  return [
+    { name: 'Waitlist · Desktop', node: frames.wlLanding },
+    { name: 'Waitlist · Mobile', node: frames.wlmLanding },
+  ];
 }

@@ -1,19 +1,17 @@
-// Profiles a generator run against the mock: time per stage (from figma.notify) and the heaviest frames.
-const path = require('path');
+// Profiles a full build with all four plugins against the mock: time per step (from panel progress) and the heaviest frames.
 const { mock } = require('./mock-figma');
 global.figma = mock;
+const { press } = require('./drive');
 
 const stamps = [];
-const notify = mock.notify;
-mock.notify = (msg) => {
-  stamps.push([Date.now(), msg]);
-  notify(msg);
+const post = mock.ui.postMessage;
+mock.ui.postMessage = (m) => {
+  if (m.type === 'progress') stamps.push([Date.now(), m.text]);
+  post(m);
 };
 const t0 = Date.now();
-require(path.join(__dirname, '..', 'code.js'));
-const id = setInterval(() => {
-  if (mock.closed === null) return;
-  clearInterval(id);
+(async () => {
+  for (const name of ['general', 'mobile', 'website', 'webapp']) await press(name, 'needed');
   stamps.push([Date.now(), 'done']);
   for (let i = 0; i < stamps.length - 1; i++) console.log(String(stamps[i + 1][0] - stamps[i][0]).padStart(6) + ' ms  ' + stamps[i][1]);
   console.log('total', Date.now() - t0, 'ms');
@@ -35,4 +33,4 @@ const id = setInterval(() => {
     for (const r of rows.slice(0, 8)) console.log('  ' + String(r[1]).padStart(6) + ' nodes ' + String(r[2]).padStart(5) + ' instances  ' + r[0]);
   }
   process.exit(0);
-}, 20);
+})();

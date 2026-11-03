@@ -1,71 +1,74 @@
 # Gutchek Figma plugins
 
-This repo contains two Figma plugins for the Gutchek brand:
+This repo contains five Figma plugins for the Gutchek brand. Four of them build the design file, each owning its own pages:
 
-- **Gutchek Design Generator** builds a complete design file in one run: the design system, brand guidelines, the mobile app (light and dark), the web app, the user flow, the marketing website and the waitlist page.
-- **Gutchek Graphic Designer** turns a plain-language brief into ready-to-export marketing graphics: social posts, stories, share images, email headers, app store screenshots and ad banners.
+- **Gutchek General** owns the design system and brand: variables and styles, the component library, foundations, brand guidelines and the cover. Run it first.
+- **Gutchek Mobile** owns the iOS app screens (light and dark) and the user flow.
+- **Gutchek Website & Waitlist** owns the marketing website (desktop, mobile and the staff admin dashboard) and the waitlist page.
+- **Gutchek Web App** owns the signed-in web app (desktop and mobile web, light and dark).
 
-Both plugins run entirely inside Figma. They make no network requests.
+The fifth, **Gutchek Graphic Designer**, turns a plain-language brief into ready-to-export marketing graphics: social posts, stories, share images, email headers, app store screenshots and ad banners.
+
+All plugins run entirely inside Figma. They make no network requests.
 
 ## Setup
 
 You need [Node.js](https://nodejs.org) and the Figma desktop app (development plugins can only be imported in the desktop app).
 
-1. Install dependencies and build both plugins:
+1. Install dependencies and build every plugin:
 
    ```sh
    npm install
    npm run build
    ```
 
-   This writes `code.js` (the generator) and `graphics/code.js` (the graphic designer). Both files are gitignored, so you need to build after every pull.
+   This writes `plugins/<name>/code.js` for the four design plugins and `graphics/code.js` for the Graphic Designer. These files are gitignored, so you need to build after every pull.
 
 2. In Figma desktop, open a design file and go to **Plugins → Development → Import plugin from manifest…**. Import each plugin once:
-   - `manifest.json` in the repo root for the **Gutchek Design Generator**
-   - `graphics/manifest.json` for the **Gutchek Graphic Designer**
+   - `plugins/general/manifest.json` for **Gutchek General**
+   - `plugins/mobile/manifest.json` for **Gutchek Mobile**
+   - `plugins/website/manifest.json` for **Gutchek Website & Waitlist**
+   - `plugins/webapp/manifest.json` for **Gutchek Web App**
+   - `graphics/manifest.json` for **Gutchek Graphic Designer**
 
-3. Run either plugin from **Plugins → Development**.
+3. Run any plugin from **Plugins → Development**.
 
-For best results, install **Plus Jakarta Sans** (display type) and **Inter** (UI type). If Plus Jakarta Sans is missing, display text falls back to Inter and the generator notes this in its log.
+For best results, install **Plus Jakarta Sans** (display type) and **Inter** (UI type). If Plus Jakarta Sans is missing, display text falls back to Inter and the plugin says so in its notes.
 
-## Gutchek Design Generator
+## The design plugins
 
-### What it does
+### Who owns what
 
-Run the plugin in a design file (ideally an empty one) and it builds the following pages, in this order:
+| Plugin | Pages | Parts you can tick |
+| --- | --- | --- |
+| Gutchek General | Cover, Brand Guidelines, Foundations, Components | Variables and styles, Component library, Rebuild every component, Foundations, Brand Guidelines, Cover |
+| Gutchek Mobile | Screens · Light, Screens · Dark, User Flow | Each flow group (Onboarding, App lock, Home and saved, Notes, Run a Gutchek, Report, Check a Chat, Gist Rooms, Safety, Settings and account) in light and in dark, and the user flow map |
+| Gutchek Website & Waitlist | Website, Waitlist | Website desktop, Website mobile, Admin dashboard, Waitlist desktop, Waitlist mobile |
+| Gutchek Web App | Web App | Each web app group (Sign in, Home and search, Notes, Report, Check a Chat, Rooms, Safety and settings, Mobile web) in light and in dark |
 
-| Page | Contents |
-| --- | --- |
-| Cover | Cover frame with app and web app previews, also set as the file thumbnail |
-| Brand Guidelines | Personality, logo use and misuse, colour, accessible pairings, the Gut Meter, motion and vocabulary |
-| Foundations | Colour, type, spacing, radius and elevation tokens |
-| Components | The component library, including `Icon/…` components |
-| Screens · Light | Every mobile app screen, grouped by flow, in light mode |
-| Screens · Dark | The same screens in dark mode |
-| Web App | Desktop and mobile web versions of the app |
-| User Flow | A map of how the app screens connect |
-| Website | The marketing website |
-| Waitlist | The waitlist landing page |
+General also owns the **Gutchek / Color** variables, the spacing and radius variables and the **Gutchek/…** text and effect styles. Every generated frame is bound to them. On paid Figma plans, light and dark are two modes of one colour collection. On the Starter plan (one mode per collection), dark tokens go into a separate **Gutchek / Color Dark** collection.
 
-It also creates the **Gutchek / Color** variables, plus spacing and radius variables and **Gutchek/…** text and effect styles. Every generated frame is bound to these variables and styles. On paid Figma plans, light and dark live as two modes of one colour collection. On the Starter plan (one mode per collection), dark tokens go into a separate **Gutchek / Color Dark** collection.
+Mobile, Website & Waitlist and Web App build from General's variables, styles and components, so they refuse to run until General has run in the file. The website's phone mockups and the cover use the app screens, so for a new file run the plugins in this order: General, Mobile, Web App, Website & Waitlist, then General again with **Cover** ticked.
 
-### How to use it
+### How to use them
 
-1. Open the file you want to generate into.
-2. Run **Plugins → Development → Gutchek Design Generator**. There is no UI. Progress messages appear at the bottom of the screen and the plugin closes itself when it's done.
-3. You land on the Cover page. The closing message tells you whether light and dark ended up as modes or as separate collections.
+1. Run a plugin. A panel lists the parts it owns, each marked **Missing** or **In file**.
+2. Only the missing parts are ticked. Tick anything else you want rebuilt from the code, or press **Clear** and pick one part.
+3. Press **Update**. Progress, then a summary and any notes, appear in the panel. The panel stays open so you can run it again.
 
-**Running it again replaces the previous output.** Before building, the generator deletes:
+### What a run touches
 
-- every page it created on an earlier run
-- every empty page
-- all variable collections and styles whose names start with `Gutchek` (or the old name, `Libra`)
+A run changes only the parts you ticked:
 
-Pages you created yourself are kept, as long as they're not empty. Changes you made to generated pages are lost, so duplicate anything you want to keep before running it again.
+- **A section is rebuilt where it is.** The new section takes the old one's position. Sections below it (or to the right, on the board pages) move only if its size changed. Other sections, and anything you added to the page yourself, are left alone.
+- **Prototype links keep working.** Links from untouched frames to a rebuilt frame are pointed at the new frame, and starting points are kept, including your own.
+- **Variables and styles are updated in place.** Ticking **Variables and styles** adds anything missing and rewrites existing values from the code. Their ids don't change, so nothing in the file comes unbound. The other plugins only add tokens that are missing and never change existing ones.
+- **Components are never rebuilt by accident.** **Component library** adds components, variants and icons that are new in the code and leaves existing ones alone. **Rebuild every component from code** replaces the whole library, then switches every instance in the file to the new components (keeping overrides) before the old ones are removed.
+- **Pages are never deleted or reordered.** A missing page is created in the usual position.
 
-### When something goes wrong
+Edits you made inside a section are lost when that section is rebuilt, so duplicate a section before ticking it if you want to keep your version.
 
-If the run finishes with warnings or fails partway, the plugin adds a **Gutchek · Generator log** page. It lists the stage that was running, the error and any warnings, so you can diagnose a problem from a share link. The page is removed automatically on the next run.
+Files made by the old all-in-one generator work as they are: sections are matched by name. The first time you run General, it removes the leftover **Gutchek · Generator log** page.
 
 ## Gutchek Graphic Designer
 
@@ -73,7 +76,7 @@ If the run finishes with warnings or fails partway, the plugin adds a **Gutchek 
 
 The Graphic Designer reads a brief and designs every graphic it lists on a page named **Graphic Design**. It groups the graphics into sections (Social, Share images and email, App stores and Ads) and adds a summary card of the brief, plus any notes. Every frame has a PNG export setting, so you can export it straight away.
 
-The graphics use the same variables, styles and icons as the generator. If the file doesn't have them yet, the plugin creates them first. Phone mockups use real app screens from the **Screens · Light** page, so run the Design Generator in the same file first if you want those. Without it, the plugin uses illustrations instead and says so in the notes.
+The graphics use the same variables, styles and icons as Gutchek General. If the file doesn't have them yet, the plugin creates the missing ones first and leaves existing ones unchanged. Phone mockups use real app screens from the **Screens · Light** page, so run Gutchek Mobile in the same file first if you want those. Without it, the plugin uses illustrations instead and says so in the notes.
 
 ### How to use it
 
@@ -173,19 +176,20 @@ Some headings expand into several formats at once:
 
 | Command | What it does |
 | --- | --- |
-| `npm run build` | Bundles both plugins with esbuild |
-| `npm run watch` | Rebuilds on change |
+| `npm run build` | Bundles all five plugins with esbuild |
+| `npm run watch` | Rebuilds the four design plugins on change |
 | `npm run typecheck` | Type-checks with TypeScript |
-| `npm run smoke` | Runs both plugins against a mock Figma API (`test/`), including Starter-plan, missing-font and re-run scenarios |
+| `npm run smoke` | Runs the plugins against a mock Figma API (`test/`) under the normal, Starter-plan and missing-font scenarios. It checks partial reruns: only the ticked section changes, variable and style ids survive, and instances and prototype links stay connected |
 | `npm run check` | Typecheck, build and smoke tests together |
 
 After rebuilding, run the plugin again in Figma to pick up the new `code.js`. You don't need to re-import the manifest.
 
 ### Project layout
 
-- `src/main.ts` is the Design Generator entry point.
+- `src/plugins/` holds the four design plugin entry points (`general.ts`, `mobile.ts`, `website.ts`, `webapp.ts`). Their manifests are in `plugins/<name>/`.
+- `src/core/panel.ts` and `src/core/panel.html` are the checklist panel all four share. `src/core/sections.ts` replaces one section in place and repoints prototype links.
 - `src/graphics/` holds the Graphic Designer: brief parsing, the format list and the layout code. Its UI is `graphics/ui.html`.
-- `src/tokens.ts` defines the colour, type, spacing, radius and elevation tokens shared by both plugins.
+- `src/tokens.ts` defines the colour, type, spacing, radius and elevation tokens shared by every plugin.
 - `src/core/` holds the shared Figma helpers: variables, styles, fonts and layout primitives.
 - `src/components/`, `src/pages/`, `src/screens/`, `src/webapp/` and `src/web/` build the components, documentation pages, app screens, web app and website.
 - `brand/gutchek-logo.svg` is the master logo. After changing it, run `node tools/import-logo.js` to regenerate `src/brand-paths.ts`, then rebuild.

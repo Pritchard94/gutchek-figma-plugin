@@ -15,8 +15,17 @@ import {
   typeScale,
 } from '../tokens';
 
-export const PLUGIN_KEY = 'libra';
 export const NAME_PREFIX = 'Gutchek';
+/** Shared plugin data namespace, readable by every Gutchek plugin (plain plugin data is private to one plugin id). */
+const SHARED_NS = 'gutchek';
+
+export function tag(node: BaseNode, key: string, value: string) {
+  node.setSharedPluginData(SHARED_NS, key, value);
+}
+
+export function tagOf(node: BaseNode, key: string): string {
+  return node.getSharedPluginData(SHARED_NS, key);
+}
 /** Prefixes from earlier runs, including the product's former name, removed before regenerating. */
 const OLD_PREFIXES = [NAME_PREFIX, 'Libra'];
 
@@ -152,50 +161,109 @@ function scopesFor(group: string): VariableScope[] {
   return ['ALL_FILLS', 'STROKE_COLOR'];
 }
 
-export async function createVariables() {
+/** What a token sync did: how many variables and styles it created, and how many existing ones it rewrote. */
+export interface SyncReport {
+  created: number;
+  updated: number;
+}
+
+/** True when the file already has the Gutchek colour collection (under the current or the former name). */
+export async function hasTokens(): Promise<boolean> {
+  const all = await figma.variables.getLocalVariableCollectionsAsync();
+  return all.some((c) => OLD_PREFIXES.some((p) => c.name === p + ' / Color'));
+}
+
+/**
+ * Connects ctx to the Gutchek variables in this file, creating any that are missing. Existing variables keep their
+ * ids, so every binding elsewhere in the file survives. With `update`, existing values are rewritten from tokens.ts.
+ */
+export async function syncVariables(update: boolean): Promise<SyncReport> {
+  const report: SyncReport = { created: 0, updated: 0 };
   try {
-    const prim = figma.variables.createVariableCollection(NAME_PREFIX + ' / Primitives');
+    const collections = await figma.variables.getLocalVariableCollectionsAsync();
+    const existing = await figma.variables.getLocalVariablesAsync();
+    const findCollection = (name: string): VariableCollection | null => {
+      const hit = collections.filter((c) => c.name === NAME_PREFIX + ' / ' + name)[0];
+      if (hit) return hit;
+      const legacy = collections.filter((c) => OLD_PREFIXES.some((p) => c.name === p + ' / ' + name))[0];
+      if (legacy) legacy.name = NAME_PREFIX + ' / ' + name;
+      return legacy || null;
+    };
+    const collection = (name: string, modeName: string): VariableCollection => {
+      const found = findCollection(name);
+      if (found) return found;
+      const c = figma.variables.createVariableCollection(NAME_PREFIX + ' / ' + name);
+      c.renameMode(c.modes[0].modeId, modeName);
+      collections.push(c);
+      return c;
+    };
+    const variable = (c: VariableCollection, name: string, type: VariableResolvedDataType): { v: Variable; write: boolean } => {
+      const hit = existing.filter((v) => v.variableCollectionId === c.id && v.name === name)[0];
+      if (hit) {
+        if (update) report.updated++;
+        return { v: hit, write: update };
+      }
+      report.created++;
+      return { v: figma.variables.createVariable(name, c, type), write: true };
+    };
+    const modeNamed = (c: VariableCollection, name: string) => (c.modes.filter((m) => m.name === name)[0] || c.modes[0]).modeId;
+
+    const prim = collection('Primitives', 'Value');
     const pMode = prim.modes[0].modeId;
-    prim.renameMode(pMode, 'Value');
     for (const ramp of Object.keys(primitives)) {
       for (const step of Object.keys(primitives[ramp])) {
-        const v = figma.variables.createVariable(ramp + '/' + step, prim, 'COLOR');
-        const c = hexToRgba(primitives[ramp][step]);
-        v.setValueForMode(pMode, c);
-        v.scopes = [];
-        v.hiddenFromPublishing = true;
+        const { v, write } = variable(prim, ramp + '/' + step, 'COLOR');
+        if (write) {
+          v.setValueForMode(pMode, hexToRgba(primitives[ramp][step]));
+          v.scopes = [];
+          v.hiddenFromPublishing = true;
+        }
         ctx.primitiveVars.set(ramp + '/' + step, v);
       }
     }
 
-    const dims = figma.variables.createVariableCollection(NAME_PREFIX + ' / Dimensions');
+    const dims = collection('Dimensions', 'Value');
     const dMode = dims.modes[0].modeId;
-    dims.renameMode(dMode, 'Value');
     for (const s of spacing) {
-      const v = figma.variables.createVariable('space/' + s, dims, 'FLOAT');
-      v.setValueForMode(dMode, s);
-      v.scopes = ['GAP', 'WIDTH_HEIGHT'];
-      setCodeSyntax(v, 'spacing-' + s);
+      const { v, write } = variable(dims, 'space/' + s, 'FLOAT');
+      if (write) {
+        v.setValueForMode(dMode, s);
+        v.scopes = ['GAP', 'WIDTH_HEIGHT'];
+        setCodeSyntax(v, 'spacing-' + s);
+      }
       ctx.dimensionVars.set(s, v);
     }
     for (const key of Object.keys(radius) as Array<keyof typeof radius>) {
-      const v = figma.variables.createVariable('radius/' + key, dims, 'FLOAT');
-      v.setValueForMode(dMode, radius[key]);
-      v.scopes = ['CORNER_RADIUS'];
-      setCodeSyntax(v, 'rounded-' + key);
+      const { v, write } = variable(dims, 'radius/' + key, 'FLOAT');
+      if (write) {
+        v.setValueForMode(dMode, radius[key]);
+        v.scopes = ['CORNER_RADIUS'];
+        setCodeSyntax(v, 'rounded-' + key);
+      }
       ctx.radiusVars.set(radius[key], v);
     }
 
-    const color = figma.variables.createVariableCollection(NAME_PREFIX + ' / Color');
+    const color = collection('Color', 'Light');
     ctx.colorCollection = color;
-    ctx.lightModeId = color.modes[0].modeId;
-    color.renameMode(ctx.lightModeId, 'Light');
-    try {
-      ctx.darkModeId = color.addMode('Dark');
+    ctx.lightModeId = modeNamed(color, 'Light');
+    let dark = findCollection('Color Dark');
+    const darkMode = color.modes.filter((m) => m.name === 'Dark')[0];
+    if (darkMode) {
       ctx.modes = true;
-    } catch (_) {
-      ctx.modes = false;
+      ctx.darkModeId = darkMode.modeId;
+    } else if (!dark) {
+      try {
+        ctx.darkModeId = color.addMode('Dark');
+        ctx.modes = true;
+      } catch (_) {
+        ctx.modes = false;
+      }
+    }
+    if (!ctx.modes) {
       warn('This Figma plan allows one variable mode per collection, so dark tokens live in a separate "Color Dark" collection.');
+      dark = dark || collection('Color Dark', 'Dark');
+      ctx.darkCollection = dark;
+      ctx.darkModeId = dark.modes[0].modeId;
     }
 
     const valueFor = (ref: string): VariableValue => {
@@ -207,19 +275,24 @@ export async function createVariables() {
       return hexToRgba(r.hex, r.alpha);
     };
 
-    const make = (collection: VariableCollection, modeId: string, theme: Theme | 'both') => {
+    const make = (c: VariableCollection, modeId: string, theme: Theme | 'both') => {
       for (const token of Object.keys(semantic)) {
         const def = semantic[token];
-        const v = figma.variables.createVariable(token, collection, 'COLOR');
-        v.scopes = scopesFor(def.group);
-        setCodeSyntax(v, token.replace('/', '-'));
+        const { v, write } = variable(c, token, 'COLOR');
+        if (write) {
+          v.scopes = scopesFor(def.group);
+          setCodeSyntax(v, token.replace('/', '-'));
+          if (theme === 'both') {
+            v.setValueForMode(ctx.lightModeId, valueFor(def.light));
+            v.setValueForMode(ctx.darkModeId, valueFor(def.dark));
+          } else {
+            v.setValueForMode(modeId, valueFor(def[theme]));
+          }
+        }
         if (theme === 'both') {
-          v.setValueForMode(ctx.lightModeId, valueFor(def.light));
-          v.setValueForMode(ctx.darkModeId, valueFor(def.dark));
           ctx.colorVars.light.set(token, v);
           ctx.colorVars.dark.set(token, v);
         } else {
-          v.setValueForMode(modeId, valueFor(def[theme]));
           ctx.colorVars[theme].set(token, v);
         }
       }
@@ -229,16 +302,12 @@ export async function createVariables() {
       make(color, ctx.lightModeId, 'both');
     } else {
       make(color, ctx.lightModeId, 'light');
-      const dark = figma.variables.createVariableCollection(NAME_PREFIX + ' / Color Dark');
-      const m = dark.modes[0].modeId;
-      dark.renameMode(m, 'Dark');
-      ctx.darkCollection = dark;
-      ctx.darkModeId = m;
-      make(dark, m, 'dark');
+      make(dark as VariableCollection, ctx.darkModeId, 'dark');
     }
   } catch (e) {
     warn('Variables could not be created (' + String(e) + '). Raw colours are used instead.');
   }
+  return report;
 }
 
 /** Apply the Dark mode to a frame so bound variables resolve to dark values. */
@@ -257,32 +326,86 @@ export function colorVar(token: Token, theme: Theme = ctx.theme): Variable | und
 
 // ---------------------------------------------------------------- styles
 
-export function createStyles() {
+/**
+ * Connects ctx to the Gutchek text and effect styles, creating missing ones. Existing styles keep their ids, so text
+ * and frames that use them stay linked. With `update`, their properties are rewritten from tokens.ts.
+ */
+export async function syncStyles(update: boolean): Promise<SyncReport> {
+  const report: SyncReport = { created: 0, updated: 0 };
+  const legacyName = (name: string) => OLD_PREFIXES.map((p) => p + name.slice(NAME_PREFIX.length));
+  const pick = <S extends BaseStyle>(list: S[], name: string, create: () => S): { s: S; write: boolean } => {
+    const hit = list.filter((s) => s.name === name)[0] || list.filter((s) => legacyName(name).indexOf(s.name) !== -1)[0];
+    if (hit) {
+      hit.name = name;
+      if (update) report.updated++;
+      return { s: hit, write: update };
+    }
+    const s = create();
+    s.name = name;
+    report.created++;
+    return { s, write: true };
+  };
+
+  const texts = await figma.getLocalTextStylesAsync();
   for (const key of Object.keys(typeScale) as TypeKey[]) {
     const t = typeScale[key] as (typeof typeScale)[TypeKey] & { upper?: boolean };
-    const s = figma.createTextStyle();
-    s.name = NAME_PREFIX + '/' + t.name;
-    s.fontName = font(t.family, t.weight);
-    s.fontSize = t.size;
-    s.lineHeight = { unit: 'PIXELS', value: t.line };
-    s.letterSpacing = { unit: 'PERCENT', value: t.tracking };
-    if (t.upper) s.textCase = 'UPPER';
-    s.description = t.usage;
+    const { s, write } = pick(texts, NAME_PREFIX + '/' + t.name, () => figma.createTextStyle());
+    if (write) {
+      s.fontName = font(t.family, t.weight);
+      s.fontSize = t.size;
+      s.lineHeight = { unit: 'PIXELS', value: t.line };
+      s.letterSpacing = { unit: 'PERCENT', value: t.tracking };
+      s.textCase = t.upper ? 'UPPER' : 'ORIGINAL';
+      s.description = t.usage;
+    }
     ctx.textStyles.set(key, s);
   }
+
+  const effects = await figma.getLocalEffectStylesAsync();
   for (const key of Object.keys(elevation) as Array<keyof typeof elevation>) {
     const e = elevation[key];
-    const s = figma.createEffectStyle();
-    s.name = NAME_PREFIX + '/' + e.name;
-    s.description = e.usage;
-    s.effects = shadowEffects(key);
+    const { s, write } = pick(effects, NAME_PREFIX + '/' + e.name, () => figma.createEffectStyle());
+    if (write) {
+      s.description = e.usage;
+      s.effects = shadowEffects(key);
+    }
     ctx.effectStyles.set(key, s);
   }
-  const glass = figma.createEffectStyle();
-  glass.name = NAME_PREFIX + '/Elevation/Glass';
-  glass.description = 'Floating translucent chrome: tab bar and floating actions. Pair with a 72 to 80% surface fill.';
-  glass.effects = (shadowEffects('e2') as Effect[]).concat([{ type: 'BACKGROUND_BLUR', blurType: 'NORMAL', radius: 24, visible: true }]);
+  const { s: glass, write } = pick(effects, NAME_PREFIX + '/Elevation/Glass', () => figma.createEffectStyle());
+  if (write) {
+    glass.description = 'Floating translucent chrome: tab bar and floating actions. Pair with a 72 to 80% surface fill.';
+    glass.effects = (shadowEffects('e2') as Effect[]).concat([{ type: 'BACKGROUND_BLUR', blurType: 'NORMAL', radius: 24, visible: true }]);
+  }
   ctx.effectStyles.set('glass', glass);
+  return report;
+}
+
+/** How many Gutchek variables and styles tokens.ts defines that this file does not have yet. */
+export async function missingTokenCount(): Promise<number> {
+  const names = new Set<string>();
+  const ours = (await figma.variables.getLocalVariableCollectionsAsync()).filter((c) => OLD_PREFIXES.some((p) => c.name.indexOf(p + ' / ') === 0));
+  const byId = new Map(ours.map((c) => [c.id, c.name.slice(c.name.indexOf(' / ') + 3)] as [string, string]));
+  for (const v of await figma.variables.getLocalVariablesAsync()) {
+    const c = byId.get(v.variableCollectionId);
+    if (c) names.add(c + '|' + v.name);
+  }
+  const styles = (await figma.getLocalTextStylesAsync() as BaseStyle[]).concat(await figma.getLocalEffectStylesAsync());
+  for (const s of styles) {
+    const prefix = OLD_PREFIXES.filter((p) => s.name.indexOf(p + '/') === 0)[0];
+    if (prefix) names.add(NAME_PREFIX + s.name.slice(prefix.length));
+  }
+  let missing = 0;
+  const need = (key: string) => {
+    if (!names.has(key)) missing++;
+  };
+  for (const ramp of Object.keys(primitives)) for (const step of Object.keys(primitives[ramp])) need('Primitives|' + ramp + '/' + step);
+  for (const s of spacing) need('Dimensions|space/' + s);
+  for (const k of Object.keys(radius)) need('Dimensions|radius/' + k);
+  for (const token of Object.keys(semantic)) need('Color|' + token);
+  for (const k of Object.keys(typeScale) as TypeKey[]) need(NAME_PREFIX + '/' + typeScale[k].name);
+  for (const k of Object.keys(elevation) as Array<keyof typeof elevation>) need(NAME_PREFIX + '/' + elevation[k].name);
+  need(NAME_PREFIX + '/Elevation/Glass');
+  return missing;
 }
 
 export function shadowEffects(key: keyof typeof elevation): Effect[] {
@@ -297,19 +420,4 @@ export function shadowEffects(key: keyof typeof elevation): Effect[] {
       blendMode: 'NORMAL',
     }),
   );
-}
-
-// ---------------------------------------------------------------- cleanup
-
-export async function removePrevious() {
-  const ours = (name: string, sep: string) => OLD_PREFIXES.some((p) => name.indexOf(p + sep) === 0);
-  for (const c of await figma.variables.getLocalVariableCollectionsAsync()) {
-    if (ours(c.name, ' / ')) c.remove();
-  }
-  for (const s of await figma.getLocalTextStylesAsync()) {
-    if (ours(s.name, '/')) s.remove();
-  }
-  for (const s of await figma.getLocalEffectStylesAsync()) {
-    if (ours(s.name, '/')) s.remove();
-  }
 }

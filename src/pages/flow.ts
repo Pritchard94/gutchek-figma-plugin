@@ -1,10 +1,10 @@
 import { ctx } from '../core/ctx';
-import { box, col, icon, row, text } from '../core/ui';
+import { box, col, icon, row, snapshot, text } from '../core/ui';
 const SCALE = 0.5;
 
 function thumb(frame: FrameNode | undefined, caption: string): FrameNode | null {
   if (!frame) return null;
-  const c = frame.clone();
+  const c = snapshot(frame);
   c.rescale(SCALE);
   const viewport = box({ name: 'Viewport', dir: 'none', w: Math.round(393 * SCALE), h: Math.round(852 * SCALE), radius: 24, clip: true, stroke: 'border/default', shadow: 'e2' });
   viewport.appendChild(c);
@@ -31,7 +31,7 @@ function lane(title: string, note: string, steps: Array<[FrameNode | undefined, 
   ]);
 }
 
-export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): PageNode {
+export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): FrameNode {
   ctx.theme = 'light';
   const root = col({ name: 'User flow', gap: 64, pad: 96, fill: 'bg/canvas', radius: 48 }, [
     col({ name: 'Header', gap: 12 }, [
@@ -103,7 +103,5 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Pa
     ]),
   ]);
   page.appendChild(root);
-  root.x = 0;
-  root.y = 0;
-  return page;
+  return root;
 }

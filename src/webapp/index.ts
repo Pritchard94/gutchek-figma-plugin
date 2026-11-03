@@ -1,5 +1,5 @@
 import { Theme } from '../tokens';
-import { applyThemeMode, ctx, flush, later, warn } from '../core/ctx';
+import { applyThemeMode, ctx, later, tag, warn } from '../core/ctx';
 import { hexPaint, text } from '../core/ui';
 import { appLinks } from './shell';
 import { wHome, wHomeEmpty, wLinked, wMatch, wNotifications, wPaywall, wProcessing, wPurpose, wSearch, wSignIn, wVerify } from './core';
@@ -99,7 +99,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
 const GAP = 120;
 const PAD = 120;
 
-function section(page: PageNode, title: string, note: string, frames: FrameNode[], y: number, dark: boolean, x0 = 0): number {
+function section(page: PageNode, title: string, note: string, frames: FrameNode[], dark: boolean): SectionNode | FrameNode {
   const tallest = frames.reduce((m, f) => Math.max(m, f.height), 0);
   const width = frames.reduce((w, f) => w + f.width, 0) + GAP * Math.max(0, frames.length - 1) + PAD * 2;
   let container: SectionNode | FrameNode;
@@ -116,8 +116,6 @@ function section(page: PageNode, title: string, note: string, frames: FrameNode[
     container = f;
   }
   page.appendChild(container);
-  container.x = x0;
-  container.y = y;
   const caption = text(note, 'body', 'text/secondary');
   caption.fills = [hexPaint(dark ? '#A9A9BC' : '#475467')];
   container.appendChild(caption);
@@ -130,7 +128,53 @@ function section(page: PageNode, title: string, note: string, frames: FrameNode[
     f.y = PAD;
     x += f.width + GAP;
   }
-  return y + container.height + 200;
+  return container;
+}
+
+export const WEBAPP_PAGE = 'Web App';
+export const WEBAPP_SECTION_GAP = 200;
+/** Space between the light column and the dark column. */
+export const WEBAPP_COLUMN_GAP = 400;
+export const WEBAPP_GROUPS = GROUPS;
+
+export function webAppTitle(g: (typeof GROUPS)[number], theme: Theme): string {
+  return g.title + (theme === 'dark' ? ' · Dark' : '');
+}
+
+/** Builder ids and frame names. Dark frames carry a ':dark' id so both themes can share one page. */
+export function webAppKeys(theme: Theme): Array<[string, string]> {
+  const out: Array<[string, string]> = [];
+  for (const g of GROUPS) for (const d of g.pages) out.push([d[0] + (theme === 'dark' ? ':dark' : ''), d[1] + (theme === 'dark' ? ' · Dark' : '')]);
+  return out;
+}
+
+/** Builds one group in one theme as a section on the current page. Links are queued for resolveWebAppLinks. */
+export function buildWebAppGroup(page: PageNode, g: (typeof GROUPS)[number], theme: Theme): { section: SectionNode | FrameNode; frames: Record<string, FrameNode> } {
+  const frames: Record<string, FrameNode> = {};
+  const built: FrameNode[] = [];
+  for (const d of g.pages) {
+    const f = build(d, theme);
+    if (f) {
+      tag(f, 'id', d[0] + (theme === 'dark' ? ':dark' : ''));
+      frames[d[0]] = f;
+      built.push(f);
+    }
+  }
+  const note = theme === 'dark' ? g.note + ' Dark mode, from the same tokens.' : g.note;
+  return { section: section(page, webAppTitle(g, theme), note, built, theme === 'dark'), frames };
+}
+
+/** Wires queued links to frames of the same theme, keyed by builder id without the ':dark' suffix. */
+export function resolveWebAppLinks(frames: Record<string, FrameNode>) {
+  resolve(frames);
+}
+
+export function webAppStarts(light: Record<string, FrameNode>, dark: Record<string, FrameNode>): Array<{ name: string; node?: FrameNode }> {
+  return [
+    { name: 'Web app · Sign in', node: light.wSignIn },
+    { name: 'Web app · Home', node: light.wHome },
+    { name: 'Web app · Home · Dark', node: dark.wHome },
+  ];
 }
 
 function resolve(frames: Record<string, FrameNode>) {
@@ -141,7 +185,7 @@ function resolve(frames: Record<string, FrameNode>) {
   };
   for (const [node, target] of appLinks) {
     const dest = frames[target];
-    if (!dest || node.removed || topOf(node) === dest) continue;
+    if (!dest || dest.removed || node.removed || topOf(node) === dest) continue;
     later(
       () =>
         (node as FrameNode).setReactionsAsync([
@@ -169,61 +213,4 @@ function build(def: Def, theme: Theme): FrameNode | null {
   } finally {
     ctx.theme = 'light';
   }
-}
-
-export async function buildWebApp(page: PageNode, progress: (step: string) => void = () => {}): Promise<Record<string, FrameNode>> {
-  const pause = async (step: string) => {
-    progress(step);
-    await flush();
-    await new Promise((r) => setTimeout(r, 0));
-  };
-  page.backgrounds = [hexPaint('#E9EBF0')];
-  appLinks.length = 0;
-  const light: Record<string, FrameNode> = {};
-  const rows: Array<{ y: number; g: (typeof GROUPS)[number] }> = [];
-  let y = 0;
-  let widest = 0;
-  for (const g of GROUPS) {
-    const frames: FrameNode[] = [];
-    for (const d of g.pages) {
-      const f = build(d, 'light');
-      if (f) {
-        light[d[0]] = f;
-        frames.push(f);
-      }
-    }
-    rows.push({ y, g });
-    y = section(page, g.title, g.note, frames, y, false);
-    await pause(g.title.replace('Web app · ', ''));
-    const last = page.children[page.children.length - 1] as SceneNode;
-    widest = Math.max(widest, last.width);
-  }
-  resolve(light);
-
-  const dark: Record<string, FrameNode> = {};
-  const darkX = widest + 400;
-  for (const { y: rowY, g } of rows) {
-    const frames: FrameNode[] = [];
-    for (const d of g.pages) {
-      const f = build(d, 'dark');
-      if (f) {
-        dark[d[0]] = f;
-        frames.push(f);
-      }
-    }
-    section(page, g.title + ' · Dark', g.note + ' Dark mode, from the same tokens.', frames, rowY, true, darkX);
-    await pause(g.title.replace('Web app · ', '') + ' · Dark');
-  }
-  resolve(dark);
-
-  try {
-    page.flowStartingPoints = [
-      { nodeId: light.wSignIn && light.wSignIn.id, name: 'Web app · Sign in' },
-      { nodeId: light.wHome && light.wHome.id, name: 'Web app · Home' },
-      { nodeId: dark.wHome && dark.wHome.id, name: 'Web app · Home · Dark' },
-    ].filter((p) => !!p.nodeId);
-  } catch (_) {
-    warn('Could not set web app prototype starting points.');
-  }
-  return light;
 }

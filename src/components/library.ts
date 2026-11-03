@@ -29,6 +29,7 @@ import { ICONS, iconSvg } from '../icons';
 import { glyph } from '../brand';
 import { Tilt, scaleDial } from './scale';
 import { bubble, roomMessage } from './chat';
+import { setWallpaperHolder } from './doodles';
 
 type Props = Record<string, string>;
 
@@ -569,34 +570,39 @@ function configureSet(cs: ComponentSetNode) {
   cs.cornerRadius = 16;
 }
 
+function iconCell(name: string): FrameNode | null {
+  let node: FrameNode;
+  try {
+    node = figma.createNodeFromSvg(iconSvg(ICONS[name]));
+  } catch (e) {
+    ctx.warnings.push('Icon ' + name + ' failed to import');
+    return null;
+  }
+  const comp = figma.createComponentFromNode(node);
+  comp.name = 'Icon/' + name;
+  comp.fills = [];
+  comp.clipsContent = false;
+  comp.description = 'Lucide ' + name + ', 24pt, 1.5 stroke.';
+  for (const c of comp.children) {
+    try {
+      (c as ConstraintMixin & SceneNode).constraints = { horizontal: 'SCALE', vertical: 'SCALE' };
+    } catch (_) {
+      /* groups have no constraints */
+    }
+  }
+  recolor(comp, 'text/primary');
+  iconComps.set(name, comp);
+  const cell = col({ name: name, w: 120, pad: [16, 8], gap: 10, cross: 'center', radius: 12, fill: 'bg/surface', stroke: 'border/default' }, []);
+  cell.appendChild(comp);
+  add(cell, text(name, 'caption', 'text/secondary', { align: 'center' }));
+  return cell;
+}
+
 function buildIcons(): FrameNode {
   const grid = row({ name: 'Icons', w: 1100, gap: 16, wrap: true, wrapGap: 16 }, []);
   for (const name of Object.keys(ICONS)) {
-    let node: FrameNode;
-    try {
-      node = figma.createNodeFromSvg(iconSvg(ICONS[name]));
-    } catch (e) {
-      ctx.warnings.push('Icon ' + name + ' failed to import');
-      continue;
-    }
-    const comp = figma.createComponentFromNode(node);
-    comp.name = 'Icon/' + name;
-    comp.fills = [];
-    comp.clipsContent = false;
-    comp.description = 'Lucide ' + name + ', 24pt, 1.5 stroke.';
-    for (const c of comp.children) {
-      try {
-        (c as ConstraintMixin & SceneNode).constraints = { horizontal: 'SCALE', vertical: 'SCALE' };
-      } catch (_) {
-        /* groups have no constraints */
-      }
-    }
-    recolor(comp, 'text/primary');
-    iconComps.set(name, comp);
-    const cell = col({ name: name, w: 120, pad: [16, 8], gap: 10, cross: 'center', radius: 12, fill: 'bg/surface', stroke: 'border/default' }, []);
-    cell.appendChild(comp);
-    add(cell, text(name, 'caption', 'text/secondary', { align: 'center' }));
-    add(grid, cell);
+    const cell = iconCell(name);
+    if (cell) add(grid, cell);
   }
   return grid;
 }
@@ -625,18 +631,26 @@ function sectionFor(groups: Map<string, FrameNode>, root: FrameNode, group: stri
   return wrap;
 }
 
+function makeComponent(def: Def, v: Props, theme: Theme): ComponentNode {
+  const node = def.build(v);
+  const rootEffect = node.getPluginData(STYLE_KEYS.effect);
+  const comp = node.type === 'COMPONENT' ? node : figma.createComponentFromNode(node);
+  relinkStyles(comp, rootEffect);
+  comp.name = def.variants.length > 1 ? propsName(v) : NAME_PREFIX + '/' + def.set;
+  comp.description = def.description;
+  registry.set(vkey(def.set, v, theme), comp);
+  return comp;
+}
+
+function cardFor(def: Def): FrameNode {
+  return col({ name: def.set, gap: 16, pad: 32, radius: 24, fill: 'bg/surface', stroke: 'border/default' }, [
+    text(def.set, 'h3', 'text/primary'),
+    text(def.description, 'small', 'text/secondary', { w: 420 }),
+  ]);
+}
+
 function buildSetFor(def: Def, theme: Theme, holder: FrameNode) {
-  const comps: ComponentNode[] = [];
-  for (const v of def.variants) {
-    const node = def.build(v);
-    const rootEffect = node.getPluginData(STYLE_KEYS.effect);
-    const comp = node.type === 'COMPONENT' ? node : figma.createComponentFromNode(node);
-    relinkStyles(comp, rootEffect);
-    comp.name = def.variants.length > 1 ? propsName(v) : NAME_PREFIX + '/' + def.set;
-    comp.description = def.description;
-    registry.set(vkey(def.set, v, theme), comp);
-    comps.push(comp);
-  }
+  const comps: ComponentNode[] = def.variants.map((v) => makeComponent(def, v, theme));
   if (comps.length > 1) {
     for (const c of comps) holder.appendChild(c);
     const cs = figma.combineAsVariants(comps, holder);
@@ -679,10 +693,7 @@ export function buildLibrary(page: PageNode, sharedMode: boolean): FrameNode[] {
     const groups = new Map<string, FrameNode>();
     for (const def of defs) {
       const wrap = sectionFor(groups, root, def.group);
-      const card = col({ name: def.set, gap: 16, pad: 32, radius: 24, fill: 'bg/surface', stroke: 'border/default' }, [
-        text(def.set, 'h3', 'text/primary'),
-        text(def.description, 'small', 'text/secondary', { w: 420 }),
-      ]);
+      const card = cardFor(def);
       add(wrap, card);
       buildSetFor(def, theme, card);
     }
@@ -690,4 +701,197 @@ export function buildLibrary(page: PageNode, sharedMode: boolean): FrameNode[] {
   }
   ctx.theme = 'light';
   return roots;
+}
+
+// ---------------------------------------------------------------- an existing library
+
+const ROOT_NAMES: Record<Theme, string> = { light: 'Components · Light', dark: 'Components · Dark' };
+export const WALLPAPER_HOLDER = 'Wallpaper components (reused as instances)';
+
+function libraryRoots(page: PageNode): FrameNode[] {
+  return page.children.filter((n) => n.type === 'FRAME' && (n.name === ROOT_NAMES.light || n.name === ROOT_NAMES.dark)) as FrameNode[];
+}
+
+function themesInUse(): Theme[] {
+  return shared ? ['light'] : ['light', 'dark'];
+}
+
+function parseProps(name: string): Props {
+  const out: Props = {};
+  for (const part of name.split(',')) {
+    const i = part.indexOf('=');
+    if (i > 0) out[part.slice(0, i).trim()] = part.slice(i + 1).trim();
+  }
+  return out;
+}
+
+export interface LibraryState {
+  exists: boolean;
+  missingComponents: number;
+  missingIcons: number;
+}
+
+function missingVariants(): Array<{ def: Def; theme: Theme; variants: Props[] }> {
+  const out: Array<{ def: Def; theme: Theme; variants: Props[] }> = [];
+  for (const theme of themesInUse()) {
+    for (const def of defs) {
+      const variants = def.variants.filter((v) => !registry.has(vkey(def.set, v, theme)));
+      if (variants.length) out.push({ def, theme, variants });
+    }
+  }
+  return out;
+}
+
+function state(exists: boolean): LibraryState {
+  return {
+    exists,
+    missingComponents: missingVariants().reduce((n, m) => n + m.variants.length, 0),
+    missingIcons: Object.keys(ICONS).filter((k) => !iconComps.has(k)).length,
+  };
+}
+
+/**
+ * Registers the components already on the Components page, so new instances come from them instead of new copies.
+ * Variants are matched by set name and property values, which is how the library names them.
+ */
+export async function attachLibrary(page: PageNode | null): Promise<LibraryState> {
+  registry.clear();
+  iconComps.clear();
+  if (!page) return state(false);
+  await page.loadAsync();
+  const roots = libraryRoots(page);
+  shared = !roots.some((r) => r.name === ROOT_NAMES.dark);
+  for (const root of roots) {
+    const theme: Theme = root.name === ROOT_NAMES.dark ? 'dark' : 'light';
+    for (const c of root.findAllWithCriteria({ types: ['COMPONENT'] })) {
+      if (c.name.indexOf('Icon/') === 0) {
+        if (!iconComps.has(c.name.slice(5))) iconComps.set(c.name.slice(5), c);
+        continue;
+      }
+      const inSet = !!c.parent && c.parent.type === 'COMPONENT_SET';
+      const setName = inSet ? (c.parent as ComponentSetNode).name : c.name;
+      if (setName.indexOf(NAME_PREFIX + '/') !== 0) continue;
+      const def = defs.find((d) => d.set === setName.slice(NAME_PREFIX.length + 1));
+      if (!def) continue;
+      const parsed = inSet ? parseProps(c.name) : {};
+      const props: Props = {};
+      for (const k of Object.keys(def.variants[0])) props[k] = parsed[k];
+      registry.set(vkey(def.set, props, theme), c);
+    }
+  }
+  return state(roots.length > 0);
+}
+
+/** The frame that holds generated wallpaper components, created next to the library if the page lacks one. */
+export function ensureWallpaperHolder(page: PageNode): FrameNode {
+  let holder = page.children.filter((n) => n.type === 'FRAME' && n.name === WALLPAPER_HOLDER)[0] as FrameNode | undefined;
+  if (!holder) {
+    const right = libraryRoots(page).reduce((m, r) => Math.max(m, r.x + r.width), 0);
+    holder = figma.createFrame();
+    holder.name = WALLPAPER_HOLDER;
+    holder.fills = [];
+    holder.clipsContent = false;
+    page.appendChild(holder);
+    holder.x = right + 400;
+    holder.y = 0;
+  }
+  setWallpaperHolder(holder);
+  return holder;
+}
+
+/** Adds components, variants and icons that the code defines but the library on the page lacks. Nothing else changes. */
+export function addMissingComponents(page: PageNode): number {
+  const roots = libraryRoots(page);
+  const light = roots.filter((r) => r.name === ROOT_NAMES.light)[0];
+  let added = 0;
+  const icons = Object.keys(ICONS).filter((k) => !iconComps.has(k));
+  if (icons.length && light) {
+    ctx.theme = 'light';
+    const grids = light.findAll((n) => n.type === 'FRAME' && n.name === 'Icons') as FrameNode[];
+    const grid = grids[grids.length - 1];
+    for (const name of icons) {
+      const cell = iconCell(name);
+      if (!cell) continue;
+      if (grid) add(grid, cell);
+      else light.appendChild(cell);
+      added++;
+    }
+  }
+  for (const m of missingVariants()) {
+    const root = roots.filter((r) => r.name === ROOT_NAMES[m.theme])[0];
+    if (!root) continue;
+    ctx.theme = m.theme;
+    const set = root.findOne((n) => n.type === 'COMPONENT_SET' && n.name === NAME_PREFIX + '/' + m.def.set) as ComponentSetNode | null;
+    if (set) {
+      for (const v of m.variants) set.appendChild(makeComponent(m.def, v, m.theme));
+    } else {
+      const wrap = (root.findOne((n) => n.type === 'FRAME' && n.name === m.def.group + ' items') as FrameNode | null) || sectionFor(new Map(), root, m.def.group);
+      const card = cardFor(m.def);
+      add(wrap, card);
+      buildSetFor(m.def, m.theme, card);
+    }
+    added += m.variants.length;
+  }
+  ctx.theme = 'light';
+  return added;
+}
+
+/**
+ * Rebuilds the whole library from code, then points every instance in the file at the new components before the old
+ * ones are removed, so screens and pages keep their overrides and stay linked.
+ */
+export async function rebuildLibrary(page: PageNode): Promise<{ swapped: number; failed: number }> {
+  await attachLibrary(page);
+  const oldRoots = libraryRoots(page);
+  const oldComps = new Map(registry);
+  const oldIcons = new Map(iconComps);
+  registry.clear();
+  iconComps.clear();
+  const roots = buildLibrary(page, ctx.modes);
+  for (const r of roots) {
+    const o = oldRoots.filter((x) => x.name === r.name)[0];
+    if (o) {
+      r.x = o.x;
+      r.y = o.y;
+    }
+  }
+  const pairs: Array<[ComponentNode, ComponentNode]> = [];
+  oldComps.forEach((o, k) => {
+    const n = registry.get(k);
+    if (n) pairs.push([o, n]);
+  });
+  oldIcons.forEach((o, k) => {
+    const n = iconComps.get(k);
+    if (n) pairs.push([o, n]);
+  });
+  const within = (n: BaseNode, test: (p: BaseNode) => boolean) => {
+    for (let p = n.parent; p; p = p.parent) if (test(p)) return true;
+    return false;
+  };
+  const inOld = (n: BaseNode) => within(n, (p) => oldRoots.indexOf(p as FrameNode) !== -1);
+  const nested = (n: BaseNode) => within(n, (p) => p.type === 'INSTANCE');
+  let swapped = 0;
+  let failed = 0;
+  // Top-level instances first; nested ones that still point at an old component afterwards are swap overrides.
+  for (const allowNested of [false, true]) {
+    for (const [o, n] of pairs) {
+      let list: InstanceNode[] = [];
+      try {
+        list = await o.getInstancesAsync();
+      } catch (_) {
+        continue;
+      }
+      for (const i of list) {
+        if (i.removed || inOld(i) || (!allowNested && nested(i))) continue;
+        try {
+          i.swapComponent(n);
+          swapped++;
+        } catch (_) {
+          failed++;
+        }
+      }
+    }
+  }
+  for (const o of oldRoots) o.remove();
+  return { swapped, failed };
 }

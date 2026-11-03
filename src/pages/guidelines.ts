@@ -1,11 +1,11 @@
 import { NAME_HUES, Token, contrast, primitives, tokenHex } from '../tokens';
 import { ctx } from '../core/ctx';
-import { FillSpec, Kid, abs, add, box, col, gradient, hexPaint, icon, paint, rect, row, text, pill, avatar } from '../core/ui';
+import { FillSpec, Kid, abs, add, box, col, gradient, hexPaint, icon, paint, rect, row, snapshot, text, pill, avatar } from '../core/ui';
 import { appIcon, glyph, lockup } from '../brand';
 import { use } from '../components/library';
 import { doodleLayer } from '../components/doodles';
 import { MOODS, moodDot, moodFg, moodTint } from '../components/notes';
-import { board, bullet, layoutHorizontally, section } from './common';
+import { board, bullet, section } from './common';
 import { swatchChip, themedPanel } from './foundations';
 
 const EYEBROW = 'Gutchek · Brand guideline';
@@ -459,12 +459,12 @@ function accessibility(): FrameNode {
   );
 }
 
-export function buildGuidelines(page: PageNode): PageNode {
+/** Builds the guideline boards on the page. The caller places them. */
+export function buildGuidelines(page: PageNode): FrameNode[] {
   ctx.theme = 'light';
   const boards = [essence(), logo(), colour(), typography(), layout(), iconography(), signature(), voice(), accessibility()];
   for (const b of boards) page.appendChild(b);
-  layoutHorizontally(boards, 160);
-  return page;
+  return boards;
 }
 
 // ---------------------------------------------------------------- cover
@@ -482,14 +482,14 @@ function browserWindow(shot: FrameNode, w: number): FrameNode {
     box({ name: 'Spacer', w: 'fill', h: 1 }),
     box({ name: 'Balance', w: 52, h: 1 }),
   ]);
-  const c = shot.clone();
+  const c = snapshot(shot);
   c.rescale(w / c.width);
   const win = col({ name: 'Web app snapshot', w, gap: 0, radius: 20, fill: 'bg/raised', clip: true }, [chrome, c]);
   win.effects = [COVER_SHADOW];
   return win;
 }
 
-export function buildCover(previews: FrameNode[], page: PageNode, web?: FrameNode): PageNode {
+export function buildCover(previews: FrameNode[], page: PageNode, web?: FrameNode): FrameNode {
   ctx.theme = 'light';
   const cover = box({ name: 'Cover', dir: 'none', w: 1920, h: 1080, fill: [gradient([['#2C1E66', 0], ['#5B3FD1', 0.65], ['#7556E3', 1]], 120)], clip: true });
   const left = col({ name: 'Copy', gap: 28, w: 760 }, [
@@ -507,7 +507,7 @@ export function buildCover(previews: FrameNode[], page: PageNode, web?: FrameNod
   ]);
   add(cover, abs(left, 120, 220));
   const phone = (p: FrameNode, x: number, y: number) => {
-    const c = p.clone();
+    const c = snapshot(p);
     c.rescale(0.62);
     const screenH = Math.round(852 * 0.62);
     if (c.height > screenH) {
@@ -527,9 +527,7 @@ export function buildCover(previews: FrameNode[], page: PageNode, web?: FrameNod
     previews.forEach((p, i) => phone(p, 1000 + i * 300, 140 + (i % 2) * 80));
   }
   page.appendChild(cover);
-  cover.x = 0;
-  cover.y = 0;
-  return page;
+  return cover;
 }
 
 function metaPill(label: string): FrameNode {

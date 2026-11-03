@@ -1,6 +1,6 @@
 // Smoke test for the Graphic Designer plugin against the mock API.
 // 1. An empty file: tokens, styles and icons are created, phones fall back to illustrations.
-// 2. After the generator has run: tokens are reused and phone mockups use real app screens.
+// 2. After Gutchek General and Mobile have run: tokens are reused and phone mockups use real app screens.
 // 3. The .docx reader in ui.html extracts text from a real Word file.
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +11,7 @@ global.__html__ = '<html></html>';
 
 const root = path.join(__dirname, '..');
 const graphics = path.join(root, 'graphics', 'code.js');
-const generator = path.join(root, 'code.js');
+const { press } = require('./drive');
 
 const until = (pred, ms = 120000) =>
   new Promise((resolve, reject) => {
@@ -51,10 +51,11 @@ async function runGraphics(label, text) {
   const again = await runGraphics('second run on the same page');
   if (again.frames.length !== 28) throw new Error('rerun did not replace the page contents');
 
-  require(generator);
-  await until(() => mock.closed !== null, 120000);
-  if (mock.closed.indexOf('failed') !== -1) throw new Error('generator failed: ' + mock.closed);
-  const withScreens = await runGraphics('after the generator');
+  for (const name of ['general', 'mobile']) {
+    const res = await press(name, 'needed');
+    if (res.type !== 'done') throw new Error(name + ' failed: ' + res.text);
+  }
+  const withScreens = await runGraphics('after General and Mobile');
   if (withScreens.phones < 8) throw new Error('expected phone mockups from real screens, got ' + withScreens.phones);
 
   const small = await runGraphics('short brief', 'Campaign: Test\n## Google display\nHeadline: Hello\n## Unknown thing\n## Instagram story\nTheme: dark\nVisual: notes');

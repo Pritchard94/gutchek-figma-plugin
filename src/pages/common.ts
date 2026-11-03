@@ -1,12 +1,4 @@
 import { Kid, box, col, row, text } from '../core/ui';
-import { PLUGIN_KEY } from '../core/ctx';
-
-export function newPage(name: string): PageNode {
-  const p = figma.createPage();
-  p.name = name;
-  p.setPluginData(PLUGIN_KEY, '1');
-  return p;
-}
 
 export function board(eyebrow: string, title: string, intro: string, kids: Kid[], w = 1440, name?: string): FrameNode {
   return col({ name: name || title, w, pad: [72, 80, 80, 80], gap: 56, fill: 'bg/surface', radius: 40 }, [

@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  :root { --indigo: #5b3fd1; --ink: #1f2937; --amber: #f5b83d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px 16px 88px; font: 13px/1.45 Inter, system-ui, sans-serif; color: var(--figma-color-text, #101828); background: var(--figma-color-bg, #fff); }
+  h1 { font-size: 15px; margin: 0 0 4px; }
+  p.lead { margin: 0 0 12px; color: var(--figma-color-text-secondary, #475467); }
+  .group { border: 1px solid var(--figma-color-border, #e4e7ec); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  .group > label { display: flex; gap: 8px; align-items: center; padding: 10px 12px; font-weight: 600; background: var(--figma-color-bg-secondary, #f9fafb); cursor: pointer; }
+  .group .note { padding: 0 12px 8px; margin-top: -4px; font-size: 11px; color: var(--figma-color-text-secondary, #667085); background: var(--figma-color-bg-secondary, #f9fafb); }
+  .item { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-top: 1px solid var(--figma-color-border, #eef0f3); cursor: pointer; }
+  .item .text { flex: 1; min-width: 0; }
+  .item .hint { display: block; font-size: 11px; color: var(--figma-color-text-secondary, #667085); }
+  .pill { font-size: 11px; padding: 1px 8px; border-radius: 999px; white-space: nowrap; background: var(--figma-color-bg-secondary, #f2f4f7); color: var(--figma-color-text-secondary, #475467); }
+  .pill.needed { background: #fef0c7; color: #93370d; }
+  input[type=checkbox] { margin: 2px 0 0; accent-color: var(--indigo); }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 16px; display: flex; gap: 8px; background: var(--figma-color-bg, #fff); border-top: 1px solid var(--figma-color-border, #e4e7ec); }
+  button { border: 0; border-radius: 10px; padding: 10px 12px; font: 600 12px Inter, system-ui, sans-serif; cursor: pointer; }
+  .primary { flex: 1; background: var(--amber); color: var(--ink); }
+  .secondary { background: var(--figma-color-bg-secondary, #f2f4f7); color: inherit; }
+  button:disabled { opacity: .5; cursor: default; }
+  #status { margin: 4px 0 12px; font-size: 12px; color: var(--figma-color-text-secondary, #475467); }
+  #status:empty { display: none; }
+  #status.error { color: #b42318; }
+  #status ul { margin: 6px 0 0; padding-left: 16px; }
+</style>
+</head>
+<body>
+  <h1 id="name">Gutchek</h1>
+  <p class="lead" id="intro">Loading…</p>
+  <div id="status"></div>
+  <div id="groups"></div>
+  <div class="bar">
+    <button class="secondary" id="missing" title="Tick only the parts this file does not have yet">Only what's missing</button>
+    <button class="secondary" id="none">Clear</button>
+    <button class="primary" id="go" disabled>Update selected</button>
+  </div>
+<script>
+var groupsEl = document.getElementById('groups');
+var status = document.getElementById('status');
+var go = document.getElementById('go');
+var busy = false;
+var groups = [];
+var picked = null;
+
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function say(html, error) { status.innerHTML = html; status.className = error ? 'error' : ''; }
+function boxes() { return Array.prototype.slice.call(groupsEl.querySelectorAll('input[data-id]')); }
+function selected() { return boxes().filter(function (b) { return b.checked; }).map(function (b) { return b.getAttribute('data-id'); }); }
+
+function sync() {
+  var n = selected().length;
+  go.disabled = busy || n === 0;
+  go.textContent = busy ? 'Working…' : n ? 'Update ' + n + ' selected' : 'Nothing selected';
+  Array.prototype.forEach.call(groupsEl.querySelectorAll('input[data-group]'), function (g) {
+    var kids = boxes().filter(function (b) { return b.getAttribute('data-in') === g.getAttribute('data-group'); });
+    var on = kids.filter(function (b) { return b.checked; }).length;
+    g.checked = on > 0 && on === kids.length;
+    g.indeterminate = on > 0 && on < kids.length;
+  });
+}
+
+function render() {
+  var keep = picked;
+  groupsEl.innerHTML = groups.map(function (g, gi) {
+    var items = g.items.map(function (it) {
+      var on = keep ? keep.indexOf(it.id) !== -1 : it.needed;
+      return '<label class="item"><input type="checkbox" data-id="' + esc(it.id) + '" data-in="' + gi + '"' + (on ? ' checked' : '') + ' />' +
+        '<span class="text">' + esc(it.label) + (it.hint ? '<span class="hint">' + esc(it.hint) + '</span>' : '') + '</span>' +
+        '<span class="pill' + (it.needed ? ' needed' : '') + '">' + esc(it.status) + '</span></label>';
+    }).join('');
+    return '<div class="group"><label><input type="checkbox" data-group="' + gi + '" />' + esc(g.title) + '</label>' +
+      (g.note ? '<div class="note">' + esc(g.note) + '</div>' : '') + items + '</div>';
+  }).join('');
+  sync();
+}
+
+groupsEl.onchange = function (e) {
+  var t = e.target;
+  if (t.hasAttribute('data-group')) {
+    boxes().forEach(function (b) { if (b.getAttribute('data-in') === t.getAttribute('data-group')) b.checked = t.checked; });
+  }
+  picked = selected();
+  sync();
+};
+
+document.getElementById('missing').onclick = function () {
+  picked = null;
+  render();
+};
+document.getElementById('none').onclick = function () {
+  boxes().forEach(function (b) { b.checked = false; });
+  picked = [];
+  sync();
+};
+go.onclick = function () {
+  var ids = selected();
+  if (!ids.length) return;
+  busy = true;
+  sync();
+  say('Starting…');
+  parent.postMessage({ pluginMessage: { type: 'run', ids: ids } }, '*');
+};
+
+function notes(list) {
+  return list && list.length ? '<ul>' + list.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul>' : '';
+}
+
+onmessage = function (e) {
+  var m = e.data.pluginMessage;
+  if (!m) return;
+  if (m.type === 'init') {
+    document.getElementById('name').textContent = m.name;
+    document.getElementById('intro').textContent = m.intro;
+    groups = m.groups || [];
+    picked = null;
+    render();
+  }
+  if (m.type === 'progress') say(esc(m.text) + '…');
+  if (m.type === 'done') { busy = false; say('<b>' + esc(m.text) + '</b>' + notes(m.notes)); sync(); }
+  if (m.type === 'error') { busy = false; say(esc(m.text) + notes(m.notes), true); sync(); }
+};
+</script>
+</body>
+</html>

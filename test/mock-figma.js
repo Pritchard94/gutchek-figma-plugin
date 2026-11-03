@@ -92,13 +92,27 @@ class BaseNode {
       if (i >= 0) this.parent.children.splice(i, 1);
     }
     this.parent = null;
-    this.removed = true;
+    const mark = (n) => {
+      n.removed = true;
+      for (const c of n.children || []) mark(c);
+    };
+    mark(this);
   }
   setPluginData(k, v) {
     this._pluginData[k] = v;
   }
   getPluginData(k) {
     return this._pluginData[k] || '';
+  }
+  setSharedPluginData(ns, k, v) {
+    if (!this._shared) this._shared = {};
+    this._shared[ns + '|' + k] = v;
+  }
+  getSharedPluginData(ns, k) {
+    return (this._shared && this._shared[ns + '|' + k]) || '';
+  }
+  findAllWithCriteria(c) {
+    return this.findAll ? this.findAll((n) => !c.types || c.types.indexOf(n.type) !== -1) : [];
   }
   setBoundVariable(field, v) {
     if (!v || v.type !== 'VARIABLE') throw new Error('setBoundVariable expects a variable');
@@ -244,19 +258,48 @@ class FrameNode extends ParentNode {
     const inst = deepClone(this, true);
     inst.type = 'INSTANCE';
     inst.mainComponent = this;
+    indexInstance(inst);
     mock.currentPage.appendChild(inst);
     return inst;
   }
   swapComponent(c) {
     if (this.type !== 'INSTANCE') throw new Error('swapComponent on non-instance');
+    if (c.type !== 'COMPONENT' || c.removed) throw new Error('swapComponent needs a live component');
+    if (this.mainComponent && instancesOf.has(this.mainComponent)) instancesOf.get(this.mainComponent).delete(this);
     this.mainComponent = c;
+    indexInstance(this);
+    for (const ch of this.children) {
+      ch.parent = null;
+      const mark = (n) => {
+        n.removed = true;
+        for (const k of n.children || []) mark(k);
+      };
+      mark(ch);
+    }
     this.children = [];
     for (const ch of c.children) {
       const k = deepClone(ch, true);
       k.parent = this;
       this.children.push(k);
     }
+    if (c.children.length) for (const ch of this.children) markInstanceChild(ch);
   }
+  async getInstancesAsync() {
+    if (this.type !== 'COMPONENT') throw new Error('getInstancesAsync on non-component');
+    return [...(instancesOf.get(this) || [])].filter((n) => !n.removed && attached(n) && n.mainComponent === this);
+  }
+}
+
+const instancesOf = new Map();
+function indexInstance(n) {
+  if (!instancesOf.has(n.mainComponent)) instancesOf.set(n.mainComponent, new Set());
+  instancesOf.get(n.mainComponent).add(n);
+}
+
+function attached(n) {
+  let p = n;
+  while (p.parent) p = p.parent;
+  return p.type === 'DOCUMENT';
 }
 
 function deepClone(n, intoInstance) {
@@ -265,8 +308,13 @@ function deepClone(n, intoInstance) {
     if (k === 'children' || k === 'parent') continue;
     c[k] = n[k];
   }
+  c._pluginData = Object.assign({}, n._pluginData);
+  if (n._shared) c._shared = Object.assign({}, n._shared);
+  c.reactions = (n.reactions || []).slice();
+  c.removed = false;
   c.id = (intoInstance ? 'I' : '') + '1:' + nextId++;
   nodesById.set(c.id, c);
+  if (c.type === 'INSTANCE' && c.mainComponent) indexInstance(c);
   c.parent = null;
   if (n.children) {
     c.children = [];
@@ -598,4 +646,4 @@ nodesById.set(first.id, first);
 mock.root.appendChild(first);
 mock.currentPage = first;
 
-module.exports = { mock, nodesById, collections, variables, styles };
+module.exports = { mock, nodesById, collections, variables, styles, attached };

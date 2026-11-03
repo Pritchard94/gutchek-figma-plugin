@@ -2,14 +2,15 @@
   "name": "libra-figma",
   "version": "1.0.0",
   "private": true,
-  "description": "Figma plugins for Gutchek: the design generator (brand, design system, app, web app, website) and the graphic designer (social, share, store and ad graphics from a brief).",
+  "description": "Figma plugins for Gutchek: General (design system and brand), Mobile (app screens and user flow), Website & Waitlist, Web App, and the Graphic Designer (social, share, store and ad graphics from a brief).",
   "scripts": {
-    "build": "esbuild src/main.ts --bundle --target=es2017 --format=iife --outfile=code.js && npm run build:graphics",
-    "watch": "npm run build -- --watch",
+    "build": "npm run build:plugins && npm run build:graphics",
+    "build:plugins": "esbuild src/plugins/general.ts src/plugins/mobile.ts src/plugins/website.ts src/plugins/webapp.ts --bundle --target=es2017 --format=iife --loader:.html=text --outdir=plugins --entry-names=[name]/code",
+    "build:graphics": "esbuild src/graphics/main.ts --bundle --target=es2017 --format=iife --outfile=graphics/code.js",
+    "watch": "npm run build:plugins -- --watch",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run build && npm run smoke",
-    "smoke": "node test/run.js && MAX_MODES=1 node test/run.js && NO_JAKARTA=1 RERUN=1 node test/run.js && node test/run-graphics.js",
-    "build:graphics": "esbuild src/graphics/main.ts --bundle --target=es2017 --format=iife --outfile=graphics/code.js"
+    "smoke": "node test/smoke.js && node test/run-graphics.js"
   },
   "devDependencies": {
     "@figma/plugin-typings": "*",

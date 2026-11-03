@@ -1,5 +1,5 @@
 import { Theme } from '../tokens';
-import { ctx, applyThemeMode, flush, later, warn } from '../core/ctx';
+import { ctx, applyThemeMode, later, tag, warn } from '../core/ctx';
 import { hexPaint, text } from '../core/ui';
 import { links } from './kit';
 import { purpose, signIn, verify, welcome } from './auth';
@@ -215,67 +215,74 @@ function makeReaction(destinationId: string): Reaction {
   };
 }
 
-export async function buildScreens(theme: Theme, page: PageNode, progress: (step: string) => void = () => {}): Promise<{ page: PageNode; frames: Record<string, FrameNode> }> {
+export const SCREEN_PAGES: Record<Theme, string> = { light: 'Screens · Light', dark: 'Screens · Dark' };
+export const SCREEN_BACKGROUND: Record<Theme, string> = { light: '#E9EBF0', dark: '#05050A' };
+
+/** Builder id and frame name of every screen, for finding screens that are already in the file. */
+export function screenKeys(theme: Theme): Array<[string, string]> {
+  const out: Array<[string, string]> = [];
+  for (const g of GROUPS) for (const s of g.screens) out.push([s.id, s.label + (theme === 'dark' ? ' · Dark' : '')]);
+  return out;
+}
+
+/** Builds one flow group as a section on the current page. Prototype links are queued in `links` for resolveScreenLinks. */
+export function buildScreenGroup(theme: Theme, g: (typeof GROUPS)[number], page: PageNode): { section: SectionNode | FrameNode; frames: Record<string, FrameNode> } {
   ctx.theme = theme;
-  links.length = 0;
-  page.backgrounds = [hexPaint(theme === 'dark' ? '#05050A' : '#E9EBF0')];
   const frames: Record<string, FrameNode> = {};
-  let y = 0;
-  for (const g of GROUPS) {
-    const built: FrameNode[] = [];
-    for (const s of g.screens) {
-      let f: FrameNode;
-      try {
-        f = s.build();
-      } catch (e) {
-        warn('Screen ' + s.label + ' failed: ' + String(e && (e as Error).message ? (e as Error).message : e));
-        continue;
-      }
-      f.name = s.label + (theme === 'dark' ? ' · Dark' : '');
-      applyThemeMode(f, theme);
-      frames[s.id] = f;
-      built.push(f);
-    }
-    const tallest = built.reduce((m, f) => Math.max(m, f.height), 852);
-    const width = built.length * 393 + (built.length - 1) * GAP + SECTION_PAD * 2;
-    const height = tallest + SECTION_PAD * 2 + 64;
-
-    let container: SectionNode | FrameNode;
+  const built: FrameNode[] = [];
+  for (const s of g.screens) {
+    let f: FrameNode;
     try {
-      const section = figma.createSection();
-      section.name = g.title;
-      section.resizeWithoutConstraints(width, height);
-      section.fills = [hexPaint(theme === 'dark' ? '#101018' : '#FFFFFF')];
-      container = section;
-    } catch (_) {
-      const frame = figma.createFrame();
-      frame.name = g.title;
-      frame.resize(width, height);
-      frame.fills = [hexPaint(theme === 'dark' ? '#101018' : '#FFFFFF')];
-      container = frame;
+      f = s.build();
+    } catch (e) {
+      warn('Screen ' + s.label + ' failed: ' + String(e && (e as Error).message ? (e as Error).message : e));
+      continue;
     }
-    page.appendChild(container);
-    container.x = 0;
-    container.y = y;
-    const caption = text(g.note, 'body', 'text/secondary');
-    caption.fills = [hexPaint(theme === 'dark' ? '#A9A9BC' : '#475467')];
-    container.appendChild(caption);
-    caption.x = SECTION_PAD;
-    caption.y = SECTION_PAD - 40;
-    let x = SECTION_PAD;
-    for (const f of built) {
-      container.appendChild(f);
-      f.x = x;
-      f.y = SECTION_PAD + 24;
-      x += 393 + GAP;
-    }
-    y += height + SECTION_GAP;
-    progress(g.title);
-    await flush();
-    await new Promise((r) => setTimeout(r, 0));
-    ctx.theme = theme;
+    f.name = s.label + (theme === 'dark' ? ' · Dark' : '');
+    tag(f, 'id', s.id);
+    applyThemeMode(f, theme);
+    frames[s.id] = f;
+    built.push(f);
   }
+  const tallest = built.reduce((m, f) => Math.max(m, f.height), 852);
+  const width = built.length * 393 + Math.max(0, built.length - 1) * GAP + SECTION_PAD * 2;
+  const height = tallest + SECTION_PAD * 2 + 64;
 
+  let container: SectionNode | FrameNode;
+  try {
+    const section = figma.createSection();
+    section.name = g.title;
+    section.resizeWithoutConstraints(width, height);
+    section.fills = [hexPaint(theme === 'dark' ? '#101018' : '#FFFFFF')];
+    container = section;
+  } catch (_) {
+    const frame = figma.createFrame();
+    frame.name = g.title;
+    frame.resize(width, height);
+    frame.fills = [hexPaint(theme === 'dark' ? '#101018' : '#FFFFFF')];
+    container = frame;
+  }
+  page.appendChild(container);
+  const caption = text(g.note, 'body', 'text/secondary');
+  caption.fills = [hexPaint(theme === 'dark' ? '#A9A9BC' : '#475467')];
+  container.appendChild(caption);
+  caption.x = SECTION_PAD;
+  caption.y = SECTION_PAD - 40;
+  let x = SECTION_PAD;
+  for (const f of built) {
+    container.appendChild(f);
+    f.x = x;
+    f.y = SECTION_PAD + 24;
+    x += 393 + GAP;
+  }
+  ctx.theme = 'light';
+  return { section: container, frames };
+}
+
+export const SCREEN_SECTION_GAP = SECTION_GAP;
+
+/** Wires the links queued while building to their destination screens, which may be new or already on the page. */
+export function resolveScreenLinks(frames: Record<string, FrameNode>) {
   const screenOf = (n: BaseNode): BaseNode | null => {
     let p: BaseNode | null = n;
     while (p && !(p.type === 'FRAME' && (p as FrameNode).getPluginData('screen') === '1')) p = p.parent;
@@ -283,16 +290,8 @@ export async function buildScreens(theme: Theme, page: PageNode, progress: (step
   };
   for (const [node, target] of links) {
     const dest = frames[target];
-    if (!dest || node.removed || screenOf(node) === dest) continue;
+    if (!dest || dest.removed || node.removed || screenOf(node) === dest) continue;
     later(() => (node as FrameNode).setReactionsAsync([makeReaction(dest.id)]), node);
   }
-  if (frames.welcome) {
-    try {
-      page.flowStartingPoints = [{ nodeId: frames.welcome.id, name: theme === 'dark' ? 'Main flow · Dark' : 'Main flow' }];
-    } catch (e) {
-      warn('Could not set prototype starting point.');
-    }
-  }
-  ctx.theme = 'light';
-  return { page, frames };
+  links.length = 0;
 }
