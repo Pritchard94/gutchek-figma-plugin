@@ -4,6 +4,7 @@ import { Brief, SAMPLE_BRIEF, parseBrief } from './brief';
 import { GROUP_ORDER } from './formats';
 import { Env, compose } from './compose';
 import { attachDesignSystem, findScreens } from './system';
+import { setWallpaperHolder } from '../components/doodles';
 
 const PAGE = 'Graphic Design';
 const KEY = 'gutchek-graphics';
@@ -75,6 +76,14 @@ async function generate(source: string) {
     page.appendChild(holder);
     return holder;
   });
+  const wallpapers = figma.createFrame();
+  wallpapers.name = 'Wallpaper components used by the graphics';
+  wallpapers.fills = [];
+  wallpapers.clipsContent = false;
+  page.appendChild(wallpapers);
+  wallpapers.x = -12000;
+  wallpapers.y = 0;
+  setWallpaperHolder(wallpapers);
   const env: Env = { screens: await findScreens(), notes: [], missing: [] };
   const groups = new Map<string, FrameNode[]>();
   brief.items.forEach((item, i) => {
@@ -115,6 +124,7 @@ async function generate(source: string) {
   return { count, notes: unique, campaign: brief.campaign };
 }
 
+figma.skipInvisibleInstanceChildren = true;
 figma.showUI(__html__, { width: 460, height: 640, themeColors: true });
 figma.ui.postMessage({ type: 'sample', text: SAMPLE_BRIEF });
 figma.ui.onmessage = async (msg: { type: string; text?: string }) => {

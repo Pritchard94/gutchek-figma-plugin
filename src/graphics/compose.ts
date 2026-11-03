@@ -61,7 +61,7 @@ function logoFor(theme: Theme, height: number): FrameNode {
 }
 
 /** The doodle grid is drawn at phone scale and enlarged, so large frames keep the same density with far fewer layers. */
-function doodles(w: number, h: number, token: Token, opacity: number, seed: number): FrameNode {
+function doodles(w: number, h: number, token: Token, opacity: number, seed: number): FrameNode | InstanceNode {
   const k = Math.max(1, Math.min(w, h) / 360);
   const layer = doodleLayer(Math.ceil(w / k), Math.ceil(h / k), token, opacity, seed);
   if (k > 1) layer.rescale(k);

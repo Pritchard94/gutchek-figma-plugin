@@ -1,5 +1,5 @@
 import { Theme } from '../tokens';
-import { ctx, applyThemeMode, later, warn } from '../core/ctx';
+import { ctx, applyThemeMode, flush, later, warn } from '../core/ctx';
 import { hexPaint, text } from '../core/ui';
 import { links } from './kit';
 import { purpose, signIn, verify, welcome } from './auth';
@@ -215,7 +215,7 @@ function makeReaction(destinationId: string): Reaction {
   };
 }
 
-export function buildScreens(theme: Theme, page: PageNode): { page: PageNode; frames: Record<string, FrameNode> } {
+export async function buildScreens(theme: Theme, page: PageNode, progress: (step: string) => void = () => {}): Promise<{ page: PageNode; frames: Record<string, FrameNode> }> {
   ctx.theme = theme;
   links.length = 0;
   page.backgrounds = [hexPaint(theme === 'dark' ? '#05050A' : '#E9EBF0')];
@@ -270,6 +270,10 @@ export function buildScreens(theme: Theme, page: PageNode): { page: PageNode; fr
       x += 393 + GAP;
     }
     y += height + SECTION_GAP;
+    progress(g.title);
+    await flush();
+    await new Promise((r) => setTimeout(r, 0));
+    ctx.theme = theme;
   }
 
   const screenOf = (n: BaseNode): BaseNode | null => {

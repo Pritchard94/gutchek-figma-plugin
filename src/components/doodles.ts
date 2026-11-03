@@ -1,4 +1,5 @@
 import { Token } from '../tokens';
+import { ctx } from '../core/ctx';
 import { box, icon, placeRotated } from '../core/ui';
 
 /** Line-art motifs for chat wallpaper: dating, care and the check. No surveillance imagery. */
@@ -8,7 +9,41 @@ const MOTIFS = ['check-circle', 'heart', 'message', 'coffee', 'star', 'sparkle',
  * WhatsApp-style tiled doodle wallpaper. Positions and rotations come from a seeded
  * generator so every run, and light and dark, produce the same pattern.
  */
-export function doodleLayer(w: number, h: number, token: Token = 'brand/fg', opacity = 0.09, seed = 11): FrameNode {
+let holder: (FrameNode | SectionNode) | null = null;
+const cache = new Map<string, ComponentNode>();
+
+/**
+ * Where wallpaper components live. Once set, each distinct pattern is drawn once as a component and reused as a
+ * single instance, so a frame carries one layer instead of hundreds. Colours are tokens, so light and dark share it.
+ */
+export function setWallpaperHolder(node: FrameNode | SectionNode | null) {
+  holder = node;
+  cache.clear();
+}
+
+export function doodleLayer(w: number, h: number, token: Token = 'brand/fg', opacity = 0.09, seed = 11): FrameNode | InstanceNode {
+  if (holder && !holder.removed) {
+    const key = Math.round(w) + 'x' + Math.round(h) + '|' + token + '|' + opacity + '|' + seed + (ctx.modes ? '' : '|' + ctx.theme);
+    let comp = cache.get(key);
+    if (!comp || comp.removed) {
+      comp = figma.createComponentFromNode(drawDoodles(w, h, token, opacity, seed));
+      comp.name = 'Wallpaper/' + Math.round(w) + '\u00d7' + Math.round(h) + ' \u00b7 ' + token + ' \u00b7 ' + Math.round(opacity * 100) + '%';
+      comp.description = 'Doodle wallpaper, generated. Reused as an instance wherever this size and colour appear.';
+      holder.appendChild(comp);
+      const kids = holder.children.length;
+      comp.x = ((kids - 1) % 6) * 1600;
+      comp.y = Math.floor((kids - 1) / 6) * 1200;
+      cache.set(key, comp);
+    }
+    const inst = comp.createInstance();
+    inst.name = 'Chat wallpaper';
+    inst.locked = true;
+    return inst;
+  }
+  return drawDoodles(w, h, token, opacity, seed);
+}
+
+function drawDoodles(w: number, h: number, token: Token, opacity: number, seed: number): FrameNode {
   const f = box({ name: 'Chat wallpaper', dir: 'none', w, h, clip: true });
   let s = seed;
   const rnd = () => {

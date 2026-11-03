@@ -1,4 +1,4 @@
-import { ctx, later, warn } from '../core/ctx';
+import { ctx, flush, later, warn } from '../core/ctx';
 import { hexPaint, text } from '../core/ui';
 import { webLinks } from './kit';
 import { Screens, landing, mobileLanding } from './landing';
@@ -86,7 +86,13 @@ export function sectionFor(page: PageNode, title: string, note: string, frames: 
   return y + container.height + 200;
 }
 
-export function buildWebsite(page: PageNode, screens: Screens): Record<string, FrameNode> {
+export async function buildWebsite(page: PageNode, screens: Screens, progress: (step: string) => void = () => {}): Promise<Record<string, FrameNode>> {
+  const pause = async (step: string) => {
+    progress(step);
+    await flush();
+    await new Promise((r) => setTimeout(r, 0));
+    ctx.theme = 'light';
+  };
   ctx.theme = 'light';
   webLinks.length = 0;
   page.backgrounds = [hexPaint('#E9EBF0')];
@@ -107,7 +113,9 @@ export function buildWebsite(page: PageNode, screens: Screens): Record<string, F
       .filter((f): f is FrameNode => !!f);
 
   const desktop = build(DESKTOP_PAGES);
+  await pause('Desktop pages');
   const mobile = build(MOBILE_PAGES);
+  await pause('Mobile pages');
   const adminDefs = [...ANALYTICS_PAGES, ADMIN_PAGES[0], ADMIN_EXTRA[0], ADMIN_EXTRA[1], ...ADMIN_PAGES.slice(1), ...ADMIN_EXTRA.slice(2)];
   const admin = build(adminDefs.map(([id, label, fn]) => ({ id, label, build: () => fn() })));
   let y = sectionFor(page, 'Website · Desktop 1440', 'Marketing site, public opt-out and dispute flow, help centre and legal pages. Click through with Play.', desktop, 0);
