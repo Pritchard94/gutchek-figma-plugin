@@ -4,7 +4,7 @@ import { glyph } from '../brand';
 import { use } from '../components/library';
 import { nickAvatar } from '../components/chat';
 import { MOODS, Mood, NoteSpec, WEEK, moodDot, moodPicker, moodRibbon, noteCard, personChip, tagChip, timelineItem, weekStrip } from '../components/notes';
-import { N_KUNLE, N_MORNING, N_QUIET, N_TOBI_CALL } from '../screens/notes';
+import { N_GENERAL_DRAFT, N_KUNLE, N_MORNING, N_QUIET, N_TOBI_CALL } from '../screens/notes';
 import { tobi } from '../screens/data';
 import { APP_H, alink, appFrame, btn, modal } from './shell';
 
@@ -35,9 +35,9 @@ function notesColumn(active: string): FrameNode {
   };
   return col({ name: 'Notes list', w: LIST_W, h: APP_H, pad: [20, 12], gap: 12, fill: 'bg/surface', stroke: 'border/default' }, [
     row({ name: 'Head', w: 'fill', gap: 8, pad: [0, 8] }, [text('Notes', 'h3', 'text/primary', { w: 'fill' }), icon('lock', 18, 'text/tertiary')]),
-    alink(fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Write a note' }, { show: ['icon'], icons: { icon: 'pencil' } })), 'wNotes'),
+    alink(fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Write a note' }, { show: ['icon'], icons: { icon: 'pencil' } })), 'wNotesGeneral'),
     box({ name: 'Search', dir: 'h', w: 'fill', h: 36, pad: [0, 12], gap: 8, radius: 10, fill: 'bg/subtle', cross: 'center' }, [icon('search', 16, 'text/tertiary'), text('Search notes', 'small', 'text/tertiary', { w: 'fill' }), text('⌘F', 'caption', 'text/tertiary')]),
-    col({ name: 'Library', w: 'fill', gap: 2 }, [item('notebook-pen', 'All notes', '21'), item('file-text', 'General', '8'), item('pin', 'Pinned', '2'), item('lock', 'Evidence', '4', 'wNotesEvidence')]),
+    col({ name: 'Library', w: 'fill', gap: 2 }, [item('notebook-pen', 'All notes', '21'), item('file-text', 'General', '8', 'wNotesGeneral'), item('pin', 'Pinned', '2'), item('lock', 'Evidence', '4', 'wNotesEvidence')]),
     divider(),
     row({ name: 'People head', w: 'fill', pad: [0, 8] }, [text('People', 'overline', 'text/tertiary', { w: 'fill' }), icon('user-plus', 16, 'text/secondary')]),
     col({ name: 'People', w: 'fill', gap: 2 }, [person('Tobi', 'Talking', '9', 'wNotesPerson'), person('Kunle', 'Just matched', '3'), person('Seun', 'Dating', '14')]),
@@ -56,6 +56,15 @@ function notesColumn(active: string): FrameNode {
   ]);
 }
 
+const N_DRAFT: NoteSpec = { time: 'Today, 21:40', mood: 'Calm', body: N_GENERAL_DRAFT, tags: ['me time', 'sleep'] };
+const N_SUNDAY: NoteSpec = { time: 'Sun 25 Oct, 20:05', mood: 'Happy', body: 'Lunch with the girls. Laughed so much my face hurt. Reminder that my week doesn\u2019t have to revolve around my phone.', tags: ['friends'] };
+
+const highlight = (n: FrameNode) => {
+  n.strokes = [paint('brand/fg')];
+  n.strokeWeight = 2;
+  return n;
+};
+
 function feedColumn(): FrameNode {
   const prompt = col({ name: 'Prompt', w: 'fill', h: 'fill', pad: [16, 18], gap: 8, radius: 20, fill: 'brand/subtle' }, [
     row({ name: 'Head', gap: 6 }, [icon('sparkle', 14, 'brand/fg'), text('TONIGHT\u2019S PROMPT', 'overline', 'brand/fg')]),
@@ -66,9 +75,6 @@ function feedColumn(): FrameNode {
     row({ name: 'Head', w: 'fill' }, [text('This week', 'smallStrong', 'text/primary', { w: 'fill' }), text('Mostly calm', 'caption', 'text/tertiary')]),
     weekStrip(WEEK, 6, 'fill', 30),
   ]);
-  const selected = noteCard(N_TOBI_CALL);
-  selected.strokes = [paint('brand/fg')];
-  selected.strokeWeight = 2;
   return col({ name: 'Feed', w: FEED_W, h: APP_H, pad: [24, 28], gap: 14, clip: true }, [
     row({ name: 'Header', w: 'fill', gap: 12 }, [
       col({ name: 'Title', gap: 2, w: 'fill' }, [text('All notes', 'h2', 'text/primary'), text('21 notes · only you can see them', 'caption', 'text/tertiary')]),
@@ -76,12 +82,44 @@ function feedColumn(): FrameNode {
     ]),
     row({ name: 'Cards', w: 'fill', gap: 14, cross: 'start' }, [prompt, week]),
     text('TODAY', 'overline', 'text/tertiary'),
-    alink(selected, 'wNotesPerson'),
-    noteCard(N_MORNING),
+    alink(highlight(noteCard(N_TOBI_CALL)), 'wNotesPerson'),
+    alink(noteCard(N_MORNING), 'wNotesGeneral'),
     text('YESTERDAY', 'overline', 'text/tertiary'),
     alink(noteCard(N_KUNLE), 'wNotesEvidence'),
     text('THURSDAY 22 OCTOBER', 'overline', 'text/tertiary'),
     noteCard(N_QUIET),
+  ]);
+}
+
+function generalFeedColumn(): FrameNode {
+  return col({ name: 'Feed', w: FEED_W, h: APP_H, pad: [24, 28], gap: 14, clip: true }, [
+    row({ name: 'Header', w: 'fill', gap: 12 }, [
+      col({ name: 'Title', gap: 2, w: 'fill' }, [text('General', 'h2', 'text/primary'), text('8 notes not about anyone · only you can see them', 'caption', 'text/tertiary')]),
+      row({ name: 'Sort', gap: 6, pad: [8, 12], radius: 10, stroke: 'border/default' }, [icon('filter', 14, 'text/secondary'), text('Newest', 'smallStrong', 'text/secondary')]),
+    ]),
+    text('TODAY', 'overline', 'text/tertiary'),
+    highlight(noteCard(Object.assign({}, N_DRAFT, { time: 'Draft · today, 21:40' }) as NoteSpec)),
+    noteCard(N_MORNING),
+    text('SUNDAY 25 OCTOBER', 'overline', 'text/tertiary'),
+    noteCard(N_SUNDAY),
+  ]);
+}
+
+function generalEditorPanel(): FrameNode {
+  return col({ name: 'Editor', w: PANEL_W, h: APP_H, pad: [20, 24], gap: 18, fill: 'bg/surface', stroke: 'border/default' }, [
+    row({ name: 'Head', w: 'fill', gap: 8 }, [
+      text('New note', 'title', 'text/primary', { w: 'fill' }),
+      row({ name: 'Saved', gap: 4 }, [icon('check', 14, 'text/tertiary'), text('Draft saved · 21:41', 'caption', 'text/tertiary')]),
+    ]),
+    alink(fill(use('Segmented', { Active: 'First' }, { first: 'General', second: 'About someone' })), 'wNotes'),
+    row({ name: 'General', gap: 8, w: 'fill' }, [icon('notebook-pen', 16, 'text/tertiary'), text('Just for you. Link it to a person later if you want.', 'caption', 'text/tertiary', { w: 'fill' })]),
+    text('Thursday 29 October · 21:40', 'caption', 'text/tertiary'),
+    text(N_GENERAL_DRAFT, { family: 'ui', weight: 400, size: 17, line: 28 }, 'text/primary', { w: 'fill' }),
+    col({ name: 'Mood', gap: 8, w: 'fill' }, [text('How do you feel?', 'label', 'text/secondary'), moodPicker('Calm')]),
+    row({ name: 'Tags', gap: 6, w: 'fill' }, [tagChip('me time'), tagChip('sleep'), row({ name: 'Add tag', gap: 4, pad: [3, 8], radius: 8, stroke: 'border/strong', dash: [3, 3] }, [icon('plus', 12, 'text/secondary'), text('Tag', 'caption', 'text/secondary')])]),
+    box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
+    row({ name: 'Actions', w: 'fill', gap: 10 }, [alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Save note' })), 'wNotes'), btn('Pin', 'Secondary', 'Large', 'pin')]),
+    row({ name: 'Privacy', gap: 6 }, [icon('lock', 14, 'text/tertiary'), text('Encrypted and synced to your account. Not linked to anyone.', 'caption', 'text/tertiary')]),
   ]);
 }
 
@@ -92,7 +130,7 @@ function editorPanel(): FrameNode {
       row({ name: 'Saved', gap: 4 }, [icon('check', 14, 'text/tertiary'), text('Saved · 21:41', 'caption', 'text/tertiary')]),
       box({ name: 'More', dir: 'h', w: 32, h: 32, radius: 16, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('more', 16, 'text/secondary')]),
     ]),
-    fill(use('Segmented', { Active: 'Second' }, { first: 'General', second: 'About someone' })),
+    alink(fill(use('Segmented', { Active: 'Second' }, { first: 'General', second: 'About someone' })), 'wNotesGeneral'),
     row({ name: 'Person', w: 'fill', gap: 8 }, [personChip('Tobi', 'Talking', true), box({ name: 'Spacer', w: 'fill', h: 1 }), text('Change', 'smallStrong', 'brand/fg')]),
     text('Thursday 29 October · 21:40', 'caption', 'text/tertiary'),
     text('Long call tonight. He remembered the thing about my sister\u2019s wedding without me bringing it up. Felt really seen.\n\nStill want to ask about the football page before Saturday.', { family: 'ui', weight: 400, size: 17, line: 28 }, 'text/primary', { w: 'fill' }),
@@ -110,6 +148,10 @@ function editorPanel(): FrameNode {
 
 export function wNotes(): FrameNode {
   return appFrame({ name: 'Notes', active: 'wNotes', bleed: true, collapsed: true }, [notesColumn('All notes'), feedColumn(), editorPanel()]);
+}
+
+export function wNotesGeneral(): FrameNode {
+  return appFrame({ name: 'Notes · General', active: 'wNotes', bleed: true, collapsed: true }, [notesColumn('General'), generalFeedColumn(), generalEditorPanel()]);
 }
 
 function timelineColumn(): FrameNode {

@@ -6,8 +6,8 @@ import { RoomMsg, composerBar, nameToken, nickAvatar, roomMessage, streamDivider
 import { addWallpaper } from '../components/doodles';
 import { modeSwitch } from '../components/appearance';
 import { people, tobi, user } from '../screens/data';
-import { WEEK, moodPicker, noteCard, weekStrip } from '../components/notes';
-import { N_KUNLE, N_TOBI_CALL } from '../screens/notes';
+import { WEEK, moodPicker, noteCard, personChip, tagChip, weekStrip } from '../components/notes';
+import { N_GENERAL_DRAFT, N_KUNLE, N_TOBI_CALL } from '../screens/notes';
 import { alink, field, iconTileW, kv } from './shell';
 
 const W = 390;
@@ -381,7 +381,7 @@ export function mwNotes(): FrameNode {
       footer: col({ name: 'Write bar', w: 'fill', pad: [10, 16], gap: 10, fill: 'bg/surface' }, [
         divider(),
         row({ name: 'Composer', w: 'fill', gap: 10 }, [
-          row({ name: 'Field', w: 'fill', h: 44, pad: [0, 14], gap: 8, radius: 22, fill: 'bg/subtle', cross: 'center' }, [icon('pencil', 16, 'text/tertiary'), text('Write a note', 'small', 'text/tertiary', { w: 'fill' })]),
+          alink(row({ name: 'Field', w: 'fill', h: 44, pad: [0, 14], gap: 8, radius: 22, fill: 'bg/subtle', cross: 'center' }, [icon('pencil', 16, 'text/tertiary'), text('Write a note', 'small', 'text/tertiary', { w: 'fill' })]), 'mwWriteNote'),
           box({ name: 'Save', dir: 'h', w: 44, h: 44, radius: 22, fill: 'action/solid', main: 'center', cross: 'center' }, [icon('arrow-right', 20, 'action/on')]),
         ]),
         moodPicker(null),
@@ -393,7 +393,7 @@ export function mwNotes(): FrameNode {
         weekStrip(WEEK, 6, 'fill', 30),
       ]),
       text('TODAY', 'overline', 'text/tertiary'),
-      noteCard(N_TOBI_CALL),
+      alink(noteCard(N_TOBI_CALL), 'mwWriteNoteAbout'),
       text('YESTERDAY', 'overline', 'text/tertiary'),
       noteCard(N_KUNLE),
     ],
@@ -477,6 +477,53 @@ export function mwSettings(): FrameNode {
   ]);
 }
 
+function writeNote(general: boolean): FrameNode {
+  const top = col({ name: 'Editor bar', w: 'fill', fill: 'bg/surface' }, [
+    row({ name: 'Bar', w: 'fill', h: 52, pad: [0, 8], gap: 6, cross: 'center' }, [
+      alink(box({ name: 'Back', dir: 'h', w: 40, h: 40, radius: 20, main: 'center', cross: 'center' }, [icon('chevron-left', 22, 'text/primary')]), 'mwNotes'),
+      text('New note', 'title', 'text/primary', { w: 'fill' }),
+      row({ name: 'Saved', gap: 4, pad: [0, 8] }, [icon('check', 14, 'text/tertiary'), text('Draft saved', 'caption', 'text/tertiary')]),
+    ]),
+    divider(),
+  ]);
+  return mwFrame(
+    {
+      name: general ? 'Mobile web · Write a note · General' : 'Mobile web · Write a note · About someone',
+      url: 'gutchek.app/notes/new',
+      top,
+      gap: 14,
+      footer: col({ name: 'Save bar', w: 'fill', pad: [10, 16, 14, 16], gap: 8, fill: 'bg/surface' }, [
+        divider(),
+        alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Save note' })), 'mwNotes'),
+        row({ name: 'Privacy', gap: 6, w: 'fill', main: 'center' }, [icon('lock', 12, 'text/tertiary'), text(general ? 'Only you can see this. It isn\u2019t linked to anyone.' : 'Only you can see this. Tobi is never notified.', 'caption', 'text/tertiary')]),
+      ]),
+    },
+    [
+      alink(fill(use('Segmented', { Active: general ? 'First' : 'Second' }, { first: 'General', second: 'About someone' })), general ? 'mwWriteNoteAbout' : 'mwWriteNote'),
+      general
+        ? row({ name: 'General', gap: 8, w: 'fill' }, [icon('notebook-pen', 16, 'text/tertiary'), text('Just for you. Link it to a person later if you want.', 'caption', 'text/tertiary', { w: 'fill' })])
+        : row({ name: 'Person', gap: 8, w: 'fill' }, [personChip('Tobi', 'Talking', true), box({ name: 'Spacer', w: 'fill', h: 1 }), text('Change', 'smallStrong', 'brand/fg')]),
+      col({ name: 'Editor', w: 'fill', gap: 12, pad: [14, 16], radius: 18, fill: 'bg/surface', stroke: 'border/default' }, [
+        row({ name: 'Date', gap: 6, w: 'fill' }, [icon('calendar', 14, 'text/tertiary'), text('Thursday 29 October · 21:40', 'caption', 'text/tertiary', { w: 'fill' }), icon('lock', 14, 'text/tertiary')]),
+        text(general ? N_GENERAL_DRAFT : N_TOBI_CALL.body, 'body', 'text/primary', { w: 'fill' }),
+      ]),
+      col({ name: 'Mood', gap: 8, w: 'fill' }, [text('How do you feel?', 'label', 'text/secondary'), moodPicker(general ? 'Calm' : 'Happy')]),
+      row({ name: 'Tags', gap: 6, w: 'fill' }, [
+        ...(general ? [tagChip('me time'), tagChip('sleep')] : [tagChip('talking'), tagChip('call')]),
+        row({ name: 'Add tag', gap: 4, pad: [3, 8], radius: 8, stroke: 'border/strong', dash: [3, 3] }, [icon('plus', 12, 'text/secondary'), text('Tag', 'caption', 'text/secondary')]),
+      ]),
+    ],
+  );
+}
+
+export function mwWriteNote(): FrameNode {
+  return writeNote(true);
+}
+
+export function mwWriteNoteAbout(): FrameNode {
+  return writeNote(false);
+}
+
 export const MOBILE_WEB: Array<[string, string, () => FrameNode]> = [
   ['mwSignIn', 'Mobile web · Sign in', mwSignIn],
   ['mwHome', 'Mobile web · Home', mwHome],
@@ -485,6 +532,8 @@ export const MOBILE_WEB: Array<[string, string, () => FrameNode]> = [
   ['mwReport', 'Mobile web · Report', mwReport],
   ['mwSaved', 'Mobile web · Saved', mwSaved],
   ['mwNotes', 'Mobile web · Notes', mwNotes],
+  ['mwWriteNote', 'Mobile web · Write a note · General', mwWriteNote],
+  ['mwWriteNoteAbout', 'Mobile web · Write a note · About someone', mwWriteNoteAbout],
   ['mwAnalyse', 'Mobile web · Check a Chat', mwAnalyse],
   ['mwRooms', 'Mobile web · Rooms', mwRooms],
   ['mwRoom', 'Mobile web · Room', mwRoom],

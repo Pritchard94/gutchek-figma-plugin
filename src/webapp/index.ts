@@ -7,7 +7,7 @@ import { wCompare, wPersonality, wReport, wSaved, wSavedThreads, wSevere, wSigna
 import { wAnalyse, wChatReport, wSpeakers } from './chat';
 import { wDiscover, wRooms, wRoomsAbout, wRoomsMute, wRoomsShare, wRoomsThread } from './rooms';
 import { MOBILE_WEB } from './mobileweb';
-import { wNotes, wNotesEvidence, wNotesPerson } from './notes';
+import { wNotes, wNotesEvidence, wNotesGeneral, wNotesPerson } from './notes';
 import { wBilling, wDelete, wSafety, wSettings } from './account';
 
 type Def = [string, string, () => FrameNode];
@@ -38,9 +38,10 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
   },
   {
     title: 'Web app · 3 · Notes',
-    note: 'A private journal in three columns: library and people, the feed with tonight\'s prompt and this week\'s moods, and the editor. Person pages put notes, gut logs and reports on one timeline beside an opt-in reflection.',
+    note: 'A private journal in three columns: library and people, the feed with tonight\'s prompt and this week\'s moods, and the editor for a general note or one about someone. Person pages put notes, gut logs and reports on one timeline beside an opt-in reflection.',
     pages: [
       ['wNotes', 'Notes', wNotes],
+      ['wNotesGeneral', 'Notes · general note', wNotesGeneral],
       ['wNotesPerson', 'Notes · person timeline and reflection', wNotesPerson],
       ['wNotesEvidence', 'Notes · export evidence', wNotesEvidence],
     ],

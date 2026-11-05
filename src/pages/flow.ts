@@ -72,10 +72,11 @@ export function buildFlow(frames: Record<string, FrameNode>, page: PageNode): Fr
       [frames.lockPasscode, 'Passcode'],
       [frames.home, 'Home'],
     ]),
-    lane('Write a note', 'Flow D: Notes tab, write, pick a mood, then see it on the person\u2019s timeline beside their reports.', [
+    lane('Write a note', 'Flow D: Notes tab, write a general note or one about someone, pick a mood, then see it on the person\u2019s timeline beside their reports.', [
       [frames.notesHome, 'Notes'],
-      [frames.writeNote, 'Write a note'],
-      [frames.pickPerson, 'About someone'],
+      [frames.writeGeneral, 'General'],
+      [frames.writeNote, 'About someone'],
+      [frames.pickPerson, 'Pick a person'],
       [frames.personTimeline, 'Timeline'],
       [frames.reflection, 'Reflection · v1.5'],
     ]),

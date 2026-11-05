@@ -85,7 +85,7 @@ export function notesHome(): FrameNode {
       nav: { type: 'Large', title: 'Notes', action: 'search', actionTo: 'notesSearch' },
       gap: 16,
       tall: true,
-      footer: [link(btn('Write a note', 'Primary', 'Large', 'pencil'), 'writeNote')],
+      footer: [link(btn('Write a note', 'Primary', 'Large', 'pencil'), 'writeGeneral')],
     },
     [
       row({ name: 'Sync', gap: 6, w: 'fill' }, [icon('cloud', 14, 'text/tertiary'), text('Synced to your account · just now', 'caption', 'text/tertiary', { w: 'fill' }), icon('lock', 14, 'text/tertiary'), text('Only you', 'caption', 'text/tertiary')]),
@@ -98,7 +98,7 @@ export function notesHome(): FrameNode {
       row({ name: 'Filters', gap: 8 }, [chip('All', true), chip('General'), chip('Pinned'), chip('Evidence')]),
       dayHead('Today'),
       link(noteCard(N_TOBI_CALL), 'personTimeline'),
-      noteCard(N_MORNING),
+      link(noteCard(N_MORNING), 'writeGeneral'),
       dayHead('Yesterday'),
       link(noteCard(N_KUNLE), 'noteDetail'),
     ],
@@ -114,7 +114,7 @@ export function notesEmpty(): FrameNode {
       tab: 'Notes',
       nav: { type: 'Large', title: 'Notes', action: null },
       gap: 18,
-      footer: [link(btn('Write your first note', 'Primary', 'Large', 'pencil'), 'writeNote')],
+      footer: [link(btn('Write your first note', 'Primary', 'Large', 'pencil'), 'writeGeneral')],
     },
     [
       illoNotes(),
@@ -127,10 +127,17 @@ export function notesEmpty(): FrameNode {
 
 // ---------------------------------------------------------------- writing
 
-export function writeNote(): FrameNode {
+export const N_GENERAL_DRAFT = 'Too many chats at once this week. Taking a break from the apps until Friday and going to bed before midnight. I feel lighter already.';
+
+function noteEditor(general: boolean): FrameNode {
   const editor = col({ name: 'Editor', w: 'fill', gap: 14, pad: [16, 18, 12, 18], radius: 22, fill: 'bg/surface', stroke: 'border/default' }, [
     row({ name: 'Date', gap: 6, w: 'fill' }, [icon('calendar', 14, 'text/tertiary'), text('Thursday 29 October · 21:40', 'caption', 'text/tertiary', { w: 'fill' }), icon('lock', 14, 'text/tertiary')]),
-    text('Long call tonight. He remembered the thing about my sister\u2019s wedding without me bringing it up. Felt really seen. Still want to ask about the football page\u2026', 'body', 'text/primary', { w: 'fill' }),
+    text(
+      general ? N_GENERAL_DRAFT : 'Long call tonight. He remembered the thing about my sister\u2019s wedding without me bringing it up. Felt really seen. Still want to ask about the football page\u2026',
+      'body',
+      'text/primary',
+      { w: 'fill' },
+    ),
     divider(),
     row({ name: 'Toolbar', w: 'fill', gap: 18 }, [
       icon('tag', 20, 'text/secondary'),
@@ -140,22 +147,36 @@ export function writeNote(): FrameNode {
       row({ name: 'Voice', gap: 4, opacity: 0.5 }, [icon('mic', 18, 'text/tertiary'), text('Voice · soon', 'caption', 'text/tertiary')]),
     ]),
   ]);
+  const privacy = general ? 'Only you can see this. It isn\u2019t linked to anyone.' : 'Only you can see this. Tobi is never notified.';
   return screen(
     {
-      name: 'Write a note',
+      name: general ? 'Write a note · General' : 'Write a note',
       nav: { title: 'New note', action: null, backTo: 'notesHome' },
       gap: 16,
-      footer: [link(btn('Save note'), 'personTimeline'), row({ name: 'Privacy', gap: 6 }, [icon('lock', 14, 'text/tertiary'), text('Only you can see this. Tobi is never notified.', 'caption', 'text/tertiary')])],
+      footer: [link(btn('Save note'), general ? 'notesHome' : 'personTimeline'), row({ name: 'Privacy', gap: 6 }, [icon('lock', 14, 'text/tertiary'), text(privacy, 'caption', 'text/tertiary')])],
       footerDivider: true,
     },
     [
-      link(fill(use('Segmented', { Active: 'Second' }, { first: 'General', second: 'About someone' })), 'pickPerson'),
-      link(row({ name: 'Person', gap: 8, w: 'fill' }, [personChip('Tobi', 'Talking', true), box({ name: 'Spacer', w: 'fill', h: 1 }), text('Change', 'smallStrong', 'brand/fg')]), 'pickPerson'),
+      link(fill(use('Segmented', { Active: general ? 'First' : 'Second' }, { first: 'General', second: 'About someone' })), general ? 'pickPerson' : 'writeGeneral'),
+      general
+        ? row({ name: 'General', gap: 8, w: 'fill' }, [icon('notebook-pen', 16, 'text/tertiary'), text('Just for you. Link it to a person later if you want.', 'caption', 'text/tertiary', { w: 'fill' })])
+        : link(row({ name: 'Person', gap: 8, w: 'fill' }, [personChip('Tobi', 'Talking', true), box({ name: 'Spacer', w: 'fill', h: 1 }), text('Change', 'smallStrong', 'brand/fg')]), 'pickPerson'),
       editor,
-      col({ name: 'Mood', gap: 8, w: 'fill' }, [text('How do you feel?', 'label', 'text/secondary'), moodPicker('Happy')]),
-      row({ name: 'Tags', gap: 6, w: 'fill' }, [tagChip('talking'), tagChip('call'), row({ name: 'Add tag', gap: 4, pad: [3, 8], radius: 8, stroke: 'border/strong', dash: [3, 3] }, [icon('plus', 12, 'text/secondary'), text('Tag', 'caption', 'text/secondary')])]),
+      col({ name: 'Mood', gap: 8, w: 'fill' }, [text('How do you feel?', 'label', 'text/secondary'), moodPicker(general ? 'Calm' : 'Happy')]),
+      row({ name: 'Tags', gap: 6, w: 'fill' }, [
+        ...(general ? [tagChip('me time'), tagChip('sleep')] : [tagChip('talking'), tagChip('call')]),
+        row({ name: 'Add tag', gap: 4, pad: [3, 8], radius: 8, stroke: 'border/strong', dash: [3, 3] }, [icon('plus', 12, 'text/secondary'), text('Tag', 'caption', 'text/secondary')]),
+      ]),
     ],
   );
+}
+
+export function writeNote(): FrameNode {
+  return noteEditor(false);
+}
+
+export function writeGeneral(): FrameNode {
+  return noteEditor(true);
 }
 
 export function pickPerson(): FrameNode {
@@ -546,7 +567,8 @@ export function notesLocked(): FrameNode {
 export const NOTES_SCREENS: Array<[string, string, () => FrameNode]> = [
   ['notesHome', 'Notes', notesHome],
   ['notesEmpty', 'Notes · First time', notesEmpty],
-  ['writeNote', 'Write a note', writeNote],
+  ['writeGeneral', 'Write a note · General', writeGeneral],
+  ['writeNote', 'Write a note · About someone', writeNote],
   ['pickPerson', 'Write a note · Who is this about', pickPerson],
   ['addPerson', 'Add a person', addPerson],
   ['personTimeline', 'Person card and timeline', personTimeline],
