@@ -1,5 +1,5 @@
 import { ctx } from '../core/ctx';
-import { Kid, abs, add, avatar, box, col, divider, fill, gradient, icon, pill, rect, row, text } from '../core/ui';
+import { Kid, PLATFORMS, Tone, abs, add, avatar, box, col, divider, fill, gradient, icon, pill, rect, row, text } from '../core/ui';
 import { glyph, lockup } from '../brand';
 import { use } from '../components/library';
 import { RoomMsg, composerBar, nameToken, nickAvatar, roomMessage, streamDivider } from '../components/chat';
@@ -8,7 +8,7 @@ import { modeSwitch } from '../components/appearance';
 import { people, tobi, user } from '../screens/data';
 import { WEEK, moodPicker, noteCard, weekStrip } from '../components/notes';
 import { N_KUNLE, N_TOBI_CALL } from '../screens/notes';
-import { alink } from './shell';
+import { alink, field, iconTileW, kv } from './shell';
 
 const W = 390;
 const H = 844;
@@ -19,7 +19,7 @@ const TABS: Array<[string, string, string]> = [
   ['notebook-pen', 'Notes', 'mwNotes'],
   ['message', 'Chat', 'mwAnalyse'],
   ['messages', 'Gists', 'mwRooms'],
-  ['shield', 'Stay Safe', 'mwHome'],
+  ['shield', 'Stay Safe', 'mwSafety'],
 ];
 
 function browserTop(url: string): FrameNode {
@@ -37,7 +37,7 @@ function appBar(title?: string): FrameNode {
       alink(box({ name: 'Menu', dir: 'h', w: 40, h: 40, radius: 20, main: 'center', cross: 'center' }, [icon('menu', 22, 'text/primary')]), 'mwMenu'),
       title ? text(title, 'title', 'text/primary', { w: 'fill' }) : row({ name: 'Brand', w: 'fill' }, [lockup(22)]),
       box({ name: 'Bell', dir: 'h', w: 40, h: 40, radius: 20, main: 'center', cross: 'center' }, [icon('bell', 20, 'text/primary')]),
-      avatar(user.initials, 30, 'brand'),
+      alink(avatar(user.initials, 30, 'brand'), 'mwSettings'),
     ]),
     divider(),
   ]);
@@ -85,20 +85,45 @@ function mwFrame(spec: MwSpec, kids: Kid[]): FrameNode {
   return f;
 }
 
+function scores(p: (typeof people)[number]): SceneNode {
+  return p.confidence === 'Low'
+    ? pill('Low data', 'neutral')
+    : row({ name: 'Scores', gap: 4 }, [use('ScoreBadge', { Side: 'Caution' }, { label: String(p.caution) }), use('ScoreBadge', { Side: 'Positive' }, { label: String(p.positive) })]);
+}
+
 function reportRow(p: (typeof people)[number]): FrameNode {
   return alink(
     row({ name: p.name, w: 'fill', gap: 12, pad: 12, radius: 14, fill: 'bg/surface', stroke: 'border/default' }, [
       avatar(p.initials, 40, p.tone),
       col({ name: 'Text', gap: 0, w: 'fill' }, [text(p.name, 'smallStrong', 'text/primary'), text(p.verdict, 'caption', 'text/secondary', { w: 'fill', maxLines: 1 })]),
-      p.confidence === 'Low'
-        ? pill('Low data', 'neutral')
-        : row({ name: 'Scores', gap: 4 }, [use('ScoreBadge', { Side: 'Caution' }, { label: String(p.caution) }), use('ScoreBadge', { Side: 'Positive' }, { label: String(p.positive) })]),
+      scores(p),
     ]),
     'mwReport',
   );
 }
 
 // ---------------------------------------------------------------- pages
+
+export function mwSignIn(): FrameNode {
+  const top = col({ name: 'Brand bar', w: 'fill', fill: 'bg/surface' }, [
+    row({ name: 'Bar', w: 'fill', h: 52, pad: [0, 16], main: 'between', cross: 'center' }, [
+      lockup(22),
+      row({ name: 'Safe', gap: 6, pad: [4, 10], radius: 999, fill: 'bg/subtle', cross: 'center' }, [icon('lock', 12, 'positive/fg'), text('Private and encrypted', 'label', 'text/secondary')]),
+    ]),
+    divider(),
+  ]);
+  return mwFrame({ name: 'Mobile web · Sign in', url: 'gutchek.app/sign-in', top, pad: 20 }, [
+    text('Trust your gut. Then check it.', { family: 'display', weight: 800, size: 28, line: 34, tracking: -1.5 }, 'text/primary', { w: 'fill' }),
+    text('Sign in or create an account. Gutchek is for adults 18 and over.', 'small', 'text/secondary', { w: 'fill' }),
+    fill(use('SocialButton', { Provider: 'Apple' })),
+    fill(use('SocialButton', { Provider: 'Google' })),
+    row({ name: 'Or', gap: 12, w: 'fill' }, [fill(divider()), text('or use your phone', 'small', 'text/tertiary'), fill(divider())]),
+    fill(use('Segmented', { Active: 'First' }, { first: 'Phone', second: 'Email' })),
+    field('Phone number', '803 555 0142', 'Focused', { prefix: '+234' }),
+    alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Send code' })), 'mwHome'),
+    text('By continuing you agree to the Terms of use and Privacy policy.', 'caption', 'text/tertiary', { w: 'fill' }),
+  ]);
+}
 
 export function mwHome(): FrameNode {
   return mwFrame({ name: 'Mobile web · Home', url: 'gutchek.app/home', tab: 'Home' }, [
@@ -109,7 +134,7 @@ export function mwHome(): FrameNode {
         text('Run a Gutchek', 'h3', 'text/on-solid'),
         text('A name and one handle. A balanced report in under a minute.', 'small', 'text/on-solid', { w: 'fill', opacity: 0.88 }),
       ]),
-      'mwHome',
+      'mwSearch',
     ),
     alink(
       row({ name: 'Check a Chat', w: 'fill', gap: 12, pad: 14, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
@@ -119,7 +144,7 @@ export function mwHome(): FrameNode {
       ]),
       'mwAnalyse',
     ),
-    row({ name: 'Head', w: 'fill' }, [text('Recent reports', 'h3', 'text/primary', { w: 'fill' }), text('See all', 'smallStrong', 'brand/fg')]),
+    row({ name: 'Head', w: 'fill' }, [text('Recent reports', 'h3', 'text/primary', { w: 'fill' }), alink(text('See all', 'smallStrong', 'brand/fg'), 'mwSaved')]),
     ...people.slice(0, 3).map(reportRow),
   ]);
 }
@@ -138,15 +163,15 @@ export function mwMenu(): FrameNode {
     );
   const drawer = col({ name: 'Drawer', w: 300, h: H, pad: [64, 16, 24, 16], gap: 16, fill: 'bg/surface', shadow: 'e3' }, [
     row({ name: 'Head', w: 'fill', gap: 8 }, [lockup(26), box({ name: 'Spacer', w: 'fill', h: 1 }), alink(box({ name: 'Close', dir: 'h', w: 36, h: 36, radius: 18, fill: 'bg/subtle', main: 'center', cross: 'center' }, [icon('x', 18, 'text/secondary')]), 'mwHome')]),
-    fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Run a Gutchek' }, { show: ['icon'], icons: { icon: 'plus' } })),
+    alink(fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Run a Gutchek' }, { show: ['icon'], icons: { icon: 'plus' } })), 'mwSearch'),
     col({ name: 'Nav', w: 'fill', gap: 2 }, [
       item('home', 'Home', 'mwHome', true),
       item('notebook-pen', 'Notes', 'mwNotes'),
-      item('bookmark', 'Saved', 'mwHome'),
+      item('bookmark', 'Saved', 'mwSaved'),
       item('message', 'Check a Chat', 'mwAnalyse'),
       item('messages', 'Rooms', 'mwRooms', false, '15'),
-      item('shield', 'Stay Safe', 'mwHome'),
-      item('settings', 'Settings', 'mwHome'),
+      item('shield', 'Stay Safe', 'mwSafety'),
+      item('settings', 'Settings', 'mwSettings'),
     ]),
     box({ name: 'Spacer', w: 'fill', h: 'fill', dir: 'v' }),
     col({ name: 'Appearance', w: 'fill', gap: 6 }, [text('Appearance', 'overline', 'text/tertiary'), modeSwitch(ctx.theme === 'dark' ? 'dark' : 'system')]),
@@ -156,6 +181,33 @@ export function mwMenu(): FrameNode {
   add(base, abs(scrim, 0, 0));
   add(base, abs(drawer, 0, 0));
   return base;
+}
+
+export function mwSearch(): FrameNode {
+  const chips = row({ name: 'Platforms', gap: 8, wrap: true, wrapGap: 8, w: 'fill' }, PLATFORMS.map((p) => use('Chip', { Selected: p.code === 'IG' ? 'On' : 'Off' }, { label: p.name })));
+  return mwFrame(
+    {
+      name: 'Mobile web · Run a Gutchek',
+      url: 'gutchek.app/search',
+      title: 'Run a Gutchek',
+      tab: 'Home',
+      footer: col({ name: 'Action bar', w: 'fill', pad: [10, 16], gap: 10, fill: 'bg/surface' }, [
+        divider(),
+        alink(fill(use('Button', { Variant: 'Primary', Size: 'Large' }, { label: 'Find them' }, { show: ['icon'], icons: { icon: 'search' } })), 'mwReport'),
+        row({ name: 'Purpose', gap: 6, w: 'fill', main: 'center' }, [icon('shield-check', 14, 'brand/fg'), text('Dating and personal safety only · 3 reports left', 'caption', 'text/tertiary')]),
+      ]),
+    },
+    [
+      col({ name: 'Heading', gap: 4, w: 'fill' }, [
+        text('Who are you getting to know?', 'h3', 'text/primary', { w: 'fill' }),
+        text('Gutchek only reads public content. They are never notified.', 'small', 'text/secondary', { w: 'fill' }),
+      ]),
+      row({ name: 'Name', gap: 12, w: 'fill' }, [field('First name', 'Tobi'), field('Last name', 'Adeyemi')]),
+      col({ name: 'Platform', gap: 8, w: 'fill' }, [text('Where do you know them from?', 'label', 'text/secondary'), chips]),
+      field('Instagram handle', 'tobi.adeyemi', 'Focused', { prefix: '@', helper: 'One handle is enough. We find linked accounts through public links only.' }),
+      field('City (optional)', 'Lagos', 'Filled', { leading: 'map-pin' }),
+    ],
+  );
 }
 
 export function mwReport(): FrameNode {
@@ -174,6 +226,29 @@ export function mwReport(): FrameNode {
     text("Tobi's public posts are mostly supportive and upbeat, with steady community involvement.", 'small', 'text/secondary', { w: 'fill' }),
     sig('positive', 'Supportive comments to women in tech', '23 comments · 2022 to 2026'),
     sig('caution', 'Hostile replies in a football argument', '5 replies · Aug 2024'),
+  ]);
+}
+
+export function mwSaved(): FrameNode {
+  const person = (p: (typeof people)[number]) =>
+    alink(
+      col({ name: p.name, w: 'fill', gap: 10, pad: 14, radius: 16, fill: 'bg/surface', stroke: 'border/default' }, [
+        row({ name: 'Top', w: 'fill', gap: 12 }, [
+          avatar(p.initials, 40, p.tone),
+          col({ name: 'Text', gap: 0, w: 'fill' }, [text(p.name, 'smallStrong', 'text/primary'), text(p.verdict, 'caption', 'text/secondary', { w: 'fill', maxLines: 1 })]),
+          scores(p),
+        ]),
+        p.note
+          ? row({ name: 'Private note', w: 'fill', gap: 8, pad: [8, 10], radius: 10, fill: 'bg/subtle' }, [icon('notebook-pen', 14, 'text/tertiary'), text(p.note, 'caption', 'text/secondary', { w: 'fill', maxLines: 2 })])
+          : null,
+      ]),
+      'mwReport',
+    );
+  return mwFrame({ name: 'Mobile web · Saved', url: 'gutchek.app/saved', title: 'Saved', tab: 'Saved', gap: 12 }, [
+    fill(use('Segmented', { Active: 'First' }, { first: 'People · 4', second: 'Threads · 3' })),
+    row({ name: 'Search', w: 'fill', h: 40, pad: [0, 12], gap: 8, radius: 10, fill: 'bg/surface', stroke: 'border/strong', cross: 'center' }, [icon('search', 16, 'text/tertiary'), text('Search saved people', 'small', 'text/tertiary')]),
+    row({ name: 'Filters', gap: 8, w: 'fill' }, [use('Chip', { Selected: 'On' }, { label: 'All' }), use('Chip', { Selected: 'Off' }, { label: 'Mostly positive' }), use('Chip', { Selected: 'Off' }, { label: 'Caution' })]),
+    ...people.map(person),
   ]);
 }
 
@@ -325,13 +400,95 @@ export function mwNotes(): FrameNode {
   );
 }
 
+function listCard(title: string, kids: Kid[], action?: string): FrameNode {
+  return col({ name: title, w: 'fill', gap: 4, pad: [14, 16], radius: 18, fill: 'bg/surface', stroke: 'border/default' }, [
+    row({ name: 'Head', w: 'fill', pad: [0, 0, 4, 0] }, [text(title, 'title', 'text/primary', { w: 'fill' }), action ? text(action, 'smallStrong', 'brand/fg') : null]),
+    ...kids,
+  ]);
+}
+
+export function mwSafety(): FrameNode {
+  const contact = (initials: string, name: string, phone: string, tone: Tone, primary = false) =>
+    row({ name, w: 'fill', gap: 12, pad: [8, 0] }, [
+      avatar(initials, 36, tone),
+      col({ name: 'Text', gap: 0, w: 'fill' }, [text(name, 'smallStrong', 'text/primary'), text(phone, 'caption', 'text/tertiary')]),
+      primary ? pill('Primary', 'brand') : icon('more', 18, 'text/tertiary'),
+    ]);
+  const line = (iconName: string, title: string, sub: string, value?: string) =>
+    row({ name: title, w: 'fill', gap: 12, pad: [8, 0] }, [
+      iconTileW(iconName, 'neutral', 32),
+      col({ name: 'Text', gap: 0, w: 'fill' }, [text(title, 'smallStrong', 'text/primary', { w: 'fill' }), text(sub, 'caption', 'text/tertiary', { w: 'fill' })]),
+      value ? text(value, 'title', 'text/primary') : icon('chevron-right', 16, 'text/tertiary'),
+    ]);
+  return mwFrame({ name: 'Mobile web · Stay Safe', url: 'gutchek.app/safety', title: 'Stay Safe', tab: 'Stay Safe', gap: 14 }, [
+    row({ name: 'Emergency', w: 'fill', gap: 12, pad: 14, radius: 16, fill: 'caution/subtle' }, [
+      iconTileW('phone', 'caution', 40),
+      col({ name: 'Text', gap: 0, w: 'fill' }, [text('In danger right now?', 'bodyStrong', 'text/primary'), text('Police, fire and ambulance', 'caption', 'text/secondary')]),
+      use('Button', { Variant: 'Destructive', Size: 'Small' }, { label: 'Call 112' }),
+    ]),
+    col({ name: 'Share my date', w: 'fill', gap: 10, pad: 16, radius: 20, fill: 'bg/surface', stroke: 'border/default' }, [
+      row({ name: 'Head', w: 'fill', gap: 12 }, [
+        iconTileW('navigation', 'brand', 36),
+        col({ name: 'Text', gap: 0, w: 'fill' }, [text('Share my date', 'title', 'text/primary'), text('Plans and live location, with check-ins', 'caption', 'text/secondary', { w: 'fill' })]),
+      ]),
+      kv('Meeting', 'Tobi Adeyemi'),
+      kv('Where', 'Nok by Alara, Victoria Island'),
+      kv('When', 'Sat 25 Oct · 19:30 · every 60 min'),
+      row({ name: 'Share with', gap: 8, w: 'fill', cross: 'center' }, [text('Share with', 'label', 'text/secondary'), use('Chip', { Selected: 'On' }, { label: 'Ngozi' }), use('Chip', { Selected: 'Off' }, { label: 'Ibrahim' })]),
+      fill(use('Button', { Variant: 'Primary', Size: 'Medium' }, { label: 'Tell a friend' }, { show: ['icon'], icons: { icon: 'navigation' } })),
+    ]),
+    listCard('Trusted contacts', [contact('NK', 'Ngozi Kalu', '+234 802 555 0187', 'positive', true), contact('IB', 'Ibrahim Bello', '+234 809 555 0133', 'warning')], 'Manage'),
+    listCard('Support lines · Nigeria', [
+      line('phone', 'Emergency services', 'Police, fire, ambulance', '112'),
+      line('life-buoy', 'Sexual assault referral centre', 'Free medical care and counselling'),
+      line('phone', 'Domestic violence helpline', 'Confidential, 24 hours'),
+    ]),
+  ]);
+}
+
+export function mwSettings(): FrameNode {
+  const item = (iconName: string, label: string, sub?: string, danger = false) =>
+    row({ name: label, w: 'fill', gap: 12, pad: [12, 14] }, [
+      icon(iconName, 20, danger ? 'caution/fg' : 'text/secondary'),
+      col({ name: 'Text', gap: 0, w: 'fill' }, [text(label, 'body', danger ? 'caution/fg' : 'text/primary'), sub ? text(sub, 'caption', 'text/tertiary', { w: 'fill' }) : null]),
+      danger ? null : icon('chevron-right', 16, 'text/tertiary'),
+    ]);
+  const group = (title: string, rows: SceneNode[]) =>
+    col({ name: title, w: 'fill', gap: 6 }, [
+      text(title, 'overline', 'text/tertiary'),
+      col({ name: 'List', w: 'fill', radius: 16, fill: 'bg/surface', stroke: 'border/default', clip: true }, rows.reduce<SceneNode[]>((out, r, i) => (i ? out.concat(divider(), r) : [r]), [])),
+    ]);
+  return mwFrame({ name: 'Mobile web · Settings', url: 'gutchek.app/settings', title: 'Settings', tab: 'Settings', gap: 16 }, [
+    row({ name: 'Profile', w: 'fill', gap: 14 }, [
+      avatar(user.initials, 52, 'brand'),
+      col({ name: 'Text', gap: 6, w: 'fill' }, [text(user.name, 'title', 'text/primary'), row({ name: 'Badges', gap: 6 }, [pill('Identity verified', 'positive', 'shield-check'), pill('18+', 'neutral')])]),
+    ]),
+    row({ name: 'Plan', w: 'fill', gap: 12, pad: 14, radius: 16, fill: 'brand/subtle', stroke: 'brand/border' }, [
+      iconTileW('star', 'brand', 36),
+      col({ name: 'Text', gap: 0, w: 'fill' }, [text('Gutchek Plus', 'smallStrong', 'text/primary'), text('3 of 5 reports left · renews 1 Nov', 'caption', 'text/secondary')]),
+      text('Manage', 'smallStrong', 'brand/fg'),
+    ]),
+    group('Account', [item('user', 'Account', user.email), item('lock', 'Privacy and data'), item('bell', 'Notifications'), item('history', 'Search history', 'Auto-deletes after 90 days')]),
+    col({ name: 'Appearance', w: 'fill', gap: 6 }, [text('Appearance', 'overline', 'text/tertiary'), modeSwitch(ctx.theme === 'dark' ? 'dark' : 'system')]),
+    group('Security', [
+      row({ name: 'Passkey lock', w: 'fill', gap: 12, pad: [10, 14], cross: 'center' }, [icon('fingerprint', 20, 'text/secondary'), text('Lock with a passkey', 'body', 'text/primary', { w: 'fill' }), use('Switch', { State: 'On' })]),
+      item('trash', 'Delete account and data', undefined, true),
+    ]),
+  ]);
+}
+
 export const MOBILE_WEB: Array<[string, string, () => FrameNode]> = [
+  ['mwSignIn', 'Mobile web · Sign in', mwSignIn],
   ['mwHome', 'Mobile web · Home', mwHome],
   ['mwMenu', 'Mobile web · Menu', mwMenu],
-  ['mwNotes', 'Mobile web · Notes', mwNotes],
+  ['mwSearch', 'Mobile web · Run a Gutchek', mwSearch],
   ['mwReport', 'Mobile web · Report', mwReport],
+  ['mwSaved', 'Mobile web · Saved', mwSaved],
+  ['mwNotes', 'Mobile web · Notes', mwNotes],
   ['mwAnalyse', 'Mobile web · Check a Chat', mwAnalyse],
   ['mwRooms', 'Mobile web · Rooms', mwRooms],
   ['mwRoom', 'Mobile web · Room', mwRoom],
   ['mwRoomAbout', 'Mobile web · Room info', mwRoomAbout],
+  ['mwSafety', 'Mobile web · Stay Safe', mwSafety],
+  ['mwSettings', 'Mobile web · Settings', mwSettings],
 ];

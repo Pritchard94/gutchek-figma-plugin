@@ -91,7 +91,7 @@ const GROUPS: Array<{ title: string; note: string; pages: Def[] }> = [
   },
   {
     title: 'Web app · 8 · Mobile web',
-    note: 'The same web app on a phone browser: a top bar with a menu drawer, a bottom bar for the main sections, and stacked layouts. Rooms open full screen; room info opens from the header.',
+    note: 'The same web app on a phone browser, from sign in to settings: a top bar with a menu drawer, a bottom bar for the main sections, and stacked layouts. Rooms open full screen; room info opens from the header.',
     pages: MOBILE_WEB,
   },
 ];
@@ -174,6 +174,7 @@ export function webAppStarts(light: Record<string, FrameNode>, dark: Record<stri
     { name: 'Web app · Sign in', node: light.wSignIn },
     { name: 'Web app · Home', node: light.wHome },
     { name: 'Web app · Home · Dark', node: dark.wHome },
+    { name: 'Mobile web · Sign in', node: light.mwSignIn },
   ];
 }
 
